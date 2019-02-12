@@ -1,0 +1,19 @@
+{
+    "name": "vaimo/vipps-payment-m1-git",
+    "type": "magento-module",
+    "description": "Vipps Payment for Magento1",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Oleg Malichenko",
+            "email": "oleg.malichenko@vaimo.com"
+        }
+    ],
+    "require": {
+        "vaimo/magento": "*",
+        "magento-hackathon/magento-composer-installer": "*"
+    },
+    "extra": {
+        "vaimo-module-category": "Integration"
+    }
+}
