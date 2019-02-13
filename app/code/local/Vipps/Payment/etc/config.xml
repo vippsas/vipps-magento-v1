@@ -21,9 +21,40 @@
     </modules>
     <global>
         <helpers>
-            <vipps-payment>
+            <vipps_payment>
                 <class>Vipps_Payment_Helper</class>
-            </vipps-payment>
+            </vipps_payment>
         </helpers>
+        <models>
+            <vipps_payment>
+                <class>Vipps_Payment_Model</class>
+                <resourceModel>vipps_payment_resource</resourceModel>
+            </vipps_payment>
+            <vipps_payment_resource>
+                <class>Vipps_Payment_Model_Resource</class>
+                <entities>
+                    <jwt>
+                        <table>vipps_payment_jwt</table>
+                    </jwt>
+                    <profiling>
+                        <table>vipps_profiling</table>
+                    </profiling>
+                    <quote>
+                        <table>vipps_quote</table>
+                    </quote>
+                    <quote_attempt>
+                        <table>vipps_quote_attempt</table>
+                    </quote_attempt>
+                </entities>
+            </vipps_payment_resource>
+        </models>
+        <resources>
+            <vipps_payment_setup>
+                <setup>
+                    <module>Vipps_Payment</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </vipps_payment_setup>
+        </resources>
     </global>
 </config>
