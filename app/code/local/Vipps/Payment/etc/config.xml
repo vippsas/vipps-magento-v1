@@ -57,4 +57,34 @@
             </vipps_payment_setup>
         </resources>
     </global>
+    <default>
+        <payment>
+            <vipps>
+                <model>VippsFacade</model>
+                <title>Vipps</title>
+                <active>1</active>
+                <is_gateway>1</is_gateway>
+                <can_use_checkout>1</can_use_checkout>
+                <can_initialize>0</can_initialize>
+                <can_authorize>1</can_authorize>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+                <can_capture_partial>1</can_capture_partial>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_fetch_transaction_information>1</can_fetch_transaction_information>
+                <can_void>1</can_void>
+                <can_cancel>1</can_cancel>
+                <can_use_internal>1</can_use_internal>
+                <environment>develop</environment>
+            </vipps>
+        </payment>
+        <vipps>
+            <order_cancellation>
+                <type>manual</type>
+                <attempts_count>3</attempts_count>
+                <customer_inactivity_time>10</customer_inactivity_time>
+                <quote_storage_period>60</quote_storage_period>
+            </order_cancellation>
+        </vipps>
+    </default>
 </config>
