@@ -142,8 +142,8 @@ class GatewayCommand implements CommandInterface
         if (!$response->isSuccess()) {
             $error = $this->extractError($responseBody);
             $orderId = $this->extractOrderId($transfer, $responseBody);
-            $errorCode = $error['code'] ?? $response->getStatusCode();
-            $errorMessage = $error['message'] ?? $response->getReasonPhrase();
+            $errorCode = isset($error['code']) ? $error['code'] : $response->getStatusCode();
+            $errorMessage = isset($error['message']) ? $error['message'] : $response->getReasonPhrase();
             $exception = $this->exceptionFactory->create($errorCode, $errorMessage);
             $message = sprintf(
                 'Request error. Code: "%s", message: "%s", order id: "%s"',
@@ -203,7 +203,7 @@ class GatewayCommand implements CommandInterface
         if (preg_match('/payments(\/([^\/]+)\/([a-z]+))?$/', $transfer->getUri(), $matches)) {
             $orderId = isset($matches[2]) ? $matches[2] : null;
         }
-        return $orderId ?? ($transfer->getBody()['transaction']['orderId'] ?? ($responseBody['orderId'] ?? null));
+        return $orderId ?? ($transfer->getBody()['transaction']['orderId'] ?? (isset($responseBody['orderId']) ? $responseBody['orderId'] : null));
     }
 
     /**

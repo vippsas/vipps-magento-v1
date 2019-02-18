@@ -29,7 +29,7 @@ class OrderValidator extends AbstractValidator
      */
     public function validate(array $validationSubject)
     {
-        $orderId = $validationSubject['jsonData']['orderId'] ?? null;
+        $orderId = isset($validationSubject['jsonData']['orderId']) ? $validationSubject['jsonData']['orderId'] : null;
 
         $isValid = (bool)$orderId;
 

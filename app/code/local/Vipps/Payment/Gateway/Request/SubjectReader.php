@@ -43,7 +43,7 @@ class SubjectReader
      */
     public function readAmount($subject)
     {
-        return $subject['amount'] ?? null;
+        return isset($subject['amount']) ? $subject['amount'] : null;
     }
 
     /**

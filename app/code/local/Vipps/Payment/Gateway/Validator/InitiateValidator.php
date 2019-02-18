@@ -31,7 +31,7 @@ class InitiateValidator extends AbstractValidator
      */
     public function validate(array $validationSubject)
     {
-        $isValid = (bool)($validationSubject['jsonData']['url'] ?? false);
+        $isValid = (bool)(isset($validationSubject['jsonData']['url']) ? $validationSubject['jsonData']['url'] : false);
         $errorMessages = $isValid ? [] : [__('Gateway response error. Incorrect initiate payment parameters.')];
 
         return $this->createResult($isValid, $errorMessages);

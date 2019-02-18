@@ -13,6 +13,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+
 namespace Vipps\Payment\Gateway\Http;
 
 use Vipps\Payment\Gateway\Http\Client\ClientInterface;
@@ -77,9 +78,11 @@ class TransferFactory
      */
     public function create(array $request)
     {
-        $this->transferBuilder->setHeaders([
-            ClientInterface::HEADER_PARAM_X_REQUEST_ID => $request['requestId'] ?? $this->generateRequestId()
-        ]);
+        $this->transferBuilder->setHeaders(array(
+            ClientInterface::HEADER_PARAM_X_REQUEST_ID => isset($request['requestId'])
+                ? $request['requestId']
+                : $this->generateRequestId()
+        ));
 
         if (isset($request['requestId'])) {
             unset($request['requestId']);
@@ -94,22 +97,13 @@ class TransferFactory
     }
 
     /**
-     * Generating Url.
-     *
-     * @param $request
+     * Generate value of request id for current request
      *
      * @return string
      */
-    private function getUrl(array $request = [])
+    private function generateRequestId()
     {
-        $endpointUrl = $this->endpointUrl;
-        /** Binding url parameters if they were specified */
-        foreach ($this->urlParams as $paramValue) {
-            if (isset($request[$paramValue])) {
-                $endpointUrl = str_replace(':' . $paramValue, $request[$paramValue], $this->endpointUrl);
-            }
-        }
-        return $this->urlResolver->getUrl($endpointUrl);
+        return uniqid('req-id-', true);
     }
 
     /**
@@ -131,12 +125,21 @@ class TransferFactory
     }
 
     /**
-     * Generate value of request id for current request
+     * Generating Url.
+     *
+     * @param $request
      *
      * @return string
      */
-    private function generateRequestId()
+    private function getUrl(array $request = [])
     {
-        return uniqid('req-id-', true);
+        $endpointUrl = $this->endpointUrl;
+        /** Binding url parameters if they were specified */
+        foreach ($this->urlParams as $paramValue) {
+            if (isset($request[$paramValue])) {
+                $endpointUrl = str_replace(':' . $paramValue, $request[$paramValue], $this->endpointUrl);
+            }
+        }
+        return $this->urlResolver->getUrl($endpointUrl);
     }
 }

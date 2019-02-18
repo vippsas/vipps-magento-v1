@@ -51,7 +51,8 @@ class Profiler
      * Profiler constructor.
      *
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->config = new \Vipps\Payment\Model\Adapter\Config();
         $this->dataItemFactory = new ItemFactory();
         $this->itemRepository = new ItemRepository();
@@ -75,8 +76,8 @@ class Profiler
 
         $data = $this->parseDataFromTransferObject($transfer);
 
-        $requestType = $data['type'] ?? 'undefined';
-        $orderId = $data['order_id'] ?? $this->parseOrderId($response);
+        $requestType = isset($data['type']) ? $data['type'] : 'undefined';
+        $orderId = isset($data['order_id']) ? $data['order_id'] : $this->parseOrderId($response);
 
         $itemDO->setRequestType($requestType);
         $itemDO->setRequest($this->packArray(
@@ -112,8 +113,8 @@ class Profiler
     {
         $result = [];
         if (preg_match('/payments(\/([^\/]+)\/([a-z]+))?$/', $transfer->getUri(), $matches)) {
-            $result['order_id'] = $matches[2] ?? ($transfer->getBody()['transaction']['orderId'] ?? null);
-            $result['type'] = $matches[3] ?? TypeInterface::INITIATE_PAYMENT;
+            $result['order_id'] = isset($matches[2]) ? $matches[2] : (isset($transfer->getBody()['transaction']['orderId']) ? $transfer->getBody()['transaction']['orderId'] : null);
+            $result['type'] = isset($matches[3]) ? $matches[3] : TypeInterface::INITIATE_PAYMENT;
         }
         return $result;
     }
@@ -128,7 +129,7 @@ class Profiler
     private function parseOrderId(\Zend_Http_Response $response)
     {
         $content = $this->jsonDecoder->decode($response->getContent());
-        return $content['orderId'] ?? null;
+        return isset($content['orderId']) ? $content['orderId'] : null;
     }
 
     /**

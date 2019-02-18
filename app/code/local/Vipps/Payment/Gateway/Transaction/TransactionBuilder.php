@@ -48,13 +48,13 @@ class TransactionBuilder
      */
     public function build()
     {
-        $infoData = $this->response['transactionInfo'] ?? $this->response['transaction'] ?? [];
+        $infoData = isset($this->response['transactionInfo']) ? $this->response['transactionInfo'] : isset($this->response['transaction']) ? $this->response['transaction'] : [];
         $info = new TransactionInfo($infoData);
 
-        $summaryData = $this->response['transactionSummary'] ?? [];
+        $summaryData = isset($this->response['transactionSummary']) ? $this->response['transactionSummary'] : [];
         $summary = new TransactionSummary($summaryData);
 
-        $logHistoryData = $this->response['transactionLogHistory'] ?? [];
+        $logHistoryData = isset($this->response['transactionLogHistory']) ? $this->response['transactionLogHistory'] : [];
         $items = [];
         foreach ($logHistoryData as $itemData) {
             $items[] = new TransactionLogHistory\Item($itemData);

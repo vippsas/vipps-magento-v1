@@ -127,7 +127,7 @@ class ShippingDetails extends \Varien_Object
     public function getPostcode()
     {
         //Added condition to support zipCode in special cases
-        return $this->_data[self::ADDRESS][self::POST_CODE] ?? $this->_data[self::ADDRESS][self::ZIP_CODE] ?? null;
+        return $this->_data[self::ADDRESS][self::POST_CODE] ?? isset($this->_data[self::ADDRESS][self::ZIP_CODE]) ? $this->_data[self::ADDRESS][self::ZIP_CODE] : null;
     }
 
     /**
@@ -151,6 +151,6 @@ class ShippingDetails extends \Varien_Object
      */
     public function getAddressLine2()
     {
-        return $this->getData(self::ADDRESS)[self::ADDRESS_LINE_2] ?? '';
+        return isset($this->getData(self::ADDRESS)[self::ADDRESS_LINE_2]) ? $this->getData(self::ADDRESS)[self::ADDRESS_LINE_2] : '';
     }
 }
