@@ -13,42 +13,34 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
+namespace Vipps\Payment\Gateway\Validator;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Vipps\Payment\Gateway\Transaction\Transaction;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class RefundTransactionValidator
+ * @package Vipps\Payment\Gateway\Validator
  */
-class Item extends AbstractDb
+class RefundTransactionValidator extends AbstractValidator
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * @inheritdoc
      *
-     * @param $id
+     * @param array $validationSubject
+     *
+     * @return Result
      */
-    public function deleteById($id)
+    public function validate(array $validationSubject)
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $response = $validationSubject['jsonData'] ?? [];
+        $transaction = $this->transactionBuilder->setData($response)->build();
+
+        $info = $transaction->getTransactionInfo();
+
+        // if required fields configured - validate them
+        $isValid = $info->getStatus() == Transaction::TRANSACTION_STATUS_REFUND;
+
+        $errorMessages = $isValid ? [] : [__('Gateway response error. Incorrect transaction data.')];
+        return $this->createResult($isValid, $errorMessages);
     }
 }

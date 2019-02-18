@@ -13,16 +13,16 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\ResourceModel\Profiling\Item;
+namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item;
 
 use Magento\Customer\Ui\Component\DataProvider\Document;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface as FetchStrategy;
 use Magento\Framework\Data\Collection\EntityFactoryInterface as EntityFactory;
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 use Psr\Log\LoggerInterface as Logger;
-use Vipps\Payment\Model\ResourceModel\Profiling\Item as ProfilingItem;
+use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item as ProfilingItem;
 
 /**
  * Class Collection

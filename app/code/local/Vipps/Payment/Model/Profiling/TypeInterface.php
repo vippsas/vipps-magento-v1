@@ -13,42 +13,37 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Model\Adapter\Profiling;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Interface TypeInterface
+ * @package Vipps\Payment\Model\Profiling
  */
-class Item extends AbstractDb
+interface TypeInterface
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * Values/labels for all request types we are sending to Vipps
      *
-     * @param $id
+     * @var string
      */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-    }
+    const INITIATE_PAYMENT = 'initiate';
+    const INITIATE_PAYMENT_LABEL = 'Initiate Payment';
+
+    const GET_PAYMENT_DETAILS = 'details';
+    const GET_PAYMENT_DETAILS_LABEL = 'Get Payment Details';
+
+    const GET_ORDER_STATUS = 'status';
+    const GET_ORDER_STATUS_LABEL = 'Get Order Status';
+
+    const CAPTURE = 'capture';
+    const CAPTURE_LABEL = 'Capture';
+
+    const REFUND = 'refund';
+    const REFUND_LABEL = 'Refund';
+
+    const CANCEL = 'cancel';
+    const CANCEL_LABEL = 'Cancel';
+
+    const VOID = 'void';
+    const VOID_LABEL = 'Void';
 }

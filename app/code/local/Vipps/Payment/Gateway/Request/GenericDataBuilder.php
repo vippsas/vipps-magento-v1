@@ -13,42 +13,33 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Request;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class GenericDataBuilder
+ * @package Vipps\Payment\Gateway\Request
  */
-class Item extends AbstractDb
+class GenericDataBuilder extends AbstractBuilder
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * This builders for passing parameters into TransferFactory object.
      *
-     * @param $id
+     * @param array $buildSubject
+     * @return array
      */
-    public function deleteById($id)
+    public function build(array $buildSubject)
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $paymentDO = $this->subjectReader->readPayment($buildSubject);
+        if ($paymentDO) {
+            $orderAdapter = $paymentDO->getOrder();
+            if ($orderAdapter) {
+                $buildSubject = array_merge(
+                    $buildSubject,
+                    ['orderId' => $orderAdapter->getOrderIncrementId()]
+                );
+            }
+        }
+
+        return $buildSubject;
     }
 }

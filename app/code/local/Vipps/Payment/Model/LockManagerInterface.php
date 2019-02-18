@@ -13,42 +13,41 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
+declare(strict_types=1);
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Model\Adapter;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Interface LockManagerInterface
+ * @package Vipps\Payment\Model
  */
-class Item extends AbstractDb
+interface LockManagerInterface
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * Sets a lock
      *
-     * @param $id
+     * @param string $name lock name
+     * @param int $timeout How long to wait lock acquisition in seconds, negative value means infinite timeout
+     * @return bool
+     * @api
      */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-    }
+    public function lock(string $name, int $timeout = -1): bool;
+
+    /**
+     * Releases a lock
+     *
+     * @param string $name lock name
+     * @return bool
+     * @api
+     */
+    public function unlock(string $name): bool;
+
+    /**
+     * Tests if lock is set
+     *
+     * @param string $name lock name
+     * @return bool
+     * @api
+     */
+    public function isLocked(string $name): bool;
 }

@@ -20,6 +20,17 @@
         </Vipps_Payment>
     </modules>
     <global>
+        <events>
+            <controller_front_init_before>
+                <observers>
+                    <vipps_payment>
+                        <type>singleton</type>
+                        <class>vipps_payment/autoloader</class>
+                        <method>addAutoloader</method>
+                    </vipps_payment>
+                </observers>
+            </controller_front_init_before>
+        </events>
         <helpers>
             <vipps_payment>
                 <class>Vipps_Payment_Helper</class>
@@ -57,6 +68,17 @@
             </vipps_payment_setup>
         </resources>
     </global>
+    <frontend>
+        <routers>
+            <vipps_payment>
+                <use>standard</use>
+                <args>
+                    <module>Vipps_Payment</module>
+                    <frontName>vipps</frontName>
+                </args>
+            </vipps_payment>
+        </routers>
+    </frontend>
     <default>
         <payment>
             <vipps>

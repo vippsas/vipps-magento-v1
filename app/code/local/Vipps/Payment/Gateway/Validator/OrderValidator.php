@@ -13,42 +13,34 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
+namespace Vipps\Payment\Gateway\Validator;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Vipps\Payment\Gateway\Request\SubjectReader;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class OrderValidator
+ * @package Vipps\Payment\Gateway\Validator
  */
-class Item extends AbstractDb
+class OrderValidator extends AbstractValidator
 {
     /**
-     * Main table name
+     * @param array $validationSubject
+     * @return Result
      */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
+    public function validate(array $validationSubject)
     {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
+        $orderId = $validationSubject['jsonData']['orderId'] ?? null;
 
-    /**
-     * Delete entity by id
-     *
-     * @param $id
-     */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $isValid = (bool)$orderId;
+
+        $payment = $this->subjectReader->readPayment($validationSubject);
+        if ($payment) {
+            $orderAdapter = $payment->getOrder();
+            $isValid = ($orderId == $orderAdapter->getOrderIncrementId());
+        }
+
+        $errorMessages = $isValid ? [] : [__('Gateway response error. Order Id is incorrect')];
+
+        return $this->createResult($isValid, $errorMessages);
     }
 }

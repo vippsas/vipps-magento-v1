@@ -13,42 +13,45 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Request;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class Transaction
+ * @package Vipps\Payment\Gateway\Request\InitiateData
  */
-class Item extends AbstractDb
+class TransactionDataBuilder extends AbstractBuilder
 {
-    /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
+    use \Vipps\Payment\Lib\Formatter;
 
     /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * Amount in order. 32 Bit Integer (2147483647)
      *
-     * @param $id
+     * @var string
      */
-    public function deleteById($id)
+    private static $amount = 'amount';
+
+    /**
+     * Transaction block name
+     *
+     * @var string
+     */
+    private static $transaction = 'transaction';
+
+    /**
+     * Get merchant related data for transaction request.
+     *
+     * @param array $buildSubject
+     * @return array
+     */
+    public function build(array $buildSubject)
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $transactionData = [];
+
+        $amount = $this->subjectReader->readAmount($buildSubject);
+        if ($amount) {
+            $transactionData[self::$transaction][self::$amount] = (int)($this->formatPrice($amount) * 100);
+        }
+
+        return $transactionData;
     }
 }

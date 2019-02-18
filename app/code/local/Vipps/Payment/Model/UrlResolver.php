@@ -13,42 +13,54 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
+namespace Vipps\Payment\Model\Adapter;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Vipps\Payment\Gateway\Config\Config;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class UrlResolver
+ * @package Vipps\Payment\Model
  */
-class Item extends AbstractDb
+class UrlResolver
 {
     /**
-     * Main table name
+     * @var string
      */
-    const TABLE_NAME = 'vipps_profiling';
+    private static $productionBaseUrl = 'https://api.vipps.no';
 
     /**
-     * Index field name
+     * @var string
      */
-    const INDEX_FIELD = 'entity_id';
+    private static $developBaseUrl = 'https://apitest.vipps.no';
 
     /**
-     * Initialize resource model
+     * @var Config
      */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
+    private $config;
+
+    /**
+     * VippsUrlProvider constructor.
+     */
+    public function __construct() {
+        $this->config = new Config();
     }
 
     /**
-     * Delete entity by id
+     * {@inheritdoc}
      *
-     * @param $id
+     * @return string
      */
-    public function deleteById($id)
+    public function getBaseUrl()
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $env = $this->config->getValue('environment');
+
+        return $env === \Vipps_Payment_Model_System_Config_Source_Environment::ENVIRONMENT_DEVELOP
+            ? self::$developBaseUrl
+            : self::$productionBaseUrl;
+    }
+
+    public function getUrl($url)
+    {
+        return $this->getBaseUrl() . $url;
     }
 }

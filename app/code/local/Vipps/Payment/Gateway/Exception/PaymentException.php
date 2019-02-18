@@ -13,42 +13,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Exception;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class PaymentException
+ * @package Vipps\Payment\Gateway\Exception
  */
-class Item extends AbstractDb
+class PaymentException extends VippsException //@codingStandardsIgnoreLine
 {
-    /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
-     *
-     * @param $id
-     */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-    }
 }

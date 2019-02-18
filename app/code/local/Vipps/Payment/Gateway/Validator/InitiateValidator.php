@@ -13,42 +13,27 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Validator;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class InitiateValidator
+ * @package Vipps\Payment\Gateway\Validator
  */
-class Item extends AbstractDb
+class InitiateValidator extends AbstractValidator
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * @inheritdoc
      *
-     * @param $id
+     * @param array $validationSubject
+     *
+     * @return Result
      */
-    public function deleteById($id)
+    public function validate(array $validationSubject)
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        $isValid = (bool)($validationSubject['jsonData']['url'] ?? false);
+        $errorMessages = $isValid ? [] : [__('Gateway response error. Incorrect initiate payment parameters.')];
+
+        return $this->createResult($isValid, $errorMessages);
     }
 }

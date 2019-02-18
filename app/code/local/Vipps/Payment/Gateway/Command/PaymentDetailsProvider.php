@@ -13,42 +13,51 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Command;
+
+use Vipps\Payment\Gateway\Exception\VippsException;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class PaymentDetailsProvider
+ * @package Vipps\Payment\Gateway\Command
+ * @spi
  */
-class Item extends AbstractDb
+class PaymentDetailsProvider
 {
     /**
-     * Main table name
+     * @var CommandManager
      */
-    const TABLE_NAME = 'vipps_profiling';
+    private $commandManager;
+//
+//    /**
+//     * PaymentDetailsProvider constructor.
+//     *
+//     * @param CommandManagerInterface $commandManager
+//     */
+//    public function __construct(
+//        CommandManagerInterface $commandManager
+//    ) {
+//        $this->commandManager = $commandManager;
+//    }
 
     /**
-     * Index field name
+     * @param array $arguments
+     *
+     * @return mixed
+     * @throws VippsException
      */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
+    public function get(array $arguments)
     {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
+        return $this->getCommandManager()->getPaymentDetails($arguments);
     }
 
-    /**
-     * Delete entity by id
-     *
-     * @param $id
-     */
-    public function deleteById($id)
+    private function getCommandManager()
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        if (!$this->commandManager) {
+            $this->commandManager = new CommandManager(); // @TODO: Replace with async singleton loading
+        }
+
+        return $this->commandManager;
     }
 }

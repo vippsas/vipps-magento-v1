@@ -13,42 +13,44 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+namespace Vipps\Payment\Gateway\Request;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Class MerchantDataBuilder
+ * @package Vipps\Payment\Gateway\Request
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class Item extends AbstractDb
+class MerchantDataBuilder extends AbstractBuilder
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * Merchant info block name
      *
-     * @param $id
+     * @var string
      */
-    public function deleteById($id)
+    private static $merchantInfo = 'merchantInfo';
+
+    /**
+     * Identifies a merchant sales channel i.e. website, mobile app etc. Value must be less than or equal to
+     * 6 characters.
+     *
+     * @var string
+     */
+    private static $merchantSerialNumber = 'merchantSerialNumber';
+
+    /**
+     * Get merchant related data for request.
+     *
+     * @param array $buildSubject
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function build(array $buildSubject) //@codingStandardsIgnoreLine
     {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+        return [
+            self::$merchantInfo => [
+                self::$merchantSerialNumber => $this->scopeConfig->getValue('merchant_serial_number'),
+            ]
+        ];
     }
 }

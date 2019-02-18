@@ -13,42 +13,31 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
+namespace Vipps\Payment\Model\Adapter;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Vipps\Payment\Gateway\Exception\AuthenticationException;
 
 /**
- * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
+ * Interface TokenProviderInterface
+ * @package Vipps\Payment\Model
+ * @api
  */
-class Item extends AbstractDb
+interface TokenProviderInterface
 {
     /**
-     * Main table name
-     */
-    const TABLE_NAME = 'vipps_profiling';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
-    {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
-    }
-
-    /**
-     * Delete entity by id
+     * Method to get valid token string.
      *
-     * @param $id
+     * @return string
+     * @throws AuthenticationException
      */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-    }
+    public function get();
+
+    /**
+     * Method to regenerate access token from Vipps and save it to storage.
+     *
+     * @throws CouldNotSaveException
+     * @throws AuthenticationException
+     */
+    public function regenerate();
 }
