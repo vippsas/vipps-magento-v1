@@ -3,9 +3,6 @@
 namespace Vipps\Payment\Model\Adapter\Quote\Command;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Vipps\Payment\Api\Data\QuoteInterface;
-use Vipps\Payment\Api\Data\QuoteStatusInterface;
 use Vipps\Payment\Model\Adapter\Order\Cancellation\Config;
 use Vipps\Payment\Model\Adapter\Quote\CancelFacade;
 
@@ -79,7 +76,7 @@ class ManualCancel
                 ->cancelFacade
                 ->cancel($this->vippsQuote, $quote);
         } catch (\Throwable $exception) {
-            throw new LocalizedException(__('Failed to cancel the order. Please contact support team.'));
+            Mage::throwException(__('Failed to cancel the order. Please contact support team.'));
         }
     }
 }

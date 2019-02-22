@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2018 Vipps
+ * Copyright 2019 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
@@ -13,24 +13,27 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\Logger\Handler;
 
-use Magento\Framework\Logger\Handler\Base;
-use Monolog\Logger;
+namespace Vipps\Payment\Model\Adapter;
 
 /**
- * Class Error
- * @package Vipps\Payment\Model\Logger\Handler
+ * Class Logger
  */
-class Error extends Base
+class Logger
 {
     /**
-     * @var string
+     * @param string $message
      */
-    protected $fileName = '/var/log/vipps_exception.log'; //@codingStandardsIgnoreLine
+    public function critical($message)
+    {
+        \Mage::log($message, LOG_CRIT, 'vipps_exception.log');
+    }
 
     /**
-     * @var int
+     * @param string $message
      */
-    protected $loggerType = Logger::INFO; //@codingStandardsIgnoreLine
+    public function debug($message)
+    {
+        \Mage::log($message, LOG_DEBUG, 'vipps_debug.log');
+    }
 }

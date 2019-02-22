@@ -17,12 +17,7 @@
 
 namespace Vipps\Payment\Model\Adapter\Quote;
 
-use Magento\Quote\Api\Data\CartInterface;
-use Vipps\Payment\{Api\CommandManagerInterface,
-    Api\Data\QuoteInterface,
-    Api\Data\QuoteStatusInterface,
-    Api\Quote\CancelFacadeInterface,
-    Model\Adapter\QuoteRepository};
+use Vipps\Payment\Model\Adapter\QuoteRepository;
 
 /**
  * Quote Cancellation Facade.

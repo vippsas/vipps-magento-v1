@@ -19,8 +19,8 @@ namespace Vipps\Payment\Gateway\Http\Client;
 use Vipps\Payment\Gateway\Config\Config;
 use Vipps\Payment\Gateway\Exception\AuthenticationException;
 use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Model\Adapter\TokenProvider;
-use Vipps\Payment\Model\Adapter\TokenProviderInterface;
+use Vipps\Payment\Model\Adapter\Logger;
+use Vipps\Payment\Model\TokenProvider;
 
 /**
  * Class Curl
@@ -30,12 +30,12 @@ use Vipps\Payment\Model\Adapter\TokenProviderInterface;
 class Curl implements ClientInterface
 {
     /**
-     * @var ConfigInterface
+     * @var Config
      */
     private $config;
 
     /**
-     * @var TokenProviderInterface
+     * @var TokenProvider
      */
     private $tokenProvider;
 
@@ -45,7 +45,7 @@ class Curl implements ClientInterface
     private $jsonEncoder;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
 
@@ -57,12 +57,12 @@ class Curl implements ClientInterface
     {
         $this->config = new Config();
         $this->tokenProvider = new TokenProvider();
-        $this->jsonEncoder = new \Vipps\Payment\Model\Adapter\Adapter\JsonEncoder();
-        $this->logger = \Mage::getSingleton('vipps_payment/logger');
+        $this->jsonEncoder = new \Vipps\Payment\Model\Adapter\JsonEncoder();
+        $this->logger = new Logger();
     }
 
     /**
-     * @param TransferInterface $transfer
+     * @param Transfer $transfer
      *
      * @return array|string
      * @throws \Exception
@@ -70,8 +70,9 @@ class Curl implements ClientInterface
     public function placeRequest(Transfer $transfer)
     {
         try {
+            /** @var \Zend_Http_Response $response */
             $response = $this->place($transfer);
-            if ($response->getStatusCode() == '401') {
+            if ($response->getStatus() == '401') {
                 $this->tokenProvider->regenerate();
                 $response = $this->place($transfer);
             }
@@ -84,24 +85,23 @@ class Curl implements ClientInterface
     }
 
     /**
-     * @param TransferInterface $transfer
+     * @param Transfer $transfer
      *
-     * @return ZendResponse
+     * @return \Zend_Http_Response
      * @throws AuthenticationException
      */
     private function place(Transfer $transfer)
     {
         try {
-            $adapter = new \Zend_Http_Client_Adapter_Curl();
+            $adapter = new \Vipps\Payment\Model\Adapter\Curl();
 
             $options = $this->getBasicOptions();
             if ($transfer->getMethod() === \Zend_Http_Client::PUT) {
-                $options = $options +
-                    [
-                        \CURLOPT_RETURNTRANSFER => true,
-                        \CURLOPT_CUSTOMREQUEST  => \Zend_Http_Client::PUT,
-                        \CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($transfer->getBody())
-                    ];
+                $options = $options + [
+                    \CURLOPT_RETURNTRANSFER => true,
+                    \CURLOPT_CUSTOMREQUEST  => \Zend_Http_Client::PUT,
+                    \CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($transfer->getBody())
+                ];
             }
             $adapter->setOptions($options);
             // send request
@@ -117,7 +117,7 @@ class Curl implements ClientInterface
 
             return $response;
         } finally {
-            $adapter ? $adapter->close() : null;
+            isset($adapter) ? $adapter->close() : null;
         }
     }
 

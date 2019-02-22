@@ -15,14 +15,13 @@
  */
 namespace Vipps\Payment\Gateway\Http\Client;
 
-use Magento\Payment\Gateway\Http\ClientInterface as MagentoClientInterface;
 use Vipps\Payment\Gateway\Http\Transfer;
 
 /**
  * Interface ClientInterface
  * @package Vipps\Payment\Gateway\Http\Client
  */
-interface ClientInterface extends MagentoClientInterface
+interface ClientInterface
 {
     /**
      * @var string

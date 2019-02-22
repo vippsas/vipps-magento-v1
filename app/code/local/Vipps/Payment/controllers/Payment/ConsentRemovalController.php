@@ -14,15 +14,23 @@
  * IN THE SOFTWARE.
  */
 
-class Vipps_Payment_Model_Logger
+/**
+ * Class ConsentRemoval
+ * @package Vipps\Payment\Controller\Payment
+ */
+class Vipps_Payment_ConsentRemovalController extends \Mage_Core_Controller_Front_Action
 {
-    public function critical()
+    /**
+     * {@inheritdoc}
+     *
+     * @return Zend_Controller_Response_Abstract
+     * @throws Zend_Controller_Response_Exception
+     */
+    public function indexAction()
     {
-
-    }
-
-    public function debug()
-    {
-
+        return $this->getResponse()
+            ->setHttpResponseCode('200')
+            ->setHeader('Content-type', 'application/json')
+            ->setBody(Mage::helper('core')->jsonEncode([]));
     }
 }

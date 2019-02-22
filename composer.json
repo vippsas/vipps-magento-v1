@@ -11,7 +11,8 @@
     ],
     "require": {
         "vaimo/magento": "*",
-        "magento-hackathon/magento-composer-installer": "*"
+        "magento-hackathon/magento-composer-installer": "*",
+        "ext-curl": "*"
     },
     "extra": {
         "vaimo-module-category": "Integration"

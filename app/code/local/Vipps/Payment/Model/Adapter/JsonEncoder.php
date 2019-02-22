@@ -14,12 +14,15 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Class JsonEncoder
+ */
 class JsonEncoder
 {
     /**
-     * @var \Mage_Core_Helper_Abstract
+     * @var \Mage_Core_Helper_Data
      */
     private $helper;
 

@@ -14,13 +14,14 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model;
 
-use Magento\Quote\{Api\CartRepositoryInterface, Api\Data\CartInterface, Model\Quote};
 use Vipps\Payment\Gateway\Command\PaymentDetailsProvider;
 use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Transaction\{Transaction, TransactionBuilder};
-use Vipps\Payment\Model\Adapter\Helper\Utility;
+use Vipps\Payment\Gateway\Transaction\Transaction;
+use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
+use Vipps\Payment\Model\Adapter\CartRepository;
+use Vipps\Payment\Model\Helper\Utility;
 
 /**
  * Class QuoteUpdater
@@ -29,7 +30,7 @@ use Vipps\Payment\Model\Adapter\Helper\Utility;
 class QuoteUpdater
 {
     /**
-     * @var CartRepositoryInterface
+     * @var CartRepository
      */
     private $cartRepository;
 
@@ -50,32 +51,23 @@ class QuoteUpdater
     /**
      * QuoteUpdater constructor.
      *
-     * @param CartRepositoryInterface $cartRepository
-     * @param PaymentDetailsProvider $paymentDetailsProvider
-     * @param TransactionBuilder $transactionBuilder
-     * @param Utility $utility
      */
-    public function __construct(
-        CartRepositoryInterface $cartRepository,
-        PaymentDetailsProvider $paymentDetailsProvider,
-        TransactionBuilder $transactionBuilder,
-        Utility $utility
-    ) {
-        $this->cartRepository = $cartRepository;
-        $this->paymentDetailsProvider = $paymentDetailsProvider;
-        $this->transactionBuilder = $transactionBuilder;
-        $this->utility = $utility;
+    public function __construct()
+    {
+        $this->cartRepository = new CartRepository();
+        $this->paymentDetailsProvider = new PaymentDetailsProvider();
+        $this->transactionBuilder = new TransactionBuilder();
+        $this->utility = new Utility();
     }
 
     /**
-     * @param CartInterface $quote
+     * @param \Mage_Sales_Model_Quote $quote
      *
-     * @return bool|CartInterface|Quote
+     * @return \Mage_Sales_Model_Quote
      * @throws VippsException
      */
-    public function execute(CartInterface $quote)
+    public function execute(\Mage_Sales_Model_Quote $quote)
     {
-        /** @var Quote $quote */
         $response = $this->paymentDetailsProvider->get(['orderId' => $quote->getReservedOrderId()]);
         $transaction = $this->transactionBuilder->setData($response)->build();
         if (!$transaction->isExpressCheckout()) {
@@ -99,10 +91,10 @@ class QuoteUpdater
     }
 
     /**
-     * @param Quote $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      */
-    private function updateQuoteAddress(Quote $quote, Transaction $transaction)
+    private function updateQuoteAddress(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         if (!$quote->getIsVirtual()) {
             $this->updateShippingAddress($quote, $transaction);
@@ -112,10 +104,10 @@ class QuoteUpdater
     }
 
     /**
-     * @param Quote $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      */
-    private function updateShippingAddress(Quote $quote, Transaction $transaction)
+    private function updateShippingAddress(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         $userDetails = $transaction->getUserDetails();
         $shippingDetails = $transaction->getShippingDetails();
@@ -139,10 +131,10 @@ class QuoteUpdater
     }
 
     /**
-     * @param Quote $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      */
-    private function updateBillingAddress(Quote $quote, Transaction $transaction)
+    private function updateBillingAddress(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         $userDetails = $transaction->getUserDetails();
         $billingAddress = $quote->getBillingAddress();

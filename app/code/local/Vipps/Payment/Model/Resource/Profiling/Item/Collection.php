@@ -13,48 +13,22 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item;
-
-use Magento\Customer\Ui\Component\DataProvider\Document;
-use Magento\Framework\Data\Collection\Db\FetchStrategyInterface as FetchStrategy;
-use Magento\Framework\Data\Collection\EntityFactoryInterface as EntityFactory;
-use Magento\Framework\Event\ManagerInterface as EventManager;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
-use Psr\Log\LoggerInterface as Logger;
-use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item as ProfilingItem;
 
 /**
  * Class Collection
  * @package Vipps\Payment\Model\ResourceModel\Profiling\Item
  */
-class Collection extends SearchResult
+class Vipps_Payment_Model_Resource_Profiling_Item_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
     /**
      * {@inheritdoc}
      */
-    protected $document = Document::class; //@codingStandardsIgnoreLine
 
     /**
      * Collection constructor.
      *
-     * @param EntityFactory $entityFactory
-     * @param Logger $logger
-     * @param FetchStrategy $fetchStrategy
-     * @param EventManager $eventManager
-     * @param string $mainTable
-     * @param string $resourceModel
-     *
-     * @throws LocalizedException
      */
-    public function __construct( //@codingStandardsIgnoreLine
-        EntityFactory $entityFactory,
-        Logger $logger,
-        FetchStrategy $fetchStrategy,
-        EventManager $eventManager,
-        $mainTable = 'vipps_profiling',
-        $resourceModel = ProfilingItem::class
-    ) {
-        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $mainTable, $resourceModel);
+    protected function _construct() {
+        $this->_init('vipps_payment/profiling_item');
     }
 }

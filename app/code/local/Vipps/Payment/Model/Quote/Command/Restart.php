@@ -2,8 +2,6 @@
 
 namespace Vipps\Payment\Model\Adapter\Quote\Command;
 
-use Vipps\Payment\Api\Data\QuoteInterface;
-use Vipps\Payment\Api\Data\QuoteStatusInterface;
 use Vipps\Payment\Model\Adapter\QuoteRepository;
 
 /**

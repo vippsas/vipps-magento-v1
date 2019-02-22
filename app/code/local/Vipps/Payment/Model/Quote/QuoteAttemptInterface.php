@@ -14,12 +14,59 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model\Quote;
 
-class ExceptionFactory
+/**
+ * Interface QuoteInterface
+ * @api
+ */
+interface QuoteAttemptInterface
 {
-    public function create($errorCode, $errorMessage)
-    {
-        return new \Exception($errorMessage, $errorCode);
-    }
+    /**
+     * @const string Vipps Quote Id.
+     */
+    const PARENT_ID = 'parent_id';
+
+    /**
+     * @const string
+     */
+    const MESSAGE = 'message';
+
+    /**
+     * @const string
+     */
+    const CREATED_AT = 'created_at';
+
+    /**
+     * @param int $parentId
+     * @return self
+     */
+    public function setParentId($parentId);
+
+    /**
+     * @param string $message
+     * @return string
+     */
+    public function setMessage($message);
+
+    /**
+     * @param string $createdAt
+     * @return string
+     */
+    public function setCreatedAt($createdAt);
+
+    /**
+     * @return int
+     */
+    public function getParentId();
+
+    /**
+     * @return string
+     */
+    public function getMessage();
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt();
 }

@@ -17,8 +17,7 @@ namespace Vipps\Payment\Gateway\Exception;
 
 /**
  * Class AuthenticationException
- * @package Vipps\Payment\Gateway\Exception
  */
-class AuthenticationException extends VippsException //@codingStandardsIgnoreLine
+class AuthenticationException extends VippsException
 {
 }

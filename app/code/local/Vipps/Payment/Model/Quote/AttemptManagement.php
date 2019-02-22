@@ -15,9 +15,9 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter\Quote;
+namespace Vipps\Payment\Model\Quote;
 
-use Vipps\Payment\Model\Adapter\{Quote as VippsQuote, Quote\AttemptFactory, QuoteRepository as QuoteMonitorRepository};
+use Vipps\Payment\Model\Adapter\Quote\AttemptFactory;
 
 /**
  * Attempt Management.
@@ -25,70 +25,49 @@ use Vipps\Payment\Model\Adapter\{Quote as VippsQuote, Quote\AttemptFactory, Quot
 class AttemptManagement
 {
     /**
-     * @var AttemptFactory
-     */
-    private $attemptFactory;
-
-    /**
-     * @var QuoteMonitorRepository
-     */
-    private $quoteMonitorRepository;
-
-    /**
-     * @var AttemptRepository
-     */
-    private $attemptRepository;
-
-    /**
      * AttemptManagement constructor.
      *
-     * @param AttemptFactory $attemptFactory
-     * @param QuoteMonitorRepository $quoteRepository
-     * @param AttemptRepository $attemptRepository
      */
-    public function __construct(
-        AttemptFactory $attemptFactory,
-        QuoteMonitorRepository $quoteRepository,
-        AttemptRepository $attemptRepository
-    ) {
-        $this->attemptFactory = $attemptFactory;
-        $this->quoteMonitorRepository = $quoteRepository;
-        $this->attemptRepository = $attemptRepository;
+    public function __construct()
+    {
+        $this->attemptFactory = new AttemptFactory();
     }
 
     /**
      * Create new saved attempt. Increment attempt count. Fill it with message later.
      *
-     * @param VippsQuote $quote
+     * @param \Vipps_Payment_Model_Quote $quote
      * @param bool $ignoreIncrement
-     * @return Attempt
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return \Vipps_Payment_Model_Quote_Attempt
+     * @throws \Exception
      */
-    public function createAttempt(VippsQuote $quote, $ignoreIncrement = false)
+    public function createAttempt(\Vipps_Payment_Model_Quote $quote, $ignoreIncrement = false)
     {
+        /** @var \Vipps_Payment_Model_Quote_Attempt $attempt */
         $attempt = $this
             ->attemptFactory
-            ->create(['data' => ['parent_id' => $quote->getId()]])
+            ->create(['parent_id' => $quote->getId()])
             ->setDataChanges(true);
 
         // Saving attempt right immediately after creation cause it's already happened.
-        $this->attemptRepository->save($attempt);
+        $attempt->save();
 
         if (!$ignoreIncrement) {
             // Increase attempt counter.
             $quote->incrementAttempt();
-            $this->quoteMonitorRepository->save($quote);
+            $quote->save();
         }
 
         return $attempt;
     }
 
     /**
-     * @param Attempt $attempt
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @param \Vipps_Payment_Model_Quote_Attempt $attempt
+     * @return \Mage_Core_Model_Abstract
+     * @throws \Exception
      */
-    public function save(Attempt $attempt)
+    public function save(\Vipps_Payment_Model_Quote_Attempt $attempt)
     {
-        $this->attemptRepository->save($attempt);
+        return $attempt->save();
     }
 }

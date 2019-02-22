@@ -48,7 +48,10 @@ class TransactionBuilder
      */
     public function build()
     {
-        $infoData = isset($this->response['transactionInfo']) ? $this->response['transactionInfo'] : isset($this->response['transaction']) ? $this->response['transaction'] : [];
+        $infoData = isset($this->response['transactionInfo']) ?
+            $this->response['transactionInfo']
+            : (isset($this->response['transaction']) ? $this->response['transaction'] : []);
+
         $info = new TransactionInfo($infoData);
 
         $summaryData = isset($this->response['transactionSummary']) ? $this->response['transactionSummary'] : [];
@@ -68,7 +71,7 @@ class TransactionBuilder
 
         $shippingDetails = null;
         if (isset($this->response['shippingDetails'])) {
-            $arguments['shippingDetails'] = new ShippingDetails($this->response['shippingDetails']);
+            $shippingDetails = new ShippingDetails($this->response['shippingDetails']);
         }
 
         return new Transaction($info, $summary, $logHistory, $userDetails, $shippingDetails);

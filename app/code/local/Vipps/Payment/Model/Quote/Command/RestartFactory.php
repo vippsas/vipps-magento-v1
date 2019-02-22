@@ -2,9 +2,6 @@
 
 namespace Vipps\Payment\Model\Adapter\Quote\Command;
 
-use Magento\Framework\ObjectManagerInterface;
-use Vipps\Payment\Api\Data\QuoteInterface;
-
 /**
  * Class RestartFactory
  */

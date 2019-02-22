@@ -16,6 +16,9 @@
 
 namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Class MessageManager
+ */
 class MessageManager
 {
     /**

@@ -82,7 +82,7 @@
     <default>
         <payment>
             <vipps>
-                <model>VippsFacade</model>
+                <model>vipps_payment/standard</model>
                 <title>Vipps</title>
                 <active>1</active>
                 <is_gateway>1</is_gateway>
@@ -98,6 +98,11 @@
                 <can_cancel>1</can_cancel>
                 <can_use_internal>1</can_use_internal>
                 <environment>develop</environment>
+                <subscription_key1 backend_model="adminhtml/system_config_backend_encrypted" />
+                <subscription_key2 backend_model="adminhtml/system_config_backend_encrypted" />
+                <merchant_serial_number backend_model="adminhtml/system_config_backend_encrypted" />
+                <client_id backend_model="adminhtml/system_config_backend_encrypted" />
+                <client_secret backend_model="adminhtml/system_config_backend_encrypted" />
             </vipps>
         </payment>
         <vipps>

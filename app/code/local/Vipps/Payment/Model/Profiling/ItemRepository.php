@@ -13,11 +13,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\Profiling;
-
-use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item;
-use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item as ItemResource;
-use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item\CollectionFactory;
+namespace Vipps\Payment\Model\Profiling;
 
 /**
  * Class ItemRepository
@@ -26,11 +22,6 @@ use Vipps\Payment\Model\Adapter\ResourceModel\Profiling\Item\CollectionFactory;
  */
 class ItemRepository
 {
-    /**
-     * @var ItemResource
-     */
-    private $resource;
-
     /**
      * @var ItemFactory
      */
@@ -41,90 +32,53 @@ class ItemRepository
      *
      */
     public function __construct() {
-        $this->resource = new \Vipps\Payment\Model\Adapter\Adapter\Resource();
         $this->itemFactory = new ItemFactory();
     }
 
     /**
-     * @param ItemInterface $item
-     *
-     * @return Item
-     * @throws CouldNotSaveException
+     * @param \Varien_Object $itemDo
+     * @return \Mage_Core_Model_Abstract|
+     * @throws \Mage_Core_Exception
      */
-    public function save(\Varien_Object $item)
+    public function save(\Varien_Object $itemDo)
     {
         try {
-            $item = $this->itemFactory->create($item->getData());
-            $this->resource->save($item);
+            $item = $this->itemFactory->create($itemDo->getData());
+            $item->save();
         } catch (\Exception $exception) {
-            throw new CouldNotSaveException(__($exception->getMessage()));
+            throw new \Mage_Core_Exception(__($exception->getMessage()));
         }
         return $item;
     }
-
-    /**
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @return \Magento\Eav\Api\Data\AttributeGroupSearchResultsInterface|ItemSearchResultsInterface
-     */
-//    public function getList(SearchCriteriaInterface $searchCriteria)
-//    {
-//        /** @var ItemSearchResultsInterface $searchResults */
-//        $searchResults = $this->searchResultsFactory->create();
-//        $searchResults->setSearchCriteria($searchCriteria);
-//
-//        /** @var Collection $collection */
-//        $collection = $this->itemFactory->create()->getCollection();
-//
-//        $searchResults->setTotalCount($collection->getSize());
-//        $sortOrders = $searchCriteria->getSortOrders();
-//        if ($sortOrders) {
-//            /** @var SortOrder $sortOrder */
-//            foreach ($searchCriteria->getSortOrders() as $sortOrder) {
-//                $collection->addOrder(
-//                    $sortOrder->getField(),
-//                    ($sortOrder->getDirection() == SortOrder::SORT_ASC) ? 'ASC' : 'DESC'
-//                );
-//            }
-//        }
-//        $collection->setCurPage($searchCriteria->getCurrentPage());
-//        $collection->setPageSize($searchCriteria->getPageSize());
-//        $items = [];
-//        /** @var Item $itemModel */
-//        foreach ($collection as $itemModel) {
-//            $itemDataObject = $this->itemFactory->create($itemModel->getData());
-//            $items[] = $itemDataObject;
-//        }
-//        $searchResults->setItems($items);
-//        return $searchResults;
-//    }
 
     /**
      * @param $itemId
      *
      * @return false|\Mage_Core_Model_Abstract
+     * @throws \Mage_Core_Exception
      */
     public function get($itemId)
     {
         $item = $this->itemFactory->create();
-        $this->resource->load($item, $itemId);
+        $item->load($itemId);
         if (!$item->getId()) {
-            throw new NoSuchEntityException(__('Profiling item with id "%1" does not exist.', $itemId));
+            throw new \Mage_Core_Exception(__('Profiling item with id "%s" does not exist.', $itemId));
         }
         return $item;
     }
 
     /**
-     * @param Item $item
+     * @param \Vipps_Payment_Model_Profiling_Item $item
      *
      * @return bool
+     * @throws \Mage_Core_Exception
      */
-    public function delete(Item $item)
+    public function delete(\Vipps_Payment_Model_Profiling_Item $item)
     {
         try {
-            $this->resource->delete($item);
+            $item->delete();
         } catch (\Exception $exception) {
-            throw new CouldNotDeleteException(__($exception->getMessage()));
+            throw new \Mage_Core_Exception(__($exception->getMessage()));
         }
         return true;
     }
@@ -133,8 +87,7 @@ class ItemRepository
      * @param int $itemId
      *
      * @return bool
-     * @throws CouldNotDeleteException
-     * @throws NoSuchEntityException
+     * @throws \Mage_Core_Exception
      */
     public function deleteById($itemId)
     {

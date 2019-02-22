@@ -14,9 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Gdpr;
+namespace Vipps\Payment\Model\Gdpr;
 
-use Vipps\Payment\Model\Adapter\Adapter\JsonEncoder;
+use Vipps\Payment\Model\Adapter\JsonEncoder;
+use Vipps\Payment\Model\Adapter\Logger;
 
 /**
  * Applies Gdpr compliance.
@@ -32,19 +33,19 @@ class Compliance
     private $serializer;
 
     /**
-     * @var \Vipps_Payment_Model_Logger
+     * @var \Vipps\Payment\Model\Adapter\Logger
      */
     private $logger;
 
     /**
      * Compliance constructor.
      * @param JsonEncoder $serializer
-     * @param \Vipps_Payment_Model_Logger $logger
+     * @param \Vipps\Payment\Model\Adapter\Logger $logger
      */
     public function __construct()
     {
         $this->serializer = new JsonEncoder();
-        $this->logger = \Mage::getSingleton('vipps_payment/logger');
+        $this->logger = new Logger();
     }
 
     /**
@@ -75,6 +76,8 @@ class Compliance
      */
     public function process($responseData)
     {
+        return $responseData;
+
         $wasPacked = false;
 
         try {
@@ -84,7 +87,7 @@ class Compliance
             }
 
             if (!\is_array($responseData)) {
-                throw new SerializationException(__('Unserialization result is not an array'));
+                \Mage::throwException(__('Unserialization result is not an array'));
             }
 
             array_walk_recursive($responseData, function (&$item, $key, $schema) {

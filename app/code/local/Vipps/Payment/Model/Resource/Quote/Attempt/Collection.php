@@ -21,11 +21,6 @@
 class Vipps_Payment_Model_Resource_Quote_Attempt_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
     /**
-     * @var string
-     */
-    protected $_idFieldName = 'entity_id';
-
-    /**
      * Define resource model
      *
      * @return void

@@ -14,7 +14,7 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Profiling;
+namespace Vipps\Payment\Model\Profiling;
 
 /**
  * Interface ItemInterface

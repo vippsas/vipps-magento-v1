@@ -14,11 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Profiling;
+namespace Vipps\Payment\Model\Profiling;
 
 use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Model\Adapter\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Adapter\Gdpr\Compliance;
+use Vipps\Payment\Model\Adapter\JsonEncoder;
+use Vipps\Payment\Model\Profiling\TypeInterface;
+use Vipps\Payment\Model\Gdpr\Compliance;
 
 class Profiler
 {
@@ -53,7 +54,7 @@ class Profiler
      */
     public function __construct()
     {
-        $this->config = new \Vipps\Payment\Model\Adapter\Config();
+        $this->config = new \Vipps\Payment\Gateway\Config\Config();
         $this->dataItemFactory = new ItemFactory();
         $this->itemRepository = new ItemRepository();
         $this->jsonDecoder = new JsonEncoder();
@@ -84,7 +85,7 @@ class Profiler
             array_merge(['headers' => $transfer->getHeaders()], ['body' => $transfer->getBody()])
         ));
 
-        $itemDO->setStatusCode($response->getStatusCode());
+        $itemDO->setStatusCode($response->getStatus());
         $itemDO->setIncrementId($orderId);
         $itemDO->setResponse($this->packArray($this->parseResponse($response)));
 
@@ -99,7 +100,7 @@ class Profiler
      */
     private function isProfilingEnabled()
     {
-        return (bool)$this->config->getValue('payment/vipps/profiling', ScopeInterface::SCOPE_STORE);
+        return (bool)$this->config->getValue('profiling');
     }
 
     /**
@@ -128,7 +129,7 @@ class Profiler
      */
     private function parseOrderId(\Zend_Http_Response $response)
     {
-        $content = $this->jsonDecoder->decode($response->getContent());
+        $content = $this->jsonDecoder->decode($response->getBody());
         return isset($content['orderId']) ? $content['orderId'] : null;
     }
 
@@ -165,7 +166,7 @@ class Profiler
      */
     private function parseResponse(\Zend_Http_Response $response)
     {
-        return $this->depersonalizedResponse($this->jsonDecoder->decode($response->getContent()));
+        return $this->depersonalizedResponse($this->jsonDecoder->decode($response->getBody()));
     }
 
     /**

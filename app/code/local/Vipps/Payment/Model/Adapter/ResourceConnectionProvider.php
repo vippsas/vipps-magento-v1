@@ -14,8 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Class ResourceConnectionProvider
+ * @package Vipps\Payment\Model\Adapter
+ */
 class ResourceConnectionProvider
 {
     /**
@@ -24,5 +28,30 @@ class ResourceConnectionProvider
     public function getConnection()
     {
         return \Mage::getSingleton('core/resource')->getConnection('core_write');
+    }
+
+    /**
+     * @param $alias
+     * @return string
+     */
+    public function getTableName($alias)
+    {
+        return $this->getResource()->getTableName($alias);
+    }
+
+    /**
+     * @return \Mage_Core_Model_Resource
+     */
+    protected function getResource()
+    {
+        return \Mage::getSingleton('core/resource');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTablePrefix()
+    {
+        return (string)\Mage::getConfig()->getTablePrefix();
     }
 }

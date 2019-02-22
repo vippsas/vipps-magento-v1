@@ -15,6 +15,8 @@
  */
 namespace Vipps\Payment\Gateway\Request;
 
+use Vipps\Payment\Gateway\Data\PaymentDataObjectInterface;
+
 /**
  * Class SubjectReader
  * @package Vipps\Payment\Gateway\Response
@@ -28,7 +30,7 @@ class SubjectReader
      */
     public function readPayment($subject)
     {
-        if (isset($subject['payment']) && $subject['payment']) {
+        if (isset($subject['payment']) && $subject['payment'] instanceof PaymentDataObjectInterface) {
             return $subject['payment'];
         }
         return null;

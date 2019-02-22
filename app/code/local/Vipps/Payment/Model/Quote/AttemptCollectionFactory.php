@@ -14,19 +14,15 @@
  * IN THE SOFTWARE.
  */
 
+namespace Vipps\Payment\Model\Quote;
 
-namespace Vipps\Payment\Model\Adapter;
-
-class OrderRepository
+class AttemptCollectionFactory
 {
-    public function get($orderId)
+    /**
+     * @return \Vipps_Payment_Model_Resource_Quote_Attempt_Collection
+     */
+    public function create()
     {
-        $order = \Mage::getModel('sales/order')->load($orderId);
-
-        if(!$order->getId()) {
-            \Mage::throwException('Order is not found');
-        }
-
-        return $order;
+        return \Mage::getModel('vipps_payment/quote_attempt')->getCollection();
     }
 }

@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2018 Vipps
+ * Copyright 2019 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
@@ -14,17 +14,21 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model;
 
+use Vipps\Payment\Gateway\Config\Config;
 use Vipps\Payment\Gateway\Exception\AuthenticationException;
 use Vipps\Payment\Gateway\Http\Client\Curl;
-use Vipps\Payment\Model\Adapter\Adapter\ZendClient;
+use Vipps\Payment\Model\Adapter\JsonEncoder;
+use Vipps\Payment\Model\Adapter\Logger;
+use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
+use Vipps\Payment\Model\Adapter\ScopeResolver;
+use Vipps\Payment\Model\Adapter\ZendClient;
 
 /**
  * Class TokenProvider
- * @package Vipps\Payment\Model
  */
-class TokenProvider implements TokenProviderInterface
+class TokenProvider
 {
     /**
      * Variable to reserve time for request duration.
@@ -39,17 +43,12 @@ class TokenProvider implements TokenProviderInterface
     private static $endpointUrl = '/accessToken/get';
 
     /**
-     * @var ZendClientFactory
-     */
-    private $httpClientFactory;
-
-    /**
-     * @var \Magento_Db_Adapter_Pdo_Mysql
+     * @var ResourceConnectionProvider
      */
     private $resourceConnection;
 
     /**
-     * @var ConfigInterface
+     * @var Config
      */
     private $config;
 
@@ -59,17 +58,17 @@ class TokenProvider implements TokenProviderInterface
     private $urlResolver;
 
     /**
-     * @var Json
+     * @var JsonEncoder
      */
     private $serializer;
 
     /**
-     * @var \Vipps_Payment_Model_Logger
+     * @var Logger
      */
     private $logger;
 
     /**
-     * @var ScopeResolverInterface
+     * @var ScopeResolver
      */
     private $scopeResolver;
 
@@ -83,10 +82,10 @@ class TokenProvider implements TokenProviderInterface
      */
     public function __construct()
     {
-        $this->resourceConnection = \Mage::getSingleton('core/resource')->getConnection('core_write');
-        $this->config = new \Vipps\Payment\Gateway\Config\Config();
+        $this->resourceConnection = new Adapter\ResourceConnectionProvider();
+        $this->config = new Config();
         $this->serializer = new Adapter\JsonEncoder();
-        $this->logger = \Mage::getSingleton('vipps_payment/logger');
+        $this->logger = new Logger();
         $this->urlResolver = new UrlResolver();
         $this->scopeResolver = new Adapter\ScopeResolver();
     }
@@ -95,8 +94,7 @@ class TokenProvider implements TokenProviderInterface
      * {@inheritdoc}
      *
      * @return mixed|string
-     * @throws AuthenticationException
-     * @throws CouldNotSaveException
+     * @throws \Mage_Core_Exception
      */
     public function get()
     {
@@ -111,6 +109,7 @@ class TokenProvider implements TokenProviderInterface
      * Method to load latest token record from storage.
      *
      * @return array
+     * @throws \Mage_Core_Exception
      */
     private function loadTokenRecord()
     {
@@ -142,6 +141,7 @@ class TokenProvider implements TokenProviderInterface
      * Return current scope Id.
      *
      * @return int
+     * @throws \Mage_Core_Exception
      */
     private function getScopeId()
     {
@@ -166,8 +166,6 @@ class TokenProvider implements TokenProviderInterface
     /**
      * Method to regenerate access token from Vipps and save it to storage.
      *
-     * @throws CouldNotSaveException
-     * @throws AuthenticationException
      */
     public function regenerate()
     {
@@ -190,7 +188,7 @@ class TokenProvider implements TokenProviderInterface
             Curl::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
         ];
         /** @var ZendClient $client */
-        $client = new \Vipps\Payment\Model\Adapter\Adapter\ZendClient();
+        $client = new ZendClient();
         try {
             $client->setConfig(['strict' => false]);
             $client->setUri($this->urlResolver->getUrl(self::$endpointUrl));
@@ -241,8 +239,7 @@ class TokenProvider implements TokenProviderInterface
      * and insert a new one in another case.
      *
      * @param $jwt
-     *
-     * @throws CouldNotSaveException
+     * @throws \Mage_Core_Exception
      */
     private function refreshJwt($jwt)
     {
@@ -267,7 +264,7 @@ class TokenProvider implements TokenProviderInterface
             $this->logger->debug(__('Refreshed Jwt data.'));
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
-            throw new CouldNotSaveException(__('Can\'t save jwt data to database.' . $e->getMessage()));
+            \Mage::throwException(__('Can\'t save jwt data to database.' . $e->getMessage()));
         }
     }
 }

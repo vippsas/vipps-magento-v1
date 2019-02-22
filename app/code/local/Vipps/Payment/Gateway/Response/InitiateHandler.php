@@ -16,9 +16,9 @@
 
 namespace Vipps\Payment\Gateway\Response;
 
-use Vipps\Payment\Model\Adapter\Adapter\CartRepository;
-use Vipps\Payment\Model\Adapter\Adapter\ResourceConnectionProvider;
-use Vipps\Payment\Model\Adapter\QuoteManagement;
+use Vipps\Payment\Model\Adapter\CartRepository;
+use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
+use Vipps\Payment\Model\QuoteManagement;
 
 /**
  * Class InitiateHandler

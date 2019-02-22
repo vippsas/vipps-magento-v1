@@ -32,7 +32,7 @@ class CaptureTransactionValidator extends AbstractValidator
      */
     public function validate(array $validationSubject)
     {
-        $response = $validationSubject['jsonData'] ?? [];
+        $response = isset($validationSubject['jsonData']) ? $validationSubject['jsonData'] : [];
         $transaction = $this->transactionBuilder->setData($response)->build();
 
         $info = $transaction->getTransactionInfo();

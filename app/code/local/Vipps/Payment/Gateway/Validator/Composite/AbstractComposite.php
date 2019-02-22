@@ -17,7 +17,7 @@
 namespace Vipps\Payment\Gateway\Validator\Composite;
 
 use Vipps\Payment\Gateway\Validator\AbstractValidator;
-use Vipps\Payment\Lib\Pool;
+use Vipps\Payment\Model\Helper\Pool;
 
 /**
  * Class ValidatorComposite

@@ -14,7 +14,7 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter\Quote;
+namespace Vipps\Payment\Model\Adapter\Quote;
 
 class Factory
 {

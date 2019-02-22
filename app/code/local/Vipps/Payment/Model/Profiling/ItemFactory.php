@@ -14,10 +14,17 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Profiling;
+namespace Vipps\Payment\Model\Profiling;
 
+/**
+ * Class ItemFactory
+ */
 class ItemFactory
 {
+    /**
+     * @param null $data
+     * @return false|\Mage_Core_Model_Abstract
+     */
     public function create($data = null)
     {
         return \Mage::getModel('vipps_payment/profiling_item', [$data]);

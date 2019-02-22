@@ -14,22 +14,39 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Class Scope
+ */
 class Scope
 {
-    const SCOPE_STOREGROUP = 'storegroup';
+    /**
+     * @const string
+     */
+    const SCOPE_STOREGROUP = 'storegrp'; // 8 symbols table structure limit.
 
+    /**
+     * @return int
+     * @throws \Mage_Core_Exception
+     */
     public function getId()
     {
         return $this->getGroup()->getId();
     }
 
+    /**
+     * @return \Mage_Core_Model_Store_Group
+     * @throws \Mage_Core_Exception
+     */
     private function getGroup()
     {
         return \Mage::app()->getGroup();
     }
 
+    /**
+     * @return string
+     */
     public function getScopeType()
     {
         return self::SCOPE_STOREGROUP;

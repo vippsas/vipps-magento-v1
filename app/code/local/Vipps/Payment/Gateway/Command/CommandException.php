@@ -14,38 +14,8 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Lib;
+namespace Vipps\Payment\Gateway\Command;
 
-class Pool
+class CommandException extends \Mage_Core_Exception
 {
-    private $pool;
-
-    public function __construct($array = [])
-    {
-        $this->pool = new \ArrayObject();
-
-        foreach ($array as $key => $value) {
-            $this->add($key, $value);
-        }
-    }
-
-    public function add($key, $value)
-    {
-        $this->pool->offsetSet($key, $value);
-
-        return $this;
-    }
-
-    public function get($key)
-    {
-        return $this->pool->offsetGet($key);
-    }
-
-    /**
-     * @return \ArrayObject
-     */
-    public function getAll()
-    {
-        return $this->pool;
-    }
 }

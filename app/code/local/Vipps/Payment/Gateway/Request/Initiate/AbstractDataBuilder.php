@@ -31,7 +31,7 @@ abstract class AbstractDataBuilder implements InitiateBuilderInterface
     protected $urlBuilder;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\Adapter\CartRepository
+     * @var \Vipps\Payment\Model\Adapter\CartRepository
      */
     protected $cartRepository;
 
@@ -39,6 +39,6 @@ abstract class AbstractDataBuilder implements InitiateBuilderInterface
     {
         $this->subjectReader = new SubjectReader();
         $this->urlBuilder = \Mage::getSingleton('core/url');
-        $this->cartRepository = new \Vipps\Payment\Model\Adapter\Adapter\CartRepository();
+        $this->cartRepository = new \Vipps\Payment\Model\Adapter\CartRepository();
     }
 }

@@ -13,9 +13,8 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Exception;
 
-use Magento\Framework\Exception\LocalizedExceptionFactory;
+namespace Vipps\Payment\Gateway\Exception;
 
 /**
  * Class ExceptionFactory
@@ -24,35 +23,18 @@ use Magento\Framework\Exception\LocalizedExceptionFactory;
 class ExceptionFactory
 {
     /**
-     * @var LocalizedExceptionFactory
-     */
-    private $localizedExceptionFactory;
-
-    /**
      * @var array
      */
     private static $visibleErrors = [41, 42, 43, 44, 45, 81, 82];
-
-    /**
-     * ExceptionFactory constructor.
-     *
-     * @param LocalizedExceptionFactory $localizedExceptionFactory
-     */
-    public function __construct(
-        LocalizedExceptionFactory $localizedExceptionFactory
-    ) {
-        $this->localizedExceptionFactory = $localizedExceptionFactory;
-    }
-
     /**
      * @var array
      */
     private static $errorCodesByGroups = [
         InvalidRequestException::class => [],
-        PaymentException::class => [41, 42, 43, 44, 45, 51, 52, 53, 61, 62, 63, 71, 72, 73, 74],
-        VippsErrorException::class => [91, 92, 98, 99],
-        CustomerException::class => [81, 82],
-        MerchantException::class => [21, 22, 31, 32, 33, 34, 35, 36, 37],
+        PaymentException::class        => [41, 42, 43, 44, 45, 51, 52, 53, 61, 62, 63, 71, 72, 73, 74],
+        VippsErrorException::class     => [91, 92, 98, 99],
+        CustomerException::class       => [81, 82],
+        MerchantException::class       => [21, 22, 31, 32, 33, 34, 35, 36, 37],
     ];
 
     /**
@@ -67,15 +49,10 @@ class ExceptionFactory
     {
         $groupName = $this->findErrorGroupByCode($errorCode);
         if (!$groupName) {
-            return $this->localizedExceptionFactory->create([
-                'phrase' => __($errorMessage),
-                'cause' => null,
-                'code' => $errorCode
-            ]);
+            return new \Mage_Core_Exception(__($errorMessage), $errorCode);
         }
 
-        $exceptionObject = new $groupName(__($errorMessage), null, (int)$errorCode); //@codingStandardsIgnoreLine
-        return $exceptionObject;
+        return new $groupName(__($errorMessage), null, (int)$errorCode); //@codingStandardsIgnoreLine
     }
 
     /**
@@ -87,7 +64,7 @@ class ExceptionFactory
      */
     private function findErrorGroupByCode($errorCode)
     {
-        $errorCodeInt = (int) $errorCode;
+        $errorCodeInt = (int)$errorCode;
         if (!$errorCodeInt) {
             return key(self::$errorCodesByGroups);
         }

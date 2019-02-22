@@ -17,7 +17,7 @@
 namespace Vipps\Payment\Gateway\Http;
 
 use Vipps\Payment\Gateway\Http\Client\ClientInterface;
-use Vipps\Payment\Model\Adapter\UrlResolver;
+use Vipps\Payment\Model\UrlResolver;
 
 /**
  * Class TransferFactory
@@ -41,7 +41,7 @@ class TransferFactory
     private $transferBuilder;
 
     /**
-     * @var UrlResolver
+     * @var \Mage_Core_Model_Url
      */
     private $urlResolver;
 
@@ -62,8 +62,8 @@ class TransferFactory
         $endpointUrl,
         array $urlParams = []
     ) {
-        $this->transferBuilder = new \Vipps\Payment\Gateway\Http\TransferBuilder();
-        $this->urlResolver = \Mage::getSingleton('core/url');
+        $this->transferBuilder = new TransferBuilder();
+        $this->urlResolver = new UrlResolver();
         $this->method = $method;
         $this->endpointUrl = $endpointUrl;
         $this->urlParams = $urlParams;

@@ -14,11 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Quote;
+namespace Vipps\Payment\Model\Quote;
 
-use Magento\Quote\{Model\Quote, Model\Quote\Address};
 use Vipps\Payment\Gateway\Transaction\ShippingDetails;
-use Vipps\Payment\Model\Adapter\Helper\Utility;
+use Vipps\Payment\Model\Helper\Utility;
 
 /**
  * Class AddressUpdater
@@ -33,21 +32,20 @@ class AddressUpdater
 
     /**
      * AddressUpdater constructor.
-     * @param Utility $utility
      */
-    public function __construct(Utility $utility)
+    public function __construct()
     {
-        $this->utility = $utility;
+        $this->utility = new Utility();
     }
 
     /**
      * Update quote addresses from source address.
      *
-     * @param Quote $quote
-     * @param Address $sourceAddress
+     * @param \Mage_Sales_Model_Quote $quote
+     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
      * @throws \Exception
      */
-    public function fromSourceAddress(Quote $quote, Address $sourceAddress)
+    public function fromSourceAddress(\Mage_Sales_Model_Quote $quote, \Varien_Object $sourceAddress)
     {
         $quote->setMayEditShippingAddress(false);
         $this->utility->disabledQuoteAddressValidation($quote);
@@ -57,11 +55,11 @@ class AddressUpdater
     /**
      * Update quote addresses from source address.
      *
-     * @param Quote $quote
-     * @param Address $sourceAddress
+     * @param \Mage_Sales_Model_Quote $quote
+     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
      * @throws \Exception
      */
-    private function updateQuoteAddresses(Quote $quote, Address $sourceAddress)
+    private function updateQuoteAddresses(\Mage_Sales_Model_Quote $quote, \Mage_Sales_Model_Quote_Address $sourceAddress)
     {
         if (!$quote->getIsVirtual()) {
             $shippingAddress = $quote->getShippingAddress();
@@ -76,11 +74,10 @@ class AddressUpdater
     /**
      * Update destination address from source.
      *
-     * @param Address $destAddress
-     * @param Address $sourceAddress
-     * @throws \Exception
+     * @param \Mage_Sales_Model_Quote_Address $destAddress
+     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
      */
-    private function updateAddress(Address $destAddress, Address $sourceAddress)
+    private function updateAddress(\Mage_Sales_Model_Quote_Address $destAddress, \Mage_Sales_Model_Quote_Address $sourceAddress)
     {
         $destAddress
             ->setStreet($sourceAddress->getStreet())

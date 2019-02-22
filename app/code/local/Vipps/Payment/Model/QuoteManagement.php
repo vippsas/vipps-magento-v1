@@ -15,13 +15,9 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model;
 
-//use Magento\Framework\Exception\NoSuchEntityException;
-//use Magento\Quote\Api\Data\CartInterface;
-//use Vipps\Payment\Api\Data\QuoteInterface;
-//use Vipps\Payment\Api\QuoteManagementInterface;
-use Vipps\Payment\Model\Adapter\Adapter\Quote\Factory;
+use Vipps\Payment\Model\Adapter\Quote\Factory;
 
 /**
  * Class QuoteRepository
@@ -49,6 +45,7 @@ class QuoteManagement
     /**
      * @param \Mage_Sales_Model_Quote $cart
      * @return \Mage_Core_Model_Abstract
+     * @throws \Mage_Core_Exception
      */
     public function create(\Mage_Sales_Model_Quote $cart)
     {
@@ -66,7 +63,7 @@ class QuoteManagement
     /**
      * @param \Mage_Sales_Model_Quote $quote
      * @return \Vipps_Payment_Model_Quote
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Mage_Core_Exception
      */
     public function getByQuote(\Mage_Sales_Model_Quote $quote)
     {
@@ -87,7 +84,7 @@ class QuoteManagement
 
     /**
      * @param \Vipps_Payment_Model_Quote $quote
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Mage_Core_Exception
      */
     public function save(\Vipps_Payment_Model_Quote $quote)
     {

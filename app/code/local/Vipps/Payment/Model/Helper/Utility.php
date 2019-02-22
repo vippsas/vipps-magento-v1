@@ -14,19 +14,20 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Helper;
+namespace Vipps\Payment\Model\Helper;
 
-use Magento\Quote\Model\Quote;
-
+/**
+ * Class Utility
+ */
 class Utility
 {
     /**
      * Make sure addresses will be saved without validation errors
      *
-     * @param Quote $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @return void
      */
-    public function disabledQuoteAddressValidation(Quote $quote)
+    public function disabledQuoteAddressValidation(\Mage_Sales_Model_Quote $quote)
     {
         $billingAddress = $quote->getBillingAddress();
         $billingAddress->setShouldIgnoreValidation(true);

@@ -15,6 +15,8 @@
  */
 namespace Vipps\Payment\Gateway\Request;
 
+use Vipps\Payment\Gateway\Config\Config;
+
 /**
  * Class MerchantDataBuilder
  * @package Vipps\Payment\Gateway\Request
@@ -22,6 +24,14 @@ namespace Vipps\Payment\Gateway\Request;
  */
 class MerchantDataBuilder extends AbstractBuilder
 {
+    
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->gatewayConfig = new Config();
+    }
+
     /**
      * Merchant info block name
      *
@@ -49,7 +59,7 @@ class MerchantDataBuilder extends AbstractBuilder
     {
         return [
             self::$merchantInfo => [
-                self::$merchantSerialNumber => $this->scopeConfig->getValue('merchant_serial_number'),
+                self::$merchantSerialNumber => $this->gatewayConfig->getValue('merchant_serial_number'),
             ]
         ];
     }

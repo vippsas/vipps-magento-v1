@@ -13,13 +13,8 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request\Initiate;
 
-//use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
-//use Magento\Quote\Api\CartRepositoryInterface;
-//use Magento\Quote\Model\{Quote, Quote\Payment};
-//use Magento\Framework\UrlInterface;
-use Vipps\Payment\Gateway\Request\SubjectReader;
+namespace Vipps\Payment\Gateway\Request\Initiate;
 
 /**
  * Class MerchantInfo
@@ -104,30 +99,29 @@ class MerchantDataBuilder extends AbstractDataBuilder
         $payment = $paymentDO->getPayment();
         $payment->setAdditionalInformation(self::MERCHANT_AUTH_TOKEN, $callBackAuthToken);
         $payment->setAdditionalInformation(self::FALLBACK_AUTH_TOKEN, $fallBackAuthToken);
-        $quote = $this->cartRepository->get($payment->getQuote()->getId());
-        /** @var $quote Quote */
+        $quote = $payment->getQuote();
         $quote->reserveOrderId();
         $merchantInfo = [
             self::$merchantInfo => [
-                self::$authToken => $callBackAuthToken,
-                self::$callbackPrefix => $this->urlBuilder->getUrl('vipps/payment/callback'),
-                self::$fallBack => $this->urlBuilder->getUrl(
-                    'vipps/payment/fallback',
+                self::$authToken            => $callBackAuthToken,
+                self::$callbackPrefix       => $this->urlBuilder->getUrl('vipps/payment_callback/index'),
+                self::$fallBack             => $this->urlBuilder->getUrl(
+                    'vipps/payment_fallback/index',
                     [
                         'access_token' => $fallBackAuthToken,
-                        'order_id' => $quote->getReservedOrderId()
+                        'order_id'     => $quote->getReservedOrderId()
                     ]
                 ),
-                self::$consentRemovalPrefix => $this->urlBuilder->getUrl('vipps/payment/consentRemoval'),
-                self::$isApp => false,
-                self::PAYMENT_TYPE_KEY => $buildSubject[self::PAYMENT_TYPE_KEY],
+                self::$consentRemovalPrefix => $this->urlBuilder->getUrl('vipps/payment_consentRemoval/index'),
+                self::$isApp                => false,
+                self::PAYMENT_TYPE_KEY      => $buildSubject[self::PAYMENT_TYPE_KEY],
             ]
         ];
 
         if ($buildSubject[self::PAYMENT_TYPE_KEY] == self::PAYMENT_TYPE_EXPRESS_CHECKOUT) {
-            $merchantInfo[self::$merchantInfo][self::$shippingDetailsPrefix] =  $this->urlBuilder->getUrl(
-                'vipps/payment/shippingDetails'
-            );
+            $merchantInfo[self::$merchantInfo][self::$shippingDetailsPrefix] = $this
+                ->urlBuilder
+                ->getUrl('vipps/payment_shippingDetails/index');
         }
         return $merchantInfo;
     }
@@ -139,11 +133,8 @@ class MerchantDataBuilder extends AbstractDataBuilder
      */
     private function generateAuthToken()
     {
-        try {
-            $randomStr = random_bytes(16);
-        } catch (\Exception $e) {
-            $randomStr = uniqid('', true);
-        }
+        $randomStr = uniqid('', true);
+
         return bin2hex($randomStr);
     }
 }

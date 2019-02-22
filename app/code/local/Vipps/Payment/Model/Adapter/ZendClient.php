@@ -14,8 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Class ZendClient
+ */
 class ZendClient extends \Zend_Http_Client
 {
     /**
@@ -38,11 +41,12 @@ class ZendClient extends \Zend_Http_Client
 
     /**
      * @return $this
+     * @throws \Zend_Http_Client_Exception
      */
     protected function _trySetCurlAdapter()
     {
         if (extension_loaded('curl')) {
-            $this->setAdapter(new \Magento\Framework\HTTP\Adapter\Curl());
+            $this->setAdapter(new \Vipps\Payment\Model\Adapter\Curl());
         }
         return $this;
     }
@@ -50,6 +54,7 @@ class ZendClient extends \Zend_Http_Client
     /**
      * @param null|string $method
      * @return \Zend_Http_Response
+     * @throws \Zend_Http_Client_Exception
      */
     public function request($method = null)
     {
@@ -74,6 +79,7 @@ class ZendClient extends \Zend_Http_Client
      * standard prepare functionality
      *
      * @return string
+     * @throws \Zend_Http_Client_Exception
      */
     protected function _prepareBody()
     {

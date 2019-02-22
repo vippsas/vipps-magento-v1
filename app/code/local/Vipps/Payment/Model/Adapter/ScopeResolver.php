@@ -14,12 +14,23 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Emulate scope resolver.
+ *
+ * Class ScopeResolver
+ */
 class ScopeResolver
 {
+    /**
+     * @var
+     */
     static $scope;
 
+    /**
+     * @return Scope
+     */
     public function getScope()
     {
         if (!self::$scope) {

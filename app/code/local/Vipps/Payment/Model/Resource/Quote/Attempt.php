@@ -23,7 +23,7 @@ class Vipps_Payment_Model_Resource_Quote_Attempt extends Mage_Core_Model_Resourc
     /**
      * Main table name
      */
-    const TABLE_NAME = 'vipps_quote_attempt';
+    const TABLE_NAME = 'vipps_payment/quote_attempt';
 
     /**
      * Index field name

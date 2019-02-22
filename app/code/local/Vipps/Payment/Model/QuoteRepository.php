@@ -15,23 +15,15 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model;
 
-use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Vipps\Payment\Model\Adapter\Adapter\Quote\Factory;
-use Vipps\Payment\Model\Adapter\Adapter\Resource;
+use Vipps\Payment\Model\Adapter\Quote\Factory;
 
 /**
  * Class QuoteRepository
  */
 class QuoteRepository
 {
-    /**
-     * @var Resource
-     */
-    private $quoteResource;
-
     /**
      * @var Factory
      */
@@ -42,7 +34,6 @@ class QuoteRepository
      */
     public function __construct()
     {
-        $this->quoteResource = new Resource();
         $this->quoteFactory = new Factory();
     }
 
@@ -51,21 +42,16 @@ class QuoteRepository
      *
      * @param \Vipps_Payment_Model_Quote $quote
      * @return \Vipps_Payment_Model_Quote
+     * @throws \Mage_Core_Exception
      */
     public function save(\Vipps_Payment_Model_Quote $quote)
     {
         try {
-            $this->quoteResource->save($quote);
+            $quote->save();
 
             return $quote;
         } catch (\Exception $e) {
-            throw new CouldNotSaveException(
-                __(
-                    'Could not save Vipps Quote: %1',
-                    $e->getMessage()
-                ),
-                $e
-            );
+            throw new \Mage_Core_Exception(__('Could not save Vipps Quote: %s', $e->getMessage()));
         }
     }
 
@@ -74,16 +60,16 @@ class QuoteRepository
      *
      * @param $quoteId
      * @return false|\Mage_Core_Model_Abstract
-     * @throws NoSuchEntityException
+     * @throws \Mage_Core_Exception
      */
     public function loadByQuote($quoteId)
     {
         $monitoringQuote = $this->quoteFactory->create();
 
-        $this->quoteResource->load($monitoringQuote, $quoteId, 'quote_id');
+        $monitoringQuote->load($quoteId, 'quote_id');
 
         if (!$monitoringQuote->getId()) {
-            throw NoSuchEntityException::singleField('quote_id', $quoteId);
+            throw new \Mage_Core_Exception(__('No such entity with quote_id = %s', $quoteId));
         }
 
         return $monitoringQuote;
@@ -92,16 +78,16 @@ class QuoteRepository
     /**
      * @param int $monitoringQuoteId
      * @return \Vipps_Payment_Model_Quote
-     * @throws NoSuchEntityException
+     * @throws \Mage_Core_Exception
      */
     public function load($monitoringQuoteId)
     {
         $monitoringQuote = $this->quoteFactory->create();
 
-        $this->quoteResource->load($monitoringQuote, $monitoringQuoteId);
+        $monitoringQuote->load($monitoringQuoteId);
 
         if (!$monitoringQuote->getId()) {
-            throw NoSuchEntityException::singleField('entity_id', $monitoringQuoteId);
+            throw new \Mage_Core_Exception(__('No such entity with entity_id = %s', $monitoringQuoteId));
         }
 
         return $monitoringQuote;

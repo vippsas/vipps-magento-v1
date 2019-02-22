@@ -18,7 +18,6 @@ namespace Vipps\Payment\Model\Adapter;
 
 /**
  * Class Config
- * @package Vipps\Payment\Model
  */
 class Config
 {

@@ -16,7 +16,8 @@
 
 namespace Vipps\Payment\Gateway\Command;
 
-use Vipps\Payment\Lib\Pool;
+use Vipps\Payment\Gateway\Data\PaymentDataObjectFactory;
+use Vipps\Payment\Model\Helper\Pool;
 
 /**
  * Class CommandManager
@@ -25,9 +26,14 @@ use Vipps\Payment\Lib\Pool;
 class CommandManager
 {
     /**
-     * @var \Vipps\Payment\Model\Adapter\PaymentDataObjectFactory
+     * @var PaymentDataObjectFactory
      */
     private $paymentDataObjectFactory;
+
+    /**
+     * @var Pool
+     */
+    private $commandPool;
 
     /**
      * CommandManager constructor.
@@ -43,7 +49,7 @@ class CommandManager
         $this->commandPool->add('getPaymentDetails', GetPaymentDetailsCommand::class);
         $this->commandPool->add('cancel', CancelCommand::class);
 
-        $this->paymentDataObjectFactory = new \Vipps\Payment\Model\Adapter\PaymentDataObjectFactory();
+        $this->paymentDataObjectFactory = new PaymentDataObjectFactory();
     }
 
     /**
@@ -65,7 +71,7 @@ class CommandManager
      * @param string $commandCode
      * @param \Mage_Payment_Model_Info|null $payment
      * @param array $arguments
-     * @return ResultInterface|null
+     * @return Result|null
      * @throws NotFoundException
      * @throws CommandException
      * @since 100.1.0
@@ -142,12 +148,27 @@ class CommandManager
     }
 
     /**
+     * Refund command.
+     *
+     * @param \Mage_Payment_Model_Info $payment
+     * @param float $amount
+     * @return Result
+     */
+    public function refund(\Mage_Payment_Model_Info $payment, $amount)
+    {
+        return $this->executeByCode(
+            'refund',
+            ['amount' => $amount, 'payment' => $payment]
+        );
+    }
+
+    /**
      * Executes command
      *
      * @param CommandInterface $command
      * @param |null $payment @todo: specify interface.
      * @param array $arguments
-     * @return ResultInterface|null
+     * @return Result|null
      * @throws CommandException
      * @since 100.1.0
      */

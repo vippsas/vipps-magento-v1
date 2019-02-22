@@ -14,22 +14,57 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Helper;
 
-class Resource
+/**
+ * Class Pool
+ */
+class Pool
 {
-    public function save(\Mage_Core_Model_Abstract $model)
+    /**
+     * @var \ArrayObject
+     */
+    private $pool;
+
+    /**
+     * Pool constructor.
+     * @param array $array
+     */
+    public function __construct($array = [])
     {
-        return $model->save();
+        $this->pool = new \ArrayObject();
+
+        foreach ($array as $key => $value) {
+            $this->add($key, $value);
+        }
     }
 
-    public function load(\Mage_Core_Model_Abstract $model, $id, $field = null)
+    /**
+     * @param string $key
+     * @param string $value
+     * @return $this
+     */
+    public function add($key, $value)
     {
-        return $model->load($id, $field);
+        $this->pool->offsetSet($key, $value);
+
+        return $this;
     }
 
-    public function delete(\Mage_Core_Model_Abstract $model)
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function get($key)
     {
-        return $model->delete();
+        return $this->pool->offsetGet($key);
+    }
+
+    /**
+     * @return \ArrayObject
+     */
+    public function getAll()
+    {
+        return $this->pool;
     }
 }

@@ -16,7 +16,16 @@
 
 namespace Vipps\Payment\Gateway\Command;
 
+use Vipps\Payment\Gateway\Validator\Result;
+
 interface CommandInterface
 {
-
+    /**
+     * Executes command basing on business object
+     *
+     * @param array $commandSubject
+     * @return Result|array|null
+     * @throws CommandException
+     */
+    public function execute(array $commandSubject);
 }

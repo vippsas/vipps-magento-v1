@@ -13,15 +13,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Adapter\ResourceModel\Profiling;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
 /**
  * Class Item
  * @package Vipps\Payment\Model\ResourceModel\Profiling
  */
-class Item extends AbstractDb
+class Vipps_Payment_Model_Resource_Profiling_Item extends Mage_Core_Model_Resource_Db_Abstract
 {
     /**
      * Main table name
@@ -41,14 +38,14 @@ class Item extends AbstractDb
         $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
     }
 
-    /**
-     * Delete entity by id
-     *
-     * @param $id
-     */
-    public function deleteById($id)
-    {
-        $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-    }
+//    /**
+//     * Delete entity by id
+//     *
+//     * @param $id
+//     */
+//    public function deleteById($id)
+//    {
+//        $connection = $this->getConnection();
+//        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
+//    }
 }

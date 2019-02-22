@@ -14,70 +14,18 @@
  * IN THE SOFTWARE.
  */
 
-//use Magento\Framework\Controller\ResultFactory;
-//use Magento\Framework\Controller\ResultInterface;
-//use Magento\Framework\App\Action\Context;
-//use Magento\Framework\App\Action\Action;
-//use Magento\Framework\App\ResponseInterface;
-//use Magento\Framework\Session\SessionManagerInterface;
-//use Magento\Payment\Gateway\ConfigInterface;
-//use Vipps\Payment\Api\CommandManagerInterface;
-
-use Vipps\Payment\Gateway\Command\CommandManager;
-use Vipps\Payment\Gateway\Config\Config;
 use Vipps\Payment\Gateway\Exception\VippsException;
 use Vipps\Payment\Gateway\Request\Initiate\InitiateBuilderInterface;
-use Vipps\Payment\Model\Adapter\MessageManager;
 
-class Vipps_Payment_ExpressController extends Mage_Core_Controller_Front_Action
+class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
 {
-    /**
-     * @var CommandManager
-     */
-    private $commandManager;
-
-    /**
-     * @var Mage_Checkout_Model_Session
-     */
-    private $session;
-
-    /**
-     * @var Vipps_Payment_Model_Logger
-     */
-    private $logger;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var MessageManager
-     */
-    private $messageManager;
-
-    public function preDispatch()
-    {
-        $this->session = Mage::getSingleton('checkout/session');
-        $this->logger = Mage::getSingleton('vipps_payment/logger');
-        $this->commandManager = new CommandManager();
-        $this->config = new Config();
-        $this->messageManager = new MessageManager();
-
-        parent::preDispatch();
-
-        return $this;
-    }
-
     public function indexAction()
     {
-
-        $redirectPath = 'checkout/cart';
         try {
             if (!$this->config->getValue('express_checkout')) {
                 throw new Mage_Core_Exception(__('Express Payment method is not available.'));
             }
-            $quote = $this->session->getQuote();
+            $quote = $this->cart->getQuote();
             $responseData = $this->commandManager->initiatePayment(
                 $quote->getPayment(),
                 [
@@ -85,8 +33,8 @@ class Vipps_Payment_ExpressController extends Mage_Core_Controller_Front_Action
                     InitiateBuilderInterface::PAYMENT_TYPE_KEY => InitiateBuilderInterface::PAYMENT_TYPE_EXPRESS_CHECKOUT
                 ]
             );
-            $this->session->unsetAll();
-            $redirectPath = $responseData['url'];
+
+            return $this->_redirectUrl($responseData['url']);
         } catch (VippsException $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
@@ -100,7 +48,7 @@ class Vipps_Payment_ExpressController extends Mage_Core_Controller_Front_Action
             );
         }
 
-        return $this->_redirect($redirectPath, ['_secure' => true]);
+        return $this->_redirect('checkout/cart', ['_secure' => true]);
 
     }
 }

@@ -21,7 +21,7 @@ use Vipps\Payment\Gateway\Transaction\Transaction;
 use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
 use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item as TransactionLogHistoryItem;
 use Vipps\Payment\Gateway\Transaction\TransactionSummary;
-use Vipps\Payment\Model\Adapter\OrderRepository;
+use Vipps\Payment\Model\OrderRepository;
 
 /**
  * Class RefundCommand
@@ -89,7 +89,7 @@ class RefundCommand extends GatewayCommand
 
         // try to refund based on refund service itself
         if ($transaction->getTransactionSummary()->getRemainingAmountToRefund() < $amount) {
-            throw new LocalizedException(__('Refund amount is higher then remaining amount to refund'));
+            \Mage::throwException(__('Refund amount is higher then remaining amount to refund'));
         }
 
         $requestId = $this->getLastFailedRequestId($transaction, $amount);
@@ -135,7 +135,7 @@ class RefundCommand extends GatewayCommand
                 //prepare refund response based on data from getPaymentDetails service
                 $responseBody = $this->prepareResponseBody($transaction, $amount, $orderIncrementId);
                 if (!is_array($responseBody)) {
-                    throw new LocalizedException(__('An error occurred during refund info sync.'));
+                    Mage::throwException(__('An error occurred during refund info sync.'));
                 }
                 if ($this->handler) {
                     $this->handler->handle($commandSubject, $responseBody);
@@ -153,7 +153,7 @@ class RefundCommand extends GatewayCommand
                     $suggestedAmountToRefund
                 );
 
-                throw new LocalizedException($message);
+                Mage::throwException($message);
             }
         }
 

@@ -15,7 +15,7 @@
  */
 namespace Vipps\Payment\Gateway\Request\Initiate;
 
-use Vipps\Payment\Lib\Formatter;
+use Vipps\Payment\Model\Helper\Formatter;
 
 //use Magento\Quote\Model\Quote\Payment;
 
@@ -58,8 +58,9 @@ class TransactionDataBuilder extends AbstractDataBuilder
     public function build(array $buildSubject)
     {
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
-        /** @var Payment $payment */
+        /** @var \Mage_Sales_Model_Quote_Payment $payment */
         $payment = $paymentDO->getPayment();
+        /** @var \Mage_Sales_Model_Quote $quote */
         $quote = $payment->getQuote();
 
         $amount = $this->subjectReader->readAmount($buildSubject);

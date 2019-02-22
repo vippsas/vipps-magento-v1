@@ -14,11 +14,13 @@
  * IN THE SOFTWARE.
  */
 
+namespace Vipps\Payment\Model;
+
 /**
  * Interface QuoteInterface
  * @api
  */
-interface Vipps_Payment_Model_QuoteInterface extends Vipps_Payment_Model_QuoteStatusInterface
+interface QuoteInterface extends QuoteStatusInterface
 {
     /**
      * @const string

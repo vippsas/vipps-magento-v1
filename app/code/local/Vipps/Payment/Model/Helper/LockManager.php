@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2018 Vipps
+ * Copyright 2019 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
@@ -13,32 +13,21 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-declare(strict_types=1);
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model\Helper;
 
-use Magento\Framework\{App\DeploymentConfig,
-    App\ResourceConnection,
-    Config\ConfigOptionsListConstants,
-    Exception\AlreadyExistsException,
-    Exception\InputException,
-    Phrase};
+use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
 
 /**
  * Class LockManager
  * @package Vipps\Payment\Model
  */
-class LockManager implements LockManagerInterface
+class LockManager
 {
     /**
-     * @var ResourceConnection
+     * @var ResourceConnectionProvider
      */
     private $resource;
-
-    /**
-     * @var DeploymentConfig
-     */
-    private $deploymentConfig;
 
     /**
      * @var string
@@ -54,17 +43,10 @@ class LockManager implements LockManagerInterface
     /**
      * Database constructor.
      *
-     * @param ResourceConnection $resource
-     * @param DeploymentConfig $deploymentConfig
      * @param string|null $prefix
      */
-    public function __construct(
-        ResourceConnection $resource,
-        DeploymentConfig $deploymentConfig,
-        string $prefix = null
-    ) {
-        $this->resource = $resource;
-        $this->deploymentConfig = $deploymentConfig;
+    public function __construct($prefix = null) {
+        $this->resource = new ResourceConnectionProvider();
         $this->prefix = $prefix;
     }
 
@@ -74,10 +56,11 @@ class LockManager implements LockManagerInterface
      * @param string $name lock name
      * @param int $timeout How long to wait lock acquisition in seconds, negative value means infinite timeout
      * @return bool
-     * @throws InputException
-     * @throws AlreadyExistsException
+     * @throws \Mage_Core_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function lock(string $name, int $timeout = -1): bool
+    public function lock($name, $timeout = -1)
     {
         $name = $this->addPrefix($name);
 
@@ -87,18 +70,18 @@ class LockManager implements LockManagerInterface
          * currently we support MySQL 5.6 way only.
          */
         if ($this->currentLock) {
-            throw new AlreadyExistsException(//@codingStandardsIgnoreLine
-                new Phrase(//@codingStandardsIgnoreLine
+            \Mage::throwException(
+                sprintf(
                     'Current connection is already holding lock for $1, only single lock allowed',
-                    [$this->currentLock]
+                    $this->currentLock
                 )
             );
         }
 
-        $result = (bool)$this->resource->getConnection()->query(//@codingStandardsIgnoreLine
-            "SELECT GET_LOCK(?, ?);",//@codingStandardsIgnoreLine
-            [(string)$name, (int)$timeout]
-        )->fetchColumn();
+        $result = (bool)$this->resource
+            ->getConnection()
+            ->query("SELECT GET_LOCK(?, ?);", [(string)$name, (int)$timeout])
+            ->fetchColumn();
 
         if ($result === true) {
             $this->currentLock = $name;
@@ -108,13 +91,49 @@ class LockManager implements LockManagerInterface
     }
 
     /**
+     * Adds prefix and checks for max length of lock name
+     *
+     * Limited to 64 characters in MySQL.
+     *
+     * @param string $name
+     * @return string $name
+     * @throws \Mage_Core_Exception
+     */
+    private function addPrefix($name)
+    {
+        $name = $this->getPrefix() . '_' . $name;
+
+        if (strlen($name) > 64) {
+            \Mage::throwException(sprintf('Lock name too long: %s...', substr($name, 0, 64)));
+        }
+
+        return $name;
+    }
+
+    /**
+     * Get installation specific lock prefix to avoid lock conflicts
+     *
+     * @return string lock prefix
+     */
+    private function getPrefix()
+    {
+        if ($this->prefix === null) {
+            $this->prefix = $this->resource->getTablePrefix();
+        }
+
+        return $this->prefix;
+    }
+
+    /**
      * Releases a lock for name
      *
      * @param string $name lock name
      * @return bool
-     * @throws InputException
+     * @throws \Mage_Core_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function unlock(string $name): bool
+    public function unlock($name)
     {
         $name = $this->addPrefix($name);
 
@@ -135,9 +154,11 @@ class LockManager implements LockManagerInterface
      *
      * @param string $name lock name
      * @return bool
-     * @throws InputException
+     * @throws \Mage_Core_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function isLocked(string $name): bool
+    public function isLocked($name)
     {
         $name = $this->addPrefix($name);
 
@@ -145,44 +166,5 @@ class LockManager implements LockManagerInterface
             "SELECT IS_USED_LOCK(?);",//@codingStandardsIgnoreLine
             [(string)$name]
         )->fetchColumn();
-    }
-
-    /**
-     * Adds prefix and checks for max length of lock name
-     *
-     * Limited to 64 characters in MySQL.
-     *
-     * @param string $name
-     * @return string $name
-     * @throws InputException
-     */
-    private function addPrefix(string $name): string
-    {
-        $name = $this->getPrefix() . '|' . $name;
-
-        if (strlen($name) > 64) {
-            throw new InputException(new Phrase('Lock name too long: %1...', [substr($name, 0, 64)]));//@codingStandardsIgnoreLine
-        }
-
-        return $name;
-    }
-
-    /**
-     * Get installation specific lock prefix to avoid lock conflicts
-     *
-     * @return string lock prefix
-     */
-    private function getPrefix(): string
-    {
-        if ($this->prefix === null) {
-            $this->prefix = (string)$this->deploymentConfig->get(
-                ConfigOptionsListConstants::CONFIG_PATH_DB_CONNECTION_DEFAULT
-                . '/'
-                . ConfigOptionsListConstants::KEY_NAME,
-                ''
-            );
-        }
-
-        return $this->prefix;
     }
 }

@@ -14,7 +14,7 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Model\Adapter\Profiling\ItemInterface;
+use Vipps\Payment\Model\Profiling\ItemInterface;
 
 /**
  * Class Item

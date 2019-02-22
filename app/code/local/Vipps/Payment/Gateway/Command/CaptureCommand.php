@@ -21,7 +21,7 @@ use Vipps\Payment\Gateway\Transaction\Transaction;
 use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
 use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item as TransactionLogHistoryItem;
 use Vipps\Payment\Gateway\Transaction\TransactionSummary;
-use Vipps\Payment\Lib\Formatter;
+use Vipps\Payment\Model\Helper\Formatter;
 
 /**
  * Class CaptureCommand
@@ -42,7 +42,7 @@ class CaptureCommand extends GatewayCommand
     private $transactionBuilder;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\OrderRepository
+     * @var \Vipps\Payment\Model\OrderRepository
      */
     private $orderRepository;
 
@@ -58,7 +58,7 @@ class CaptureCommand extends GatewayCommand
 
         $this->paymentDetailsProvider = new PaymentDetailsProvider();
         $this->transactionBuilder = new TransactionBuilder();
-        $this->orderRepository = new \Vipps\Payment\Model\Adapter\OrderRepository();
+        $this->orderRepository = new \Vipps\Payment\Model\OrderRepository();
 
     }
 
@@ -88,7 +88,7 @@ class CaptureCommand extends GatewayCommand
 
         // try to capture based on capture service itself
         if ($transaction->getTransactionSummary()->getRemainingAmountToCapture() < $amount) {
-            throw new LocalizedException(__('Captured amount is higher then remaining amount to capture'));
+            Mage::throwException(__('Captured amount is higher then remaining amount to capture'));
         }
 
         $requestId = $this->getLastFailedRequestId($transaction, $amount);
@@ -134,7 +134,7 @@ class CaptureCommand extends GatewayCommand
                 //prepare capture response based on data from getPaymentDetails service
                 $responseBody = $this->prepareResponseBody($transaction, $amount, $orderIncrementId);
                 if (!is_array($responseBody)) {
-                    throw new LocalizedException(__('An error occurred during capture info sync.'));
+                    Mage::throwException(__('An error occurred during capture info sync.'));
                 }
                 if ($this->handler) {
                     $this->handler->handle($commandSubject, $responseBody);
@@ -152,7 +152,7 @@ class CaptureCommand extends GatewayCommand
                     $suggestedAmountToCapture
                 );
 
-                throw new LocalizedException($message);
+                Mage::throwException($message);
             }
         }
 

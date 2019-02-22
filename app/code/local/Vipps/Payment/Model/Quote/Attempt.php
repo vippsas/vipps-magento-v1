@@ -15,22 +15,16 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter\Quote;
-
-use Magento\Framework\Model\AbstractModel;
-use Vipps\Payment\Api\Data\QuoteAttemptInterface;
-use Vipps\Payment\Model\Adapter\ResourceModel\Quote\Attempt as AttemptResource;
-
 /**
  * Quote cancellation model.
  */
-class Attempt extends AbstractModel implements QuoteAttemptInterface
+class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implements \Vipps\Payment\Model\Quote\QuoteAttemptInterface
 {
     /**
      * @param int $parentId
      * @return QuoteAttemptInterface
      */
-    public function setParentId(int $parentId)
+    public function setParentId($parentId)
     {
         return $this->setData(self::PARENT_ID, $parentId);
     }
@@ -39,7 +33,7 @@ class Attempt extends AbstractModel implements QuoteAttemptInterface
      * @param string $message
      * @return QuoteAttemptInterface
      */
-    public function setMessage(string $message)
+    public function setMessage( $message)
     {
         return $this->setData(self::MESSAGE, $message);
     }
@@ -48,7 +42,7 @@ class Attempt extends AbstractModel implements QuoteAttemptInterface
      * @param string $createdAt
      * @return QuoteAttemptInterface
      */
-    public function setCreatedAt(string $createdAt)
+    public function setCreatedAt( $createdAt)
     {
         return $this->setData(self::CREATED_AT, $createdAt);
     }
@@ -80,8 +74,8 @@ class Attempt extends AbstractModel implements QuoteAttemptInterface
     /**
      * Constructor.
      */
-    protected function _construct() //@codingStandardsIgnoreLine
+    protected function _construct()
     {
-        $this->_init(AttemptResource::class);
+        $this->_init('vipps_payment/quote_attempt');
     }
 }

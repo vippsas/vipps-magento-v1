@@ -15,14 +15,10 @@
  *
  */
 
-//use Magento\Framework\Model\AbstractModel;
-//use Vipps\Payment\Api\Data\QuoteInterface;
-//use Vipps\Payment\Model\ResourceModel\Quote as QuoteResource;
-
 /**
  * Quote monitoring model.
  */
-class Vipps_Payment_Model_Quote extends Mage_Core_Model_Abstract implements Vipps_Payment_Model_QuoteInterface
+class Vipps_Payment_Model_Quote extends Mage_Core_Model_Abstract implements \Vipps\Payment\Model\QuoteInterface
 {
     /**
      * @param int $quoteId

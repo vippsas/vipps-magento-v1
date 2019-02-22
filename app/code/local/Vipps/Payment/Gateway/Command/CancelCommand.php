@@ -21,7 +21,7 @@ use Vipps\Payment\Gateway\Transaction\Transaction;
 use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
 use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item as TransactionLogHistoryItem;
 use Vipps\Payment\Gateway\Transaction\TransactionSummary;
-use Vipps\Payment\Lib\Formatter;
+use Vipps\Payment\Model\Helper\Formatter;
 
 /**
  * Class CancelCommand
@@ -77,7 +77,7 @@ class CancelCommand extends GatewayCommand
         }
 
         if ($transaction->getTransactionSummary()->getCapturedAmount() > 0) {
-            throw new LocalizedException(__('Can\'t cancel captured transaction.'));
+            Mage::throwException(__('Can\'t cancel captured transaction.'));
         }
 
         // if previous cancel was failed - use the same request id

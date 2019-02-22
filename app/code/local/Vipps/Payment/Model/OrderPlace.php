@@ -14,25 +14,15 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Model;
 
-use Magento\Framework\Exception\{AlreadyExistsException, CouldNotSaveException, InputException, NoSuchEntityException};
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Payment\Gateway\ConfigInterface;
-use Magento\Payment\Helper\Formatter;
-use Magento\Quote\Api\{CartManagementInterface, CartRepositoryInterface, Data\CartInterface};
-use Magento\Quote\Model\Quote;
-use Magento\Sales\Api\{Data\OrderInterface, OrderManagementInterface, OrderRepositoryInterface};
-use Magento\Sales\Model\{Order,
-    Order\Payment,
-    Order\Payment\Processor,
-    Order\Payment\Transaction as PaymentTransaction};
-use Psr\Log\LoggerInterface;
-use Vipps\Payment\Api\CommandManagerInterface;
-use Vipps\Payment\Api\Data\QuoteStatusInterface;
-use Vipps\Payment\Gateway\{Exception\VippsException, Transaction\Transaction};
+use Vipps\Payment\Gateway\Config\Config;
+use Vipps\Payment\Gateway\Exception\VippsException;
 use Vipps\Payment\Gateway\Exception\WrongAmountException;
-use Vipps\Payment\Model\Adapter\Adminhtml\Source\PaymentAction;
+use Vipps\Payment\Gateway\Transaction\Transaction;
+use Vipps\Payment\Model\Adapter\CartRepository;
+use Vipps\Payment\Model\Helper\Formatter;
+use Vipps\Payment\Model\Helper\LockManager;
 
 /**
  * Class OrderManagement
@@ -44,39 +34,24 @@ class OrderPlace
     use Formatter;
 
     /**
-     * @var OrderRepositoryInterface
+     * @var OrderRepository
      */
     private $orderRepository;
 
     /**
-     * @var CartRepositoryInterface
+     * @var CartRepository
      */
     private $cartRepository;
 
     /**
-     * @var OrderManagementInterface
-     */
-    private $orderManagement;
-
-    /**
-     * @var CartManagementInterface
+     * @var \Mage_Checkout_Model_Cart_Api
      */
     private $cartManagement;
-
-    /**
-     * @var OrderLocator
-     */
-    private $orderLocator;
 
     /**
      * @var QuoteLocator
      */
     private $quoteLocator;
-
-    /**
-     * @var Processor
-     */
-    private $processor;
 
     /**
      * @var QuoteUpdater
@@ -89,14 +64,9 @@ class OrderPlace
     private $lockManager;
 
     /**
-     * @var ConfigInterface
+     * @var Config
      */
     private $config;
-
-    /**
-     * @var CommandManagerInterface
-     */
-    private $commandManager;
 
     /**
      * @var QuoteManagement
@@ -104,72 +74,39 @@ class OrderPlace
     private $quoteManagement;
 
     /**
-     * @var LoggerInterface
+     * @var \Vipps\Payment\Model\Adapter\Logger
      */
     private $logger;
 
     /**
      * OrderPlace constructor.
      *
-     * @param OrderRepositoryInterface $orderRepository
-     * @param CartRepositoryInterface $cartRepository
-     * @param OrderManagementInterface $orderManagement
-     * @param CartManagementInterface $cartManagement
-     * @param OrderLocator $orderLocator
-     * @param QuoteLocator $quoteLocator
-     * @param Processor $processor
-     * @param QuoteUpdater $quoteUpdater
-     * @param LockManager $lockManager
-     * @param ConfigInterface $config
-     * @param CommandManagerInterface $commandManager
-     * @param QuoteManagement $quoteManagement
-     * @param LoggerInterface $logger
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
-    public function __construct(
-        OrderRepositoryInterface $orderRepository,
-        CartRepositoryInterface $cartRepository,
-        OrderManagementInterface $orderManagement,
-        CartManagementInterface $cartManagement,
-        OrderLocator $orderLocator,
-        QuoteLocator $quoteLocator,
-        Processor $processor,
-        QuoteUpdater $quoteUpdater,
-        LockManager $lockManager,
-        ConfigInterface $config,
-        CommandManagerInterface $commandManager,
-        QuoteManagement $quoteManagement,
-        LoggerInterface $logger
-    ) {
-        $this->orderRepository = $orderRepository;
-        $this->cartRepository = $cartRepository;
-        $this->orderManagement = $orderManagement;
-        $this->cartManagement = $cartManagement;
-        $this->orderLocator = $orderLocator;
-        $this->quoteLocator = $quoteLocator;
-        $this->processor = $processor;
-        $this->quoteUpdater = $quoteUpdater;
-        $this->lockManager = $lockManager;
-        $this->config = $config;
-        $this->commandManager = $commandManager;
-        $this->quoteManagement = $quoteManagement;
-        $this->logger = $logger;
+    public function __construct()
+    {
+        $this->orderRepository = new OrderRepository();
+        $this->cartRepository = new CartRepository();
+        $this->cartManagement = \Mage::getModel('checkout/cart_api');
+        $this->quoteUpdater = new QuoteUpdater();
+        $this->lockManager = new LockManager();
+        $this->config = new Config();
+        $this->quoteManagement = new QuoteManagement();
+        $this->logger = new Adapter\Logger();
     }
 
     /**
-     * @param CartInterface $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      *
-     * @return OrderInterface|null
-     * @throws AlreadyExistsException
-     * @throws CouldNotSaveException
-     * @throws InputException
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @return \Mage_Sales_Model_Order|null
      * @throws VippsException
      * @throws WrongAmountException
+     * @throws \Mage_Core_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function execute(CartInterface $quote, Transaction $transaction)
+    public function execute(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         if (!$this->canPlaceOrder($transaction)) {
             return null;
@@ -187,7 +124,7 @@ class OrderPlace
                 $this->updateVippsQuote($quote);
                 $paymentAction = $this->config->getValue('vipps_payment_action');
                 switch ($paymentAction) {
-                    case PaymentAction::ACTION_AUTHORIZE_CAPTURE:
+                    case \Vipps_Payment_Model_System_Config_Source_PaymentAction::ACTION_AUTHORIZE_CAPTURE:
                         $this->capture($order, $transaction);
                         break;
                     default:
@@ -214,13 +151,14 @@ class OrderPlace
     }
 
     /**
-     * @param CartInterface $quote
+     * @param \Mage_Sales_Model_Quote $quote
      *
      * @return bool|string
-     * @throws AlreadyExistsException
-     * @throws InputException
+     * @throws \Mage_Core_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
-    private function acquireLock(CartInterface $quote)
+    private function acquireLock(\Mage_Sales_Model_Quote $quote)
     {
         $reservedOrderId = $quote->getReservedOrderId();
         if ($reservedOrderId) {
@@ -233,17 +171,17 @@ class OrderPlace
     }
 
     /**
-     * @param CartInterface $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      *
-     * @return OrderInterface|null
+     * @return \Mage_Sales_Model_Order
      * @throws CouldNotSaveException
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws VippsException
      * @throws WrongAmountException
      */
-    private function placeOrder(CartInterface $quote, Transaction $transaction)
+    private function placeOrder(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         $clonedQuote = clone $quote;
         $reservedOrderId = $clonedQuote->getReservedOrderId();
@@ -251,11 +189,11 @@ class OrderPlace
             return null;
         }
 
-        $order = $this->orderLocator->get($reservedOrderId);
+        $order = $this->orderRepository->getByIncrement($reservedOrderId);
         if (!$order) {
             //this is used only for express checkout
             $this->quoteUpdater->execute($clonedQuote);
-            /** @var Quote $clonedQuote */
+            /** @var \Mage_Sales_Model_Quote $clonedQuote */
             $clonedQuote = $this->cartRepository->get($clonedQuote->getId());
             if ($clonedQuote->getReservedOrderId() !== $reservedOrderId) {
                 return null;
@@ -270,8 +208,8 @@ class OrderPlace
 
             // set quote active, collect totals and place order
             $clonedQuote->setIsActive(true);
-            $orderId = $this->cartManagement->placeOrder($clonedQuote->getId());
-            $order = $this->orderRepository->get($orderId);
+            $orderId = $this->cartManagement->createOrder($clonedQuote->getId());
+            $order = $this->orderRepository->getByIncrement($orderId);
         }
 
         $clonedQuote->setReservedOrderId(null);
@@ -281,7 +219,7 @@ class OrderPlace
     }
 
     /**
-     * @param CartInterface|Quote $quote
+     * @param \Mage_Sales_Model_Quote $quote
      */
     private function prepareQuote($quote)
     {
@@ -295,13 +233,13 @@ class OrderPlace
     /**
      * Check if reserved Order amount in vipps is the same as in Magento.
      *
-     * @param CartInterface $quote
+     * @param \Mage_Sales_Model_Quote $quote
      * @param Transaction $transaction
      *
      * @return void
      * @throws WrongAmountException
      */
-    private function validateAmount(CartInterface $quote, Transaction $transaction)
+    private function validateAmount(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
     {
         $quoteAmount = (int)($this->formatPrice($quote->getGrandTotal()) * 100);
         $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
@@ -316,9 +254,9 @@ class OrderPlace
     /**
      * Update vipps quote with success.
      *
-     * @param CartInterface $cart
+     * @param \Mage_Sales_Model_Quote $cart
      */
-    private function updateVippsQuote(CartInterface $cart)
+    private function updateVippsQuote(\Mage_Sales_Model_Quote $cart)
     {
         try {
             $vippsQuote = $this->quoteManagement->getByQuote($cart);
@@ -333,14 +271,13 @@ class OrderPlace
     /**
      * Capture
      *
-     * @param OrderInterface $order
+     * @param \Mage_Sales_Model_Order $order
      * @param Transaction $transaction
-     *
-     * @throws LocalizedException
+     * @throws \Mage_Core_Exception
      */
-    private function capture(OrderInterface $order, Transaction $transaction)
+    private function capture(\Mage_Sales_Model_Order $order, Transaction $transaction)
     {
-        if ($order->getState() !== Order::STATE_NEW) {
+        if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
             return;
         }
 
@@ -348,7 +285,7 @@ class OrderPlace
         $totalDue = $order->getTotalDue();
         $baseTotalDue = $order->getBaseTotalDue();
 
-        /** @var Payment $payment */
+        /** @var \Mage_Sales_Model_Order_Payment $payment */
         $payment = $order->getPayment();
         $payment->setAmountAuthorized($totalDue);
         $payment->setBaseAmountAuthorized($baseTotalDue);
@@ -356,12 +293,12 @@ class OrderPlace
         $transactionId = $transaction->getTransactionId();
         $payment->setTransactionId($transactionId);
         $payment->setTransactionAdditionalInfo(
-            PaymentTransaction::RAW_DETAILS,
+            \Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
             $transaction->getTransactionInfo()->getData()
         );
 
         // do capture
-        $this->processor->capture($payment, null);
+        $payment->capture(null);
         $this->orderRepository->save($order);
 
         $this->notify($order);
@@ -370,34 +307,34 @@ class OrderPlace
     /**
      * Send order conformation email if not sent
      *
-     * @param Order|OrderInterface $order
+     * @param \Mage_Sales_Model_Order $order
      */
-    private function notify($order)
+    private function notify(\Mage_Sales_Model_Order $order)
     {
         if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
-            $this->orderManagement->notify($order->getEntityId());
+            $order->sendOrderUpdateEmail(true);
         }
     }
 
     /**
      * Authorize action
      *
-     * @param OrderInterface $order
+     * @param \Mage_Sales_Model_Order $order
      * @param Transaction $transaction
      */
-    private function authorize(OrderInterface $order, Transaction $transaction)
+    private function authorize(\Mage_Sales_Model_Order $order, Transaction $transaction)
     {
-        if ($order->getState() !== Order::STATE_NEW) {
+        if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
             return;
         }
 
-        /** @var Payment $payment */
+        /** @var \Mage_Sales_Model_Order_Payment $payment */
         $payment = $order->getPayment();
         $transactionId = $transaction->getTransactionId();
         $payment->setTransactionId($transactionId);
         $payment->setIsTransactionClosed(false);
         $payment->setTransactionAdditionalInfo(
-            PaymentTransaction::RAW_DETAILS,
+            \Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
             $transaction->getTransactionInfo()->getData()
         );
 
@@ -406,7 +343,7 @@ class OrderPlace
         $baseTotalDue = $order->getBaseTotalDue();
 
         // do authorize
-        $this->processor->authorize($payment, false, $baseTotalDue);
+        $payment->authorize(false, $baseTotalDue);
         // base amount will be set inside
         $payment->setAmountAuthorized($totalDue);
         $this->orderRepository->save($order);
@@ -418,7 +355,8 @@ class OrderPlace
      * @param $lockName
      *
      * @return bool
-     * @throws InputException
+     * @throws \Zend_Db_Adapter_Exception
+     * @throws \Zend_Db_Statement_Exception
      */
     private function releaseLock($lockName)
     {

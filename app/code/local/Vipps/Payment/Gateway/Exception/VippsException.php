@@ -17,7 +17,6 @@ namespace Vipps\Payment\Gateway\Exception;
 
 /**
  * Class VippsException
- * @package Vipps\Payment\Gateway\Exception
  */
 class VippsException extends \Exception
 {

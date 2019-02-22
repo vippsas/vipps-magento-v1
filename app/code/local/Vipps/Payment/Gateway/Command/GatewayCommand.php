@@ -17,19 +17,18 @@
 namespace Vipps\Payment\Gateway\Command;
 
 use Vipps\Payment\Gateway\Http\Client\ClientInterface;
-use Vipps\Payment\Gateway\Exception\ExceptionFactory;
-use Vipps\Payment\Gateway\Exception\VippsException;
 use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Gateway\Request\SubjectReader;
-use Vipps\Payment\Gateway\Response\HandlerInterface;
-use Vipps\Payment\Gateway\Validator\ValidatorInterface;
-use Vipps\Payment\Lib\Formatter;
-use Vipps\Payment\Model\Adapter\Adapter\JsonEncoder;
-
-
 use Vipps\Payment\Gateway\Http\TransferFactory;
 use Vipps\Payment\Gateway\Request\BuilderInterface;
-use Vipps\Payment\Model\Adapter\Profiling\Profiler;
+use Vipps\Payment\Gateway\Request\SubjectReader;
+use Vipps\Payment\Gateway\Response\HandlerInterface;
+use Vipps\Payment\Gateway\Validator\Result;
+use Vipps\Payment\Gateway\Validator\ValidatorInterface;
+use Vipps\Payment\Model\Adapter\JsonEncoder;
+use Vipps\Payment\Model\Adapter\Logger;
+use Vipps\Payment\Model\Helper\Formatter;
+use Vipps\Payment\Model\Profiling\Profiler;
+
 
 /**
  * Class GatewayCommand
@@ -66,7 +65,7 @@ class GatewayCommand implements CommandInterface
     protected $validator;
 
     /**
-     * @var \Vipps_Payment_Model_Logger
+     * @var \Vipps\Payment\Model\Adapter\Logger
      */
     protected $logger;
 
@@ -110,8 +109,8 @@ class GatewayCommand implements CommandInterface
         $this->handler = $handler;
         $this->validator = $validator;
 
-        $this->logger = \Mage::getSingleton('vipps_payment/logger');
-        $this->exceptionFactory = new \Vipps\Payment\Model\Adapter\ExceptionFactory();
+        $this->logger = new Logger();
+        $this->exceptionFactory = new \Vipps\Payment\Gateway\Exception\ExceptionFactory();
         $this->jsonDecoder = new JsonEncoder();
         $this->subjectReader = new SubjectReader();
         $this->profiler = new Profiler();
@@ -122,7 +121,7 @@ class GatewayCommand implements CommandInterface
      *
      * @param array $commandSubject
      *
-     * @return ResultInterface|array|null
+     * @return Result|array|null
      * @throws \Exception
      */
     public function execute(array $commandSubject)
@@ -135,11 +134,11 @@ class GatewayCommand implements CommandInterface
 
         /** @var \Zend_Http_Response $response */
         $response = $result['response'];
-        $responseBody = $this->jsonDecoder->decode($response->getContent());
+        $responseBody = $this->jsonDecoder->decode($response->getBody());
 
         $this->profiler->save($transfer, $response);
 
-        if (!$response->isSuccess()) {
+        if (!$response->isSuccessful()) {
             $error = $this->extractError($responseBody);
             $orderId = $this->extractOrderId($transfer, $responseBody);
             $errorCode = isset($error['code']) ? $error['code'] : $response->getStatusCode();
@@ -203,7 +202,7 @@ class GatewayCommand implements CommandInterface
         if (preg_match('/payments(\/([^\/]+)\/([a-z]+))?$/', $transfer->getUri(), $matches)) {
             $orderId = isset($matches[2]) ? $matches[2] : null;
         }
-        return $orderId ?? ($transfer->getBody()['transaction']['orderId'] ?? (isset($responseBody['orderId']) ? $responseBody['orderId'] : null));
+        return isset($orderId) ? $orderId : (isset($transfer->getBody()['transaction']['orderId']) ? $transfer->getBody()['transaction']['orderId'] : (isset($responseBody['orderId']) ? $responseBody['orderId'] : null));
     }
 
     /**

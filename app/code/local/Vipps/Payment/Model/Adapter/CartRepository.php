@@ -14,17 +14,30 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Adapter;
+namespace Vipps\Payment\Model\Adapter;
 
+/**
+ * Emulate magento cart repository.
+ *
+ * Class CartRepository
+ */
 class CartRepository
 {
+    /**
+     * @param int $quoteId
+     * @return \Mage_Sales_Model_Quote
+     */
     public function get($quoteId)
     {
         $quote = \Mage::getModel('sales/quote')->load($quoteId);
 
-        return;
+        return $quote;
     }
 
+    /**
+     * @param $quote
+     * @return mixed
+     */
     public function save($quote)
     {
         return $quote->save();

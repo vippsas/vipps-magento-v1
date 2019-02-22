@@ -21,7 +21,7 @@ namespace Vipps\Payment\Gateway\Request;
  */
 class TransactionDataBuilder extends AbstractBuilder
 {
-    use \Vipps\Payment\Lib\Formatter;
+    use Vipps\Payment\Helper\Formatter;
 
     /**
      * Amount in order. 32 Bit Integer (2147483647)

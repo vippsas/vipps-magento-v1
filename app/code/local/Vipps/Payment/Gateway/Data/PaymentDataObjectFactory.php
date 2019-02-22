@@ -14,14 +14,31 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
+namespace Vipps\Payment\Gateway\Data;
 
+/**
+ * Class PaymentDataObjectFactory
+ * @package Vipps\Payment\Model\Adapter
+ */
 class PaymentDataObjectFactory
 {
-    public function create(\Varien_Object $payment)
+    /**
+     * Create payment data Object.
+     *
+     * @param \Mage_Payment_Model_Info $paymentInfo
+     * @return PaymentDataObject
+     */
+    public function create(\Mage_Payment_Model_Info $paymentInfo)
     {
-        // Possible mapping here.
+        $order = null;
+        if ($paymentInfo instanceof \Mage_Sales_Model_Order_Payment) {
+            /** @var $paymentInfo \Mage_Sales_Model_Order_Payment */
+            $order = new OrderAdapter($paymentInfo->getOrder());
 
-        return $payment;
+        } elseif ($paymentInfo instanceof \Mage_Sales_Model_Quote_Payment) {
+            $order = new QuoteAdapter($paymentInfo->getQuote());
+        }
+
+        return new PaymentDataObject($order, $paymentInfo);
     }
 }
