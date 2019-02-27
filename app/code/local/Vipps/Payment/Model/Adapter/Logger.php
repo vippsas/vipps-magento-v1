@@ -19,12 +19,19 @@
  */
 class Vipps_Payment_Model_Adapter_Logger
 {
+    const FILENAME_CRITICAL = 'vipps_exception.log';
+    const FILENAME_DEBUG = 'vipps_debug.log';
+
     /**
      * @param string $message
+     * @param array $context
      */
-    public function critical($message)
+    public function critical($message, $context = null)
     {
-        \Mage::log($message, LOG_CRIT, 'vipps_exception.log');
+        Mage::log($message, LOG_CRIT, self::FILENAME_CRITICAL);
+        if (!is_null($context)) {
+            Mage::log('CONTEXT:' . json_encode($context), LOG_CRIT, self::FILENAME_CRITICAL);
+        }
     }
 
     /**
@@ -32,6 +39,26 @@ class Vipps_Payment_Model_Adapter_Logger
      */
     public function debug($message)
     {
-        \Mage::log($message, LOG_DEBUG, 'vipps_debug.log');
+        Mage::log($message, LOG_DEBUG, self::FILENAME_DEBUG);
+    }
+
+    /**
+     * @param $message
+     * @param array $context
+     */
+    public function info($message, $context = null)
+    {
+        Mage::log($message, LOG_INFO, self::FILENAME_DEBUG);
+        if (!is_null($context)) {
+            Mage::log('CONTEXT:' . json_encode($context), LOG_INFO, self::FILENAME_DEBUG);
+        }
+    }
+
+    /**
+     * @param $message
+     */
+    public function error($message)
+    {
+        Mage::log($message, LOG_ERR, self::FILENAME_CRITICAL);
     }
 }

@@ -16,25 +16,27 @@
  */
 class Vipps_Payment_Model_Cron_AbstractCron
 {
+    /**
+     * Order collection page size
+     */
+    const COLLECTION_PAGE_SIZE = 100;
+
+    /** @var Vipps_Payment_Model_Adapter_Logger  */
     protected $logger;
     /** @var Mage_Core_Model_App_Emulation */
     protected $storeEmulation;
     protected $commandManager;
+    /**
+     * @var Vipps_Payment_Model_Order_Cancellation_Config
+     */
+    protected $cancellationConfig;
 
     public function __construct()
     {
-        $this->registerAutoloader();
-
         $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
         $this->storeEmulation = Mage::getSingleton('core/app_emulation');
         $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager');
-
-    }
-
-    private function registerAutoloader()
-    {
-        $autoloader = new Vipps_Payment_Model_Autoloader();
-        $autoloader->addAutoloader();
+        $this->cancellationConfig = Mage::getSingleton('vipps_payment/order_cancellation_config');
 
     }
 }

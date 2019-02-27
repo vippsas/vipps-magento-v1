@@ -14,67 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Cron;
-
-use Magento\Framework\DB\Adapter\Pdo\Mysql;
-use Magento\Framework\Intl\DateTimeFactory;
-use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
-use Psr\Log\LoggerInterface;
-use Vipps\Payment\Model\Order\Cancellation\Config;
-use Vipps\Payment\Model\ResourceModel\Quote\Collection as VippsQuoteCollection;
-use Vipps\Payment\Model\ResourceModel\Quote\CollectionFactory as VippsQuoteCollectionFactory;
-
 /**
  * Class ClearQuotesHistory
  * @package Vipps\Payment\Cron
  */
-class ClearQuotesHistory
+class Vipps_Payment_Model_Cron_ClearQuotesHistory extends Vipps_Payment_Model_Cron_AbstractCron
 {
-    /**
-     * Order collection page size
-     */
-    const COLLECTION_PAGE_SIZE = 100;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var Config
-     */
-    private $cancellationConfig;
-
-    /**
-     * @var VippsQuoteCollectionFactory
-     */
-    private $vippsQuoteCollectionFactory;
-
-    /**
-     * @var DateTimeFactory
-     */
-    private $dateTimeFactory;
-
-    /**
-     * Constructor.
-     *
-     * @param LoggerInterface $logger
-     * @param Config $cancellationConfig
-     * @param VippsQuoteCollectionFactory $vippsQuoteCollectionFactory
-     * @param DateTimeFactory $dateTimeFactory
-     */
-    public function __construct(
-        LoggerInterface $logger,
-        Config $cancellationConfig,
-        VippsQuoteCollectionFactory $vippsQuoteCollectionFactory,
-        DateTimeFactory $dateTimeFactory
-    ) {
-        $this->logger = $logger;
-        $this->cancellationConfig = $cancellationConfig;
-        $this->vippsQuoteCollectionFactory = $vippsQuoteCollectionFactory;
-        $this->dateTimeFactory = $dateTimeFactory;
-    }
-
     /**
      * Clear old vipps quote history.
      */
@@ -87,16 +32,15 @@ class ClearQuotesHistory
             return;
         }
 
-        $dateRemoveTo = $this->dateTimeFactory->create();
-
         try {
+            $dateRemoveTo = new DateTime();
             $dateRemoveTo->sub(new \DateInterval("P{$days}D"));  //@codingStandardsIgnoreLine
-            $dateTimeFormatted = $dateRemoveTo->format(Mysql::DATETIME_FORMAT);
+            $dateTimeFormatted = $dateRemoveTo->format(Varien_Db_Adapter_Interface::ISO_DATETIME_FORMAT);
 
             $this->logger->debug('Remove quotes information till ' . $dateTimeFormatted);
 
-            /** @var VippsQuoteCollection $collection */
-            $collection = $this->vippsQuoteCollectionFactory->create();
+            /** @var Vipps_Payment_Model_Resource_Quote_Collection $collection */
+            $collection = Mage::getModel('vipps_payment/quote')->getCollection();
 
             $collection->addFieldToFilter('updated_at', ['lt' => $dateTimeFormatted]);
 

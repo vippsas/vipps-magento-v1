@@ -15,67 +15,57 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
-use Vipps\Payment\Model\Adapter\QuoteRepository;
-
 /**
  * Quote Cancellation Facade.
  * It cancels the quote. Provides an ability to send cancellation request to Vipps.
  */
-class CancelFacade implements CancelFacadeInterface
+class Vipps_Payment_Model_Quote_CancelFacade
 {
     /**
-     * @var CommandManagerInterface
+     * @var Vipps_Payment_Gateway_Command_CommandManager
      */
     private $commandManager;
 
     /**
-     * @var QuoteRepository
+     * @var Vipps_Payment_Model_QuoteRepository
      */
     private $quoteRepository;
     /**
-     * @var AttemptManagement
+     * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
     private $attemptManagement;
 
     /**
      * CancellationFacade constructor.
-     * @param CommandManagerInterface $commandManager
-     * @param QuoteRepository $quoteRepository
-     * @param AttemptManagement $attemptManagement
+     * @throws Mage_Core_Exception
      */
-    public function __construct(
-        CommandManagerInterface $commandManager,
-        QuoteRepository $quoteRepository,
-        AttemptManagement $attemptManagement
-    ) {
-        $this->commandManager = $commandManager;
-        $this->quoteRepository = $quoteRepository;
-        $this->attemptManagement = $attemptManagement;
+    public function __construct()
+    {
+        $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager');
+        $this->quoteRepository = Mage::getSingleton('vipps_payment/quoteRepository');
+        $this->attemptManagement = Mage::getModel('vipps_payment/quote_attemptManagement');
     }
 
     /**
      * vipps_monitoring extension attribute requires to be loaded in the quote.
      *
-     * @param QuoteInterface $vippsQuote
-     * @param CartInterface $quote
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Exception
+     * @param Vipps_Payment_Model_Quote $vippsQuote
+     * @param Mage_Sales_Model_Quote $quote
+     * @throws Mage_Core_Exception
      */
     public function cancel(
-        QuoteInterface $vippsQuote,
-        CartInterface $quote
+        \Vipps_Payment_Model_Quote $vippsQuote,
+        \Mage_Sales_Model_Quote $quote
     ) {
         try {
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
             // cancel order on vipps side
             $this->commandManager->cancel($quote->getPayment());
-            $vippsQuote->setStatus(QuoteStatusInterface::STATUS_CANCELED);
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED);
             $attempt->setMessage('The order has been canceled.');
         } catch (\Exception $exception) {
             // Log the exception
-            $vippsQuote->setStatus(QuoteStatusInterface::STATUS_CANCEL_FAILED);
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCEL_FAILED);
             $attempt->setMessage($exception->getMessage());
             throw $exception;
         } finally {

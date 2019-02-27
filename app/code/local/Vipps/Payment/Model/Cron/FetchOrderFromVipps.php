@@ -35,11 +35,6 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
     private $orderPlace;
 
     /**
-     * @var Vipps_Payment_Model_Order_Cancellation_Config
-     */
-    private $cancellationConfig;
-
-    /**
      * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
     private $attemptManagement;
@@ -68,7 +63,6 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
 
         $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
         $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
-        $this->cancellationConfig = new Vipps_Payment_Model_Order_Cancellation_Config();
         $this->attemptManagement = Mage::getSingleton('vipps_payment/quote_attemptManagement');
         $this->quoteRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
         $this->vippsQuoteRepository = Mage::getSingleton('vipps_payment/quoteRepository');
@@ -165,7 +159,9 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             $this->logger->critical($e->getMessage(), ['vipps_quote_id' => $vippsQuote->getId()]);
             $attemptMessage = $e->getMessage();
         } finally {
-            $this->storeEmulation->stopEnvironmentEmulation($environmentInfo);
+            if(isset($environmentInfo)) {
+                $this->storeEmulation->stopEnvironmentEmulation($environmentInfo);
+            }
             $vippsQuote->setStatus($vippsQuoteStatus);
             $this->vippsQuoteRepository->save($vippsQuote);
 

@@ -14,113 +14,48 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Cron;
-
-use Magento\Framework\App\Config\ScopeCodeResolver;
-use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
-use Magento\Store\Model\StoreManagerInterface;
-use Vipps\Payment\Api\Data\QuoteInterface;
-use Vipps\Payment\Api\Data\QuoteStatusInterface;
-use Vipps\Payment\Model\Quote\AttemptManagement;
-use Vipps\Payment\Model\Quote\CancelFacade;
-use Vipps\Payment\Model\ResourceModel\Quote\Collection as VippsQuoteCollection;
-use Vipps\Payment\Model\ResourceModel\Quote\CollectionFactory as VippsQuoteCollectionFactory;
-
 /**
  * Class FetchOrderStatus
  * @package Vipps\Payment\Cron
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class CancelQuoteByAttempts
+class Vipps_Payment_Model_Cron_CancelQuoteByAttempts extends Vipps_Payment_Model_Cron_AbstractCron
 {
     /**
-     * Order collection page size
-     */
-    const COLLECTION_PAGE_SIZE = 100;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
-     * @var ScopeCodeResolver
-     */
-    private $scopeCodeResolver;
-
-    /**
-     * @var Config
-     */
-    private $cancellationConfig;
-
-    /**
-     * @var CancelFacade
+     * @var Vipps_Payment_Model_Quote_CancelFacade
      */
     private $cancellationFacade;
 
     /**
-     * @var VippsQuoteCollectionFactory
-     */
-    private $vippsQuoteCollectionFactory;
-
-    /**
-     * @var CartRepositoryInterface
+     * @var Vipps_Payment_Model_Adapter_CartRepository
      */
     private $cartRepository;
 
     /**
-     * @var AttemptManagement
+     * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
     private $attemptManagement;
 
     /**
      * FetchOrderFromVipps constructor.
      *
-     * @param LoggerInterface $logger
-     * @param StoreManagerInterface $storeManager
-     * @param ScopeCodeResolver $scopeCodeResolver
-     * @param Config $cancellationConfig
-     * @param CancelFacade $cancellationFacade
-     * @param VippsQuoteCollectionFactory $vippsQuoteCollectionFactory
-     * @param CartRepositoryInterface $cartRepository
-     * @param AttemptManagement $attemptManagement
+     * @throws Mage_Core_Exception
      */
     public function __construct(
-        LoggerInterface $logger,
-        StoreManagerInterface $storeManager,
-        ScopeCodeResolver $scopeCodeResolver,
-        Config $cancellationConfig,
-        CancelFacade $cancellationFacade,
-        VippsQuoteCollectionFactory $vippsQuoteCollectionFactory,
-        CartRepositoryInterface $cartRepository,
-        AttemptManagement $attemptManagement
     ) {
-        $this->logger = $logger;
-        $this->storeManager = $storeManager;
-        $this->scopeCodeResolver = $scopeCodeResolver;
-        $this->cancellationConfig = $cancellationConfig;
-        $this->cancellationFacade = $cancellationFacade;
-        $this->vippsQuoteCollectionFactory = $vippsQuoteCollectionFactory;
-        $this->cartRepository = $cartRepository;
-        $this->attemptManagement = $attemptManagement;
+        parent::__construct();
+
+        $this->cancellationFacade = Mage::getSingleton('vipps_payment/quote_cancelFacade');
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
+        $this->attemptManagement = Mage::getSingleton('vipps_payment/quote_attemptManagement');
     }
 
     /**
      * Create orders from Vipps that are not created in Magento yet
-     *
-     * @throws CouldNotSaveException
      */
     public function execute()
     {
         try {
-            $currentStore = $this->storeManager->getStore()->getId();
             $currentPage = 1;
             do {
                 $quoteCollection = $this->createCollection($currentPage);
@@ -131,8 +66,8 @@ class CancelQuoteByAttempts
                 }
                 $currentPage++;
             } while ($currentPage <= $quoteCollection->getLastPageNumber());
-        } finally {
-            $this->storeManager->setCurrentStore($currentStore);
+        } catch (\Exception $exception) {
+            $this->logger->critical($exception->getMessage());
         }
     }
 
@@ -143,12 +78,12 @@ class CancelQuoteByAttempts
      *
      * @param $currentPage
      *
-     * @return VippsQuoteCollection
+     * @return Vipps_Payment_Model_Resource_Quote_Collection
      */
     private function createCollection($currentPage)
     {
-        /** @var VippsQuoteCollection $collection */
-        $collection = $this->vippsQuoteCollectionFactory->create();
+        /** @var Vipps_Payment_Model_Resource_Quote_Collection $collection */
+        $collection = Mage::getModel('vipps_payment/quote')->getCollection();
 
         $collection
             ->setPageSize(self::COLLECTION_PAGE_SIZE)
@@ -160,11 +95,11 @@ class CancelQuoteByAttempts
 
         // Filter processing cancelled quotes.
         $collection->addFieldToFilter(
-            QuoteStatusInterface::FIELD_STATUS,
+            Vipps_Payment_Model_QuoteStatusInterface::FIELD_STATUS,
             ['in' => [
-                QuoteStatusInterface::STATUS_NEW,
-                QuoteStatusInterface::STATUS_PLACE_FAILED,
-                QuoteStatusInterface::STATUS_PROCESSING
+                Vipps_Payment_Model_QuoteStatusInterface::STATUS_NEW,
+                Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED,
+                Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING
             ]]
         );
 
@@ -174,16 +109,16 @@ class CancelQuoteByAttempts
     /**
      * Main process
      *
-     * @param QuoteInterface $vippsQuote
+     * @param Vipps_Payment_Model_Quote $vippsQuote
      *
-     * @throws CouldNotSaveException
+     * @throws Exception
      */
-    private function processQuote(QuoteInterface $vippsQuote)
+    private function processQuote(Vipps_Payment_Model_Quote $vippsQuote)
     {
         $this->logger->info('Start quote cancelling', ['vipps_quote_id' => $vippsQuote->getId()]);
 
         try {
-            $this->prepareEnv($vippsQuote);
+            $environmentInfo = $this->storeEmulation->startEnvironmentEmulation($vippsQuote->getStoreId());
 
             if ($this->cancellationConfig->isAutomatic($vippsQuote->getStoreId())) {
                 $quote = $this->cartRepository->get($vippsQuote->getQuoteId());
@@ -202,23 +137,16 @@ class CancelQuoteByAttempts
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage(), ['quote_id' => $vippsQuote->getId()]);
+        } finally {
+            if(isset($environmentInfo)) {
+                $this->storeEmulation->stopEnvironmentEmulation($environmentInfo);
+            }
 
             if (isset($attempt)) {
                 $attempt->setMessage($e->getMessage());
                 $this->attemptManagement->save($attempt);
             }
-        }
-    }
 
-    /**
-     * Prepare environment.
-     *
-     * @param QuoteInterface $quote
-     */
-    private function prepareEnv(QuoteInterface $quote)
-    {
-        // set quote store as current store
-        $this->scopeCodeResolver->clean();
-        $this->storeManager->setCurrentStore($quote->getStoreId());
+        }
     }
 }
