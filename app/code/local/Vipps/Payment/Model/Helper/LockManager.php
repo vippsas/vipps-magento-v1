@@ -14,18 +14,14 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Helper;
-
-use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
-
 /**
  * Class LockManager
  * @package Vipps\Payment\Model
  */
-class LockManager
+class Vipps_Payment_Model_Helper_LockManager
 {
     /**
-     * @var ResourceConnectionProvider
+     * @var Vipps_Payment_Model_Adapter_ResourceConnectionProvider
      */
     private $resource;
 
@@ -43,11 +39,10 @@ class LockManager
     /**
      * Database constructor.
      *
-     * @param string|null $prefix
+     * @throws Mage_Core_Exception
      */
-    public function __construct($prefix = null) {
-        $this->resource = new ResourceConnectionProvider();
-        $this->prefix = $prefix;
+    public function __construct() {
+        $this->resource = Mage::getSingleton('vipps_payment/adapter_resourceConnectionProvider');
     }
 
     /**

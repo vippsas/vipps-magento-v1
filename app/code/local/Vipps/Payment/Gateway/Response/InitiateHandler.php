@@ -14,21 +14,13 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Response;
-
-use Vipps\Payment\Model\Adapter\CartRepository;
-use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
-use Vipps\Payment\Model\QuoteManagement;
-
 /**
  * Class InitiateHandler
- * @package Vipps\Payment\Gateway\Response
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class InitiateHandler extends HandlerAbstract
+class Vipps_Payment_Gateway_Response_InitiateHandler extends Vipps_Payment_Gateway_Response_HandlerAbstract
 {
     /**
-     * @var CartRepository
+     * @var \Vipps_Payment_Model_Adapter_CartRepository
      */
     private $cartRepository;
 
@@ -38,12 +30,12 @@ class InitiateHandler extends HandlerAbstract
     private $customerSession;
 
     /**
-     * @var ResourceConnectionProvider
+     * @var \Vipps_Payment_Model_Adapter_ResourceConnectionProvider
      */
     private $resourceConnection;
 
     /**
-     * @var QuoteManagement
+     * @var \Vipps_Payment_Model_QuoteManagement
      */
     private $vippsQuoteManagement;
 
@@ -55,10 +47,10 @@ class InitiateHandler extends HandlerAbstract
     ) {
         parent::__construct();
 
-        $this->cartRepository = new CartRepository();
-        $this->customerSession = \Mage::getSingleton('customer/session');
-        $this->resourceConnection = new ResourceConnectionProvider();
-        $this->vippsQuoteManagement = new QuoteManagement();
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
+        $this->customerSession = Mage::getSingleton('customer/session');
+        $this->resourceConnection = Mage::getSingleton('vipps_payment/adapter_resourceConnectionProvider');
+        $this->vippsQuoteManagement = Mage::getSingleton('vipps_payment/quoteManagement');
     }
 
     /**

@@ -15,37 +15,34 @@
  *
  */
 
-namespace Vipps\Payment\Model;
-
-use Vipps\Payment\Model\Adapter\Quote\Factory;
-
 /**
  * Class QuoteRepository
  */
-class QuoteManagement
+class Vipps_Payment_Model_QuoteManagement
 {
     /**
-     * @var Factory
+     * @var Vipps_Payment_Model_Adapter_QuoteFactory
      */
     private $quoteFactory;
 
     /**
-     * @var QuoteRepository
+     * @var Vipps_Payment_Model_QuoteRepository
      */
     private $quoteRepository;
 
     /**
      * QuoteManagement constructor.
      */
-    public function __construct() {
-        $this->quoteFactory = new Factory();
-        $this->quoteRepository = new QuoteRepository();
+    public function __construct()
+    {
+        $this->quoteFactory = Mage::getSingleton('vipps_payment/adapter_quoteFactory');
+        $this->quoteRepository = Mage::getSingleton('vipps_payment/quoteRepository');
     }
 
     /**
      * @param \Mage_Sales_Model_Quote $cart
      * @return \Mage_Core_Model_Abstract
-     * @throws \Mage_Core_Exception
+     * @throws Exception
      */
     public function create(\Mage_Sales_Model_Quote $cart)
     {
@@ -69,7 +66,7 @@ class QuoteManagement
     {
         try {
             $vippsQuote = $this->quoteRepository->loadByQuote($quote->getId());
-        } catch (NoSuchEntityException $exception) {
+        } catch (Mage_Core_Exception $exception) {
             // Setup default values for backward compatibility with current quotes.
             $vippsQuote = $this->quoteFactory->create()
                 ->setQuoteId($quote->getId())
@@ -83,10 +80,10 @@ class QuoteManagement
     }
 
     /**
-     * @param \Vipps_Payment_Model_Quote $quote
-     * @throws \Mage_Core_Exception
+     * @param Vipps_Payment_Model_Quote $quote
+     * @throws Mage_Core_Exception
      */
-    public function save(\Vipps_Payment_Model_Quote $quote)
+    public function save(Vipps_Payment_Model_Quote $quote)
     {
         $this->quoteRepository->save($quote);
     }

@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Class ZendClient
  */
-class ZendClient extends \Zend_Http_Client
+class Vipps_Payment_Model_Adapter_ZendClient extends \Zend_Http_Client
 {
     /**
      * Internal flag to allow decoding of request body
@@ -46,7 +44,7 @@ class ZendClient extends \Zend_Http_Client
     protected function _trySetCurlAdapter()
     {
         if (extension_loaded('curl')) {
-            $this->setAdapter(new \Vipps\Payment\Model\Adapter\Curl());
+            $this->setAdapter(Mage::getModel('vipps_payment/adapter_curl'));
         }
         return $this;
     }

@@ -13,15 +13,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Http\Client;
-
-use Vipps\Payment\Gateway\Http\Transfer;
 
 /**
  * Interface ClientInterface
- * @package Vipps\Payment\Gateway\Http\Client
  */
-interface ClientInterface
+interface Vipps_Payment_Gateway_Http_Client_ClientInterface
 {
     /**
      * @var string
@@ -66,8 +62,8 @@ interface ClientInterface
     /**
      * Places request to gateway. Returns result as ENV array
      *
-     * @param Transfer $transferObject
+     * @param Vipps_Payment_Gateway_Http_Transfer $transferObject
      * @return array
      */
-    public function placeRequest(Transfer $transferObject);
+    public function placeRequest(Vipps_Payment_Gateway_Http_Transfer $transferObject);
 }

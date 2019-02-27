@@ -13,14 +13,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Transaction\TransactionLogHistory;
 
 /**
  * Class Item
- * @package Vipps\Payment\Gateway\Transaction\TransactionLogHistory
- * @SuppressWarnings(PHPMD.BooleanGetMethodName)
  */
-class Item extends \Varien_Object
+class Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item extends \Varien_Object
 {
     /**
      * @var string

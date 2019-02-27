@@ -14,14 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model;
-
-use Vipps\Payment\Gateway\Config\Config as GatewayConfig;
-
 /**
  * Class UrlResolver
  */
-class UrlResolver
+class Vipps_Payment_Model_UrlResolver
 {
     /**
      * @var string
@@ -34,7 +30,7 @@ class UrlResolver
     private static $developBaseUrl = 'https://apitest.vipps.no';
 
     /**
-     * @var GatewayConfig
+     * @var \Vipps_Payment_Gateway_Config_Config
      */
     private $config;
 
@@ -42,7 +38,7 @@ class UrlResolver
      * VippsUrlProvider constructor.
      */
     public function __construct() {
-        $this->config = new GatewayConfig();
+        $this->config = Mage::helper('vipps_payment/gateway')->getSingleton('config_config');
     }
 
     /**

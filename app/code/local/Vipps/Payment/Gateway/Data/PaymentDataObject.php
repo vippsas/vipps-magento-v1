@@ -14,9 +14,7 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
-class PaymentDataObject implements PaymentDataObjectInterface
+class Vipps_Payment_Gateway_Data_PaymentDataObject implements Vipps_Payment_Gateway_Data_PaymentDataObjectInterface
 {
     /**
      * @var \Mage_Core_Model_Abstract
@@ -33,7 +31,7 @@ class PaymentDataObject implements PaymentDataObjectInterface
      * @param \Mage_Payment_Model_Info $payment
      */
     public function __construct(
-        OrderAdapterInterface $order = null,
+        Vipps_Payment_Gateway_Data_OrderAdapterInterface $order = null,
         \Mage_Payment_Model_Info $payment = null
     ) {
         $this->order = $order;
@@ -43,7 +41,7 @@ class PaymentDataObject implements PaymentDataObjectInterface
     /**
      * Returns order
      *
-     * @return OrderAdapterInterface
+     * @return Vipps_Payment_Gateway_Data_OrderAdapterInterface
      */
     public function getOrder()
     {

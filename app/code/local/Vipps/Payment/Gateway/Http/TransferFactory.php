@@ -14,16 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Http;
-
-use Vipps\Payment\Gateway\Http\Client\ClientInterface;
-use Vipps\Payment\Model\UrlResolver;
-
 /**
  * Class TransferFactory
  * @package Vipps\Payment\Gateway\Http
  */
-class TransferFactory
+class Vipps_Payment_Gateway_Http_TransferFactory
 {
     /**
      * @var string
@@ -36,7 +31,7 @@ class TransferFactory
     private $method;
 
     /**
-     * @var TransferBuilder
+     * @var Vipps_Payment_Gateway_Http_TransferBuilder
      */
     private $transferBuilder;
 
@@ -62,8 +57,8 @@ class TransferFactory
         $endpointUrl,
         array $urlParams = []
     ) {
-        $this->transferBuilder = new TransferBuilder();
-        $this->urlResolver = new UrlResolver();
+        $this->transferBuilder = new Vipps_Payment_Gateway_Http_TransferBuilder();
+        $this->urlResolver = Mage::getSingleton('vipps_payment/urlResolver');
         $this->method = $method;
         $this->endpointUrl = $endpointUrl;
         $this->urlParams = $urlParams;
@@ -74,12 +69,12 @@ class TransferFactory
      *
      * @param array $request
      *
-     * @return Transfer
+     * @return Vipps_Payment_Gateway_Http_Transfer
      */
     public function create(array $request)
     {
         $this->transferBuilder->setHeaders(array(
-            ClientInterface::HEADER_PARAM_X_REQUEST_ID => isset($request['requestId'])
+            Vipps_Payment_Gateway_Http_Client_ClientInterface::HEADER_PARAM_X_REQUEST_ID => isset($request['requestId'])
                 ? $request['requestId']
                 : $this->generateRequestId()
         ));

@@ -23,7 +23,7 @@ class Vipps_Payment_Model_Resource_Profiling_Item extends Mage_Core_Model_Resour
     /**
      * Main table name
      */
-    const TABLE_NAME = 'vipps_profiling';
+    const TABLE_NAME = 'vipps_payment/profiling';
 
     /**
      * Index field name
@@ -37,15 +37,4 @@ class Vipps_Payment_Model_Resource_Profiling_Item extends Mage_Core_Model_Resour
     {
         $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
     }
-
-//    /**
-//     * Delete entity by id
-//     *
-//     * @param $id
-//     */
-//    public function deleteById($id)
-//    {
-//        $connection = $this->getConnection();
-//        $connection->delete(self::TABLE_NAME, [self::INDEX_FIELD . ' = ?' => $id]);
-//    }
 }

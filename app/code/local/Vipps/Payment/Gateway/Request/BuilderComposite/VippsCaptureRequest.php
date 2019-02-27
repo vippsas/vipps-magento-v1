@@ -14,17 +14,17 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\BuilderComposite;
-
-class VippsCaptureRequest extends \Vipps\Payment\Gateway\Request\BuilderComposite
+class Vipps_Payment_Gateway_Request_BuilderComposite_VippsCaptureRequest extends Vipps_Payment_Gateway_Request_BuilderComposite
 {
     public function __construct()
     {
+        /** @var Vipps_Payment_Helper_Gateway $helper */
+        $helper = Mage::helper('vipps_payment/gateway');
         parent::__construct([
-            'generic' => new \Vipps\Payment\Gateway\Request\GenericDataBuilder(),
-                'merchantInfo' => new \Vipps\Payment\Gateway\Request\MerchantDataBuilder(),
-                'transaction' => new \Vipps\Payment\Gateway\Request\TransactionDataBuilder(),
-                'transactionText' => new \Vipps\Payment\Gateway\Request\TransactionTextDataBuilder()
+            'generic'         => $helper->getSingleton('request_genericDataBuilder'),
+            'merchantInfo'    => $helper->getSingleton('request_merchantDataBuilder'),
+            'transaction'     => $helper->getSingleton('request_transactionDataBuilder'),
+            'transactionText' => $helper->getSingleton('request_transactionTextDataBuilder')
         ]);
     }
 }

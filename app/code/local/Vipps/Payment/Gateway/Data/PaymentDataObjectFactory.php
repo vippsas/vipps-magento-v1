@@ -14,31 +14,28 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
 /**
  * Class PaymentDataObjectFactory
- * @package Vipps\Payment\Model\Adapter
  */
-class PaymentDataObjectFactory
+class Vipps_Payment_Gateway_Data_PaymentDataObjectFactory
 {
     /**
      * Create payment data Object.
      *
      * @param \Mage_Payment_Model_Info $paymentInfo
-     * @return PaymentDataObject
+     * @return Vipps_Payment_Gateway_Data_PaymentDataObject
      */
     public function create(\Mage_Payment_Model_Info $paymentInfo)
     {
         $order = null;
-        if ($paymentInfo instanceof \Mage_Sales_Model_Order_Payment) {
-            /** @var $paymentInfo \Mage_Sales_Model_Order_Payment */
-            $order = new OrderAdapter($paymentInfo->getOrder());
+        if ($paymentInfo instanceof Mage_Sales_Model_Order_Payment) {
+            /** @var $paymentInfo Mage_Sales_Model_Order_Payment */
+            $order = new Vipps_Payment_Gateway_Data_OrderAdapter($paymentInfo->getOrder());
 
-        } elseif ($paymentInfo instanceof \Mage_Sales_Model_Quote_Payment) {
-            $order = new QuoteAdapter($paymentInfo->getQuote());
+        } elseif ($paymentInfo instanceof Mage_Sales_Model_Quote_Payment) {
+            $order = new Vipps_Payment_Gateway_Data_QuoteAdapter($paymentInfo->getQuote());
         }
 
-        return new PaymentDataObject($order, $paymentInfo);
+        return new Vipps_Payment_Gateway_Data_PaymentDataObject($order, $paymentInfo);
     }
 }

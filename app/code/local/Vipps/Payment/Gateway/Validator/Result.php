@@ -14,13 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Validator;
-
 /**
  * Class Result
- * @package Vipps\Payment\Gateway\Validator
  */
-class Result
+class Vipps_Payment_Gateway_Validator_Result
 {
     /**
      * @var bool

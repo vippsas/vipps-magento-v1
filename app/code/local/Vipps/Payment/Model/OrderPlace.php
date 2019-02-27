@@ -14,67 +14,55 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model;
-
-use Vipps\Payment\Gateway\Config\Config;
-use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Exception\WrongAmountException;
-use Vipps\Payment\Gateway\Transaction\Transaction;
-use Vipps\Payment\Model\Adapter\CartRepository;
-use Vipps\Payment\Model\Helper\Formatter;
-use Vipps\Payment\Model\Helper\LockManager;
-
 /**
  * Class OrderManagement
- * @package Vipps\Payment\Model
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class OrderPlace
+class Vipps_Payment_Model_OrderPlace
 {
-    use Formatter;
+    use Vipps_Payment_Model_Helper_Formatter;
 
     /**
-     * @var OrderRepository
+     * @var \Vipps_Payment_Model_OrderRepository
      */
     private $orderRepository;
 
     /**
-     * @var CartRepository
+     * @var \Vipps_Payment_Model_Adapter_CartRepository
      */
     private $cartRepository;
 
     /**
-     * @var \Mage_Checkout_Model_Cart_Api
+     * @var \Vipps_Payment_Model_Adapter_CartManagement
      */
     private $cartManagement;
 
     /**
-     * @var QuoteLocator
+     * @var Vipps_Payment_Model_QuoteLocator
      */
     private $quoteLocator;
 
     /**
-     * @var QuoteUpdater
+     * @var \Vipps_Payment_Model_QuoteUpdater
      */
     private $quoteUpdater;
 
     /**
-     * @var LockManager
+     * @var \Vipps_Payment_Model_Helper_LockManager
      */
     private $lockManager;
 
     /**
-     * @var Config
+     * @var Vipps_Payment_Gateway_Config_Config
      */
     private $config;
 
     /**
-     * @var QuoteManagement
+     * @var \Vipps_Payment_Model_QuoteManagement
      */
     private $quoteManagement;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\Logger
+     * @var \Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
 
@@ -85,28 +73,28 @@ class OrderPlace
      */
     public function __construct()
     {
-        $this->orderRepository = new OrderRepository();
-        $this->cartRepository = new CartRepository();
-        $this->cartManagement = \Mage::getModel('checkout/cart_api');
-        $this->quoteUpdater = new QuoteUpdater();
-        $this->lockManager = new LockManager();
-        $this->config = new Config();
-        $this->quoteManagement = new QuoteManagement();
-        $this->logger = new Adapter\Logger();
+        $this->orderRepository = Mage::getSingleton('vipps_payment/orderRepository');
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
+        $this->cartManagement = Mage::getSingleton('vipps_payment/adapter_cartManagement');
+        $this->quoteUpdater = Mage::getSingleton('vipps_payment/quoteUpdater');
+        $this->lockManager = Mage::getSingleton('vipps_payment/helper_lockManager');
+        $this->config = Mage::helper('vipps_payment/gateway')->getSingleton('config_config');
+        $this->quoteManagement = Mage::getSingleton('vipps_payment/quoteManagement');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
     }
 
     /**
      * @param \Mage_Sales_Model_Quote $quote
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return \Mage_Sales_Model_Order|null
-     * @throws VippsException
-     * @throws WrongAmountException
+     * @throws Vipps_Payment_Gateway_Exception_VippsException
+     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
      * @throws \Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
-    public function execute(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
+    public function execute(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         if (!$this->canPlaceOrder($transaction)) {
             return null;
@@ -141,11 +129,11 @@ class OrderPlace
     /**
      * Check can we place order or not based on transaction object
      *
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return bool
      */
-    private function canPlaceOrder(Transaction $transaction)
+    private function canPlaceOrder(Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         return $transaction->isTransactionReserved();
     }
@@ -172,16 +160,14 @@ class OrderPlace
 
     /**
      * @param \Mage_Sales_Model_Quote $quote
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return \Mage_Sales_Model_Order
-     * @throws CouldNotSaveException
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     * @throws VippsException
-     * @throws WrongAmountException
+     * @throws Vipps_Payment_Gateway_Exception_VippsException
+     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
+     * @throws \Mage_Core_Exception
      */
-    private function placeOrder(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
+    private function placeOrder(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $clonedQuote = clone $quote;
         $reservedOrderId = $clonedQuote->getReservedOrderId();
@@ -208,7 +194,7 @@ class OrderPlace
 
             // set quote active, collect totals and place order
             $clonedQuote->setIsActive(true);
-            $orderId = $this->cartManagement->createOrder($clonedQuote->getId());
+            $orderId = $this->cartManagement->placeOrder($clonedQuote->getId());
             $order = $this->orderRepository->getByIncrement($orderId);
         }
 
@@ -234,18 +220,18 @@ class OrderPlace
      * Check if reserved Order amount in vipps is the same as in Magento.
      *
      * @param \Mage_Sales_Model_Quote $quote
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return void
-     * @throws WrongAmountException
+     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
      */
-    private function validateAmount(\Mage_Sales_Model_Quote $quote, Transaction $transaction)
+    private function validateAmount(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $quoteAmount = (int)($this->formatPrice($quote->getGrandTotal()) * 100);
         $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
 
         if ($quoteAmount != $vippsAmount) {
-            throw new WrongAmountException(
+            throw new Vipps_Payment_Gateway_Exception_WrongAmountException(
                 __("Quote Grand Total {$quoteAmount} does not match Transaction Amount {$vippsAmount}")
             );
         }
@@ -262,7 +248,7 @@ class OrderPlace
             $vippsQuote = $this->quoteManagement->getByQuote($cart);
             $vippsQuote->setStatus(QuoteStatusInterface::STATUS_PLACED);
             $this->quoteManagement->save($vippsQuote);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             // Order is submitted but failed to update Vipps Quote. It should not affect order flow.
             $this->logger->error($e->getMessage());
         }
@@ -272,10 +258,10 @@ class OrderPlace
      * Capture
      *
      * @param \Mage_Sales_Model_Order $order
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      * @throws \Mage_Core_Exception
      */
-    private function capture(\Mage_Sales_Model_Order $order, Transaction $transaction)
+    private function capture(\Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
             return;
@@ -320,9 +306,10 @@ class OrderPlace
      * Authorize action
      *
      * @param \Mage_Sales_Model_Order $order
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
+     * @throws Exception
      */
-    private function authorize(\Mage_Sales_Model_Order $order, Transaction $transaction)
+    private function authorize(\Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
             return;
@@ -334,7 +321,7 @@ class OrderPlace
         $payment->setTransactionId($transactionId);
         $payment->setIsTransactionClosed(false);
         $payment->setTransactionAdditionalInfo(
-            \Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
+            Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
             $transaction->getTransactionInfo()->getData()
         );
 
@@ -355,6 +342,7 @@ class OrderPlace
      * @param $lockName
      *
      * @return bool
+     * @throws \Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */

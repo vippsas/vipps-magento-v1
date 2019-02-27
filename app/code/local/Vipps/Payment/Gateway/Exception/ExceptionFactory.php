@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Exception;
-
 /**
  * Class ExceptionFactory
  * @package Vipps\Payment\Gateway\Exception
  */
-class ExceptionFactory
+class Vipps_Payment_Gateway_Exception_ExceptionFactory
 {
     /**
      * @var array
@@ -30,11 +28,11 @@ class ExceptionFactory
      * @var array
      */
     private static $errorCodesByGroups = [
-        InvalidRequestException::class => [],
-        PaymentException::class        => [41, 42, 43, 44, 45, 51, 52, 53, 61, 62, 63, 71, 72, 73, 74],
-        VippsErrorException::class     => [91, 92, 98, 99],
-        CustomerException::class       => [81, 82],
-        MerchantException::class       => [21, 22, 31, 32, 33, 34, 35, 36, 37],
+        Vipps_Payment_Gateway_Exception_InvalidRequestException::class => [],
+        Vipps_Payment_Gateway_Exception_PaymentException::class        => [41, 42, 43, 44, 45, 51, 52, 53, 61, 62, 63, 71, 72, 73, 74],
+        Vipps_Payment_Gateway_Exception_VippsErrorException::class     => [91, 92, 98, 99],
+        Vipps_Payment_Gateway_Exception_CustomerException::class       => [81, 82],
+        Vipps_Payment_Gateway_Exception_MerchantException::class       => [21, 22, 31, 32, 33, 34, 35, 36, 37],
     ];
 
     /**
@@ -52,7 +50,7 @@ class ExceptionFactory
             return new \Mage_Core_Exception(__($errorMessage), $errorCode);
         }
 
-        return new $groupName(__($errorMessage), null, (int)$errorCode); //@codingStandardsIgnoreLine
+        return new $groupName(__($errorMessage), (int)$errorCode); //@codingStandardsIgnoreLine
     }
 
     /**
@@ -73,7 +71,7 @@ class ExceptionFactory
                 return $groupName;
             }
         }
-        return VippsException::class;
+        return Vipps_Payment_Gateway_Exception_VippsException::class;
     }
 
     /**

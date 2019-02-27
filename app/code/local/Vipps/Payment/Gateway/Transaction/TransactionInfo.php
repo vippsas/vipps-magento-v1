@@ -13,13 +13,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Transaction;
 
 /**
  * Class TransactionInfo
  * @package Vipps\Payment\Gateway\Transaction
  */
-class TransactionInfo extends \Varien_Object
+class Vipps_Payment_Gateway_Transaction_TransactionInfo extends \Varien_Object
 {
     /**
      * @var string

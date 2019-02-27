@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request;
-
 /**
  * Interface BuilderInterface
  */
-interface BuilderInterface
+interface Vipps_Payment_Gateway_Request_BuilderInterface
 {
     /**
      * Builds ENV request

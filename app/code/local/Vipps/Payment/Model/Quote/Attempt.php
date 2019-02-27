@@ -18,11 +18,11 @@
 /**
  * Quote cancellation model.
  */
-class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implements \Vipps\Payment\Model\Quote\QuoteAttemptInterface
+class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implements Vipps_Payment_Model_Quote_QuoteAttemptInterface
 {
     /**
      * @param int $parentId
-     * @return QuoteAttemptInterface
+     * @return self
      */
     public function setParentId($parentId)
     {
@@ -31,7 +31,7 @@ class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implem
 
     /**
      * @param string $message
-     * @return QuoteAttemptInterface
+     * @return self
      */
     public function setMessage( $message)
     {
@@ -40,7 +40,7 @@ class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implem
 
     /**
      * @param string $createdAt
-     * @return QuoteAttemptInterface
+     * @return self
      */
     public function setCreatedAt( $createdAt)
     {

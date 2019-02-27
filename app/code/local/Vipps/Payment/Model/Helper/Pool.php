@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Helper;
-
 /**
  * Class Pool
  */
-class Pool
+class Vipps_Payment_Model_Helper_Pool
 {
     /**
      * @var \ArrayObject

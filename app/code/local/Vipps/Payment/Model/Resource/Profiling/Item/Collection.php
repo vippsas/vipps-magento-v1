@@ -28,7 +28,8 @@ class Vipps_Payment_Model_Resource_Profiling_Item_Collection extends Mage_Core_M
      * Collection constructor.
      *
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('vipps_payment/profiling_item');
     }
 }

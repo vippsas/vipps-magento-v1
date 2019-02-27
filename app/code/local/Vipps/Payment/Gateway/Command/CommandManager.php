@@ -14,51 +14,51 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Data\PaymentDataObjectFactory;
-use Vipps\Payment\Model\Helper\Pool;
-
 /**
  * Class CommandManager
- * @package Vipps\Payment\Model
  */
-class CommandManager
+class Vipps_Payment_Gateway_Command_CommandManager
 {
     /**
-     * @var PaymentDataObjectFactory
+     * @var Vipps_Payment_Gateway_Data_PaymentDataObjectFactory
      */
     private $paymentDataObjectFactory;
 
     /**
-     * @var Pool
+     * @var Vipps_Payment_Model_Helper_Pool
      */
     private $commandPool;
+
+    /**
+     * @var Vipps_Payment_Helper_Gateway helper
+     */
+    private $helper;
 
     /**
      * CommandManager constructor.
      */
     public function __construct()
     {
-        $this->commandPool = new Pool();
+        $this->helper = Mage::helper('vipps_payment/gateway');
+        $this->commandPool = Mage::getModel('vipps_payment/helper_pool');
 
-        $this->commandPool->add('initiate', InitiateCommand::class);
-        $this->commandPool->add('getOrderStatus', GetOrderStatusCommand::class);
-        $this->commandPool->add('capture', CaptureCommand::class);
-        $this->commandPool->add('refund', RefundCommand::class);
-        $this->commandPool->add('getPaymentDetails', GetPaymentDetailsCommand::class);
-        $this->commandPool->add('cancel', CancelCommand::class);
+        $this->commandPool->add('initiate', 'command_initiateCommand');
+        $this->commandPool->add('getOrderStatus', 'command_getOrderStatusCommand');
+        $this->commandPool->add('capture', 'command_captureCommand');
+        $this->commandPool->add('refund', 'command_refundCommand');
+        $this->commandPool->add('getPaymentDetails', 'command_getPaymentDetailsCommand');
+        $this->commandPool->add('cancel', 'command_cancelCommand');
 
-        $this->paymentDataObjectFactory = new PaymentDataObjectFactory();
+        $this->paymentDataObjectFactory = $this->helper->getSingleton('data_paymentDataObjectFactory');
     }
 
     /**
-     * @param \Mage_Payment_Model_Info $payment
+     * @param Mage_Sales_Model_Quote_Payment $payment
      * @param array $arguments
      *
-     * @return ResultInterface|null
-     * @throws CommandException
-     * @throws NotFoundException
+     * @return Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
     public function initiatePayment(\Mage_Sales_Model_Quote_Payment $payment, $arguments)
     {
@@ -69,14 +69,13 @@ class CommandManager
      * Executes command by code
      *
      * @param string $commandCode
-     * @param \Mage_Payment_Model_Info|null $payment
+     * @param Mage_Payment_Model_Info|null $payment
      * @param array $arguments
-     * @return Result|null
-     * @throws NotFoundException
-     * @throws CommandException
-     * @since 100.1.0
+     * @return Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    public function executeByCode($commandCode, \Mage_Payment_Model_Info $payment = null, array $arguments = [])
+    public function executeByCode($commandCode, Mage_Payment_Model_Info $payment = null, array $arguments = [])
     {
         $commandSubject = $arguments;
         if ($payment !== null) {
@@ -89,18 +88,27 @@ class CommandManager
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param string $commandCode
      *
-     * @return CommandInterface
-     * @throws NotFoundException
+     * @return Vipps_Payment_Gateway_Command_CommandInterface
+     * @throws Mage_Core_Exception
      */
     public function get($commandCode)
     {
         $commandClass = $this->commandPool->get($commandCode);
+        return $this->helper->getSingleton($commandClass);
+    }
 
-        return new $commandClass();
+    /**
+     * @param Mage_Payment_Model_Info $payment
+     * @param $amount
+     * @return Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Command_CommandException
+     */
+    public function capture(Mage_Payment_Model_Info $payment, $amount)
+    {
+        return $this->executeByCode('capture', $payment, ['amount' => $amount]);
     }
 
     /**
@@ -108,9 +116,8 @@ class CommandManager
      *
      * @param $orderId
      *
-     * @return ResultInterface|null
-     * @throws CommandException
-     * @throws NotFoundException
+     * @return Vipps_Payment_Gateway_Validator_Result
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      * @throws \Exception
      */
     public function getPaymentDetails($arguments = [])
@@ -123,9 +130,8 @@ class CommandManager
      *
      * @param $orderId
      *
-     * @return ResultInterface|null
-     * @throws CommandException
-     * @throws NotFoundException
+     * @return Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
     public function getOrderStatus($orderId)
     {
@@ -135,14 +141,14 @@ class CommandManager
     /**
      * {@inheritdoc}
      *
-     * @param \Mage_Payment_Model_Info $payment
+     * @param Mage_Payment_Model_Info $payment
      * @param array $arguments
      *
-     * @return ResultInterface|mixed|null
-     * @throws CommandException
-     * @throws NotFoundException
+     * @return Vipps_Payment_Gateway_Validator_Result|mixed|null
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    public function cancel(\Mage_Payment_Model_Info $payment, $arguments = [])
+    public function cancel(Mage_Payment_Model_Info $payment, $arguments = [])
     {
         return $this->executeByCode('cancel', $payment, $arguments);
     }
@@ -150,29 +156,30 @@ class CommandManager
     /**
      * Refund command.
      *
-     * @param \Mage_Payment_Model_Info $payment
+     * @param Mage_Payment_Model_Info $payment
      * @param float $amount
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    public function refund(\Mage_Payment_Model_Info $payment, $amount)
+    public function refund(Mage_Payment_Model_Info $payment, $amount)
     {
-        return $this->executeByCode(
-            'refund',
-            ['amount' => $amount, 'payment' => $payment]
+        return $this->executeByCode('refund',
+            $payment,
+            ['amount' => $amount]
         );
     }
 
     /**
      * Executes command
      *
-     * @param CommandInterface $command
-     * @param |null $payment @todo: specify interface.
+     * @param Vipps_Payment_Gateway_Command_CommandInterface $command
+     * @param |null $payment.
      * @param array $arguments
-     * @return Result|null
-     * @throws CommandException
-     * @since 100.1.0
+     * @return Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    public function execute(CommandInterface $command, $payment = null, array $arguments = [])
+    public function execute(Vipps_Payment_Gateway_Command_CommandInterface $command, $payment = null, array $arguments = [])
     {
         $commandSubject = $arguments;
         if ($payment !== null) {

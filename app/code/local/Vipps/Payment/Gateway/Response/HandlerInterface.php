@@ -14,15 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Response;
-
 /**
  * Interface HandlerInterface
- * @package Magento\Payment\Gateway\Response
- * @api
- * @since 100.0.2
  */
-interface HandlerInterface
+interface Vipps_Payment_Gateway_Response_HandlerInterface
 {
     /**
      * Handles response

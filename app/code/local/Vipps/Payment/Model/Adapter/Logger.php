@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Class Logger
  */
-class Logger
+class Vipps_Payment_Model_Adapter_Logger
 {
     /**
      * @param string $message

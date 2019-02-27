@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Config;
-
 /**
  * Class Config
  * @package Vipps\Payment\Gateway\Config
  */
-class Config
+class Vipps_Payment_Gateway_Config_Config
 {
     /**
      * @param $field

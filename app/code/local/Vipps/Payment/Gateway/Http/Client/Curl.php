@@ -14,28 +14,18 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Http\Client;
-
-use Vipps\Payment\Gateway\Config\Config;
-use Vipps\Payment\Gateway\Exception\AuthenticationException;
-use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Model\Adapter\Logger;
-use Vipps\Payment\Model\TokenProvider;
-
 /**
  * Class Curl
- * @package Vipps\Payment\Gateway\Http\Client
- * @SuppressWarnings(PHPMD.UnusedPrivateField)
  */
-class Curl implements ClientInterface
+class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Http_Client_ClientInterface
 {
     /**
-     * @var Config
+     * @var \Vipps_Payment_Gateway_Config_Config
      */
     private $config;
 
     /**
-     * @var TokenProvider
+     * @var \Vipps_Payment_Model_TokenProvider
      */
     private $tokenProvider;
 
@@ -45,7 +35,7 @@ class Curl implements ClientInterface
     private $jsonEncoder;
 
     /**
-     * @var Logger
+     * @var \Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
 
@@ -55,19 +45,19 @@ class Curl implements ClientInterface
      */
     public function __construct()
     {
-        $this->config = new Config();
-        $this->tokenProvider = new TokenProvider();
-        $this->jsonEncoder = new \Vipps\Payment\Model\Adapter\JsonEncoder();
-        $this->logger = new Logger();
+        $this->config = Mage::helper('vipps_payment/gateway')->getSingleton('config_config');
+        $this->tokenProvider = Mage::getModel('vipps_payment/tokenProvider');
+        $this->jsonEncoder = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
     }
 
     /**
-     * @param Transfer $transfer
+     * @param Vipps_Payment_Gateway_Http_Transfer $transfer
      *
      * @return array|string
      * @throws \Exception
      */
-    public function placeRequest(Transfer $transfer)
+    public function placeRequest(Vipps_Payment_Gateway_Http_Transfer $transfer)
     {
         try {
             /** @var \Zend_Http_Response $response */
@@ -78,7 +68,7 @@ class Curl implements ClientInterface
             }
 
             return ['response' => $response];
-        } catch (\Throwable $t) {
+        } catch (\Exception $t) {
             $this->logger->critical($t->__toString());
             throw new \Exception($t->getMessage(), $t->getCode(), $t);
         }
@@ -88,20 +78,20 @@ class Curl implements ClientInterface
      * @param Transfer $transfer
      *
      * @return \Zend_Http_Response
-     * @throws AuthenticationException
+     * @throws Vipps_Payment_Gateway_Exception_AuthenticationException
      */
-    private function place(Transfer $transfer)
+    private function place(Vipps_Payment_Gateway_Http_Transfer $transfer)
     {
         try {
-            $adapter = new \Vipps\Payment\Model\Adapter\Curl();
+            $adapter = Mage::getModel('vipps_payment/adapter_curl');
 
             $options = $this->getBasicOptions();
             if ($transfer->getMethod() === \Zend_Http_Client::PUT) {
                 $options = $options + [
-                    \CURLOPT_RETURNTRANSFER => true,
-                    \CURLOPT_CUSTOMREQUEST  => \Zend_Http_Client::PUT,
-                    \CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($transfer->getBody())
-                ];
+                        \CURLOPT_RETURNTRANSFER => true,
+                        \CURLOPT_CUSTOMREQUEST  => \Zend_Http_Client::PUT,
+                        \CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($transfer->getBody())
+                    ];
             }
             $adapter->setOptions($options);
             // send request
@@ -135,7 +125,7 @@ class Curl implements ClientInterface
      * @param $headers
      *
      * @return array
-     * @throws AuthenticationException
+     * @throws Vipps_Payment_Gateway_Exception_AuthenticationException
      */
     private function getHeaders($headers)
     {

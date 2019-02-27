@@ -14,17 +14,15 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request;
-
 /**
  * Class BuilderComposite
  * @api
  * @since 100.0.2
  */
-class BuilderComposite implements BuilderInterface
+class Vipps_Payment_Gateway_Request_BuilderComposite implements Vipps_Payment_Gateway_Request_BuilderInterface
 {
     /**
-     * @var BuilderInterface[]
+     * @var Vipps_Payment_Gateway_Request_BuilderInterface[]
      */
     private $builders;
 

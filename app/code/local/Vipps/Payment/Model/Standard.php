@@ -14,8 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Command\CommandManager;
-
 /**
  * Payment source.
  *
@@ -46,7 +44,7 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
     {
         parent::__construct();
 
-        $this->commandManager = new CommandManager();
+        $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager');
     }
 
     /**
@@ -57,11 +55,46 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
         return \Mage::getUrl('vipps/payment_regular');
     }
 
-    public function refund($payment, $baseAmountToRefund)
+    /**
+     * @param Varien_Object $payment
+     * @param float $amount
+     * @return $this|Mage_Payment_Model_Abstract
+     */
+    public function refund(Varien_Object $payment, $amount)
     {
-        parent::refund();
+        parent::refund($payment, $amount);
 
-        $this->commandManager->refund($payment, $baseAmountToRefund);
+        $this->commandManager->refund($payment, $amount);
+
+        return $this;
+    }
+
+    /**
+     * @param Varien_Object $payment
+     * @param float $amount
+     * @return Vipps_Payment_Model_Standard
+     */
+    public function capture(Varien_Object $payment, $amount)
+    {
+        parent::capture($payment, $amount);
+
+        $this->commandManager->capture($payment, $amount);
+
+        return $this;
+    }
+
+    /**
+     * Cancel payment abstract method
+     *
+     * @param Varien_Object $payment
+     *
+     * @return Vipps_Payment_Model_Standard
+     */
+    public function cancel(Varien_Object $payment)
+    {
+        parent::cancel($payment);
+
+        $this->commandManager->cancel($payment);
 
         return $this;
     }

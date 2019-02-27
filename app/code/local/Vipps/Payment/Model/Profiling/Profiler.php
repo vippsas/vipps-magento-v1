@@ -14,37 +14,28 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Profiling;
-
-use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Model\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Profiling\TypeInterface;
-use Vipps\Payment\Model\Gdpr\Compliance;
-
-class Profiler
+/**
+ * Class Profiler
+ */
+class Vipps_Payment_Model_Profiling_Profiler
 {
     /**
-     * @var \Vipps\Payment\Model\Adapter\Config
+     * @var Vipps_Payment_Gateway_Config_Config
      */
     private $config;
 
     /**
-     * @var ItemFactory
-     */
-    private $dataItemFactory;
-
-    /**
-     * @var ItemRepository
+     * @var \Vipps_Payment_Model_Profiling_ItemRepository
      */
     private $itemRepository;
 
     /**
-     * @var JsonEncoder
+     * @var Vipps_Payment_Model_Adapter_JsonEncoder
      */
     private $jsonDecoder;
 
     /**
-     * @var Compliance
+     * @var Vipps_Payment_Model_Gdpr_Compliance
      */
     private $gdprCompliance;
 
@@ -54,26 +45,26 @@ class Profiler
      */
     public function __construct()
     {
-        $this->config = new \Vipps\Payment\Gateway\Config\Config();
-        $this->dataItemFactory = new ItemFactory();
-        $this->itemRepository = new ItemRepository();
-        $this->jsonDecoder = new JsonEncoder();
-        $this->gdprCompliance = new Compliance();
+        $this->config = Mage::helper('vipps_payment/gateway')->getSingleton('config_config');
+        $this->itemRepository = Mage::getSingleton('vipps_payment/profiling_itemRepository');
+        $this->jsonDecoder = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->gdprCompliance = Mage::getSingleton('vipps_payment/gdpr_compliance');
     }
 
     /**
-     * @param Transfer $transfer
+     * @param Vipps_Payment_Gateway_Http_Transfer $transfer
      * @param \Zend_Http_Response $response
      *
      * @return string|null
+     * @throws \Mage_Core_Exception
      */
-    public function save(Transfer $transfer, \Zend_Http_Response $response)
+    public function save(Vipps_Payment_Gateway_Http_Transfer $transfer, \Zend_Http_Response $response)
     {
         if (!$this->isProfilingEnabled()) {
             return null;
         }
-        /** @var ItemInterface $itemDO */
-        $itemDO = $this->dataItemFactory->create();
+        /** @var \Vipps_Payment_Model_Resource_Profiling_Item $itemDO */
+        $itemDO = \Mage::getModel('vipps_payment/profiling_item');
 
         $data = $this->parseDataFromTransferObject($transfer);
 
@@ -106,16 +97,18 @@ class Profiler
     /**
      * Parse data from transfer object
      *
-     * @param TransferInterface $transfer
+     * @param Vipps_Payment_Gateway_Http_Transfer $transfer
      *
      * @return array
      */
-    private function parseDataFromTransferObject(Transfer $transfer)
+    private function parseDataFromTransferObject(Vipps_Payment_Gateway_Http_Transfer $transfer)
     {
         $result = [];
         if (preg_match('/payments(\/([^\/]+)\/([a-z]+))?$/', $transfer->getUri(), $matches)) {
             $result['order_id'] = isset($matches[2]) ? $matches[2] : (isset($transfer->getBody()['transaction']['orderId']) ? $transfer->getBody()['transaction']['orderId'] : null);
-            $result['type'] = isset($matches[3]) ? $matches[3] : TypeInterface::INITIATE_PAYMENT;
+            $result['type'] = isset($matches[3])
+                ? $matches[3]
+                : Vipps_Payment_Model_Profiling_TypeInterface::INITIATE_PAYMENT;
         }
         return $result;
     }
@@ -123,7 +116,7 @@ class Profiler
     /**
      * Parse order id from response object
      *
-     * @param Response $response
+     * @param \Zend_Http_Response $response
      *
      * @return string|null
      */
@@ -160,7 +153,7 @@ class Profiler
     /**
      * Parse response data for profiler from response
      *
-     * @param Response $response
+     * @param \Zend_Http_Response $response
      *
      * @return array
      */

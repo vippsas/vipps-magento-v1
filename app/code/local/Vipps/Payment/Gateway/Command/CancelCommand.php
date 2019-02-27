@@ -14,31 +14,20 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Transaction\Transaction;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
-use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item as TransactionLogHistoryItem;
-use Vipps\Payment\Gateway\Transaction\TransactionSummary;
-use Vipps\Payment\Model\Helper\Formatter;
-
 /**
  * Class CancelCommand
- * @package Vipps\Payment\Gateway\Command
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class CancelCommand extends GatewayCommand
+class Vipps_Payment_Gateway_Command_CancelCommand extends Vipps_Payment_Gateway_Command_GatewayCommand
 {
-    use Formatter;
+    use Vipps_Payment_Model_Helper_Formatter;
 
     /**
-     * @var PaymentDetailsProvider
+     * @var Vipps_Payment_Gateway_Command_PaymentDetailsProvider
      */
     private $paymentDetailsProvider;
 
     /**
-     * @var TransactionBuilder
+     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
      */
     private $transactionBuilder;
 
@@ -50,21 +39,21 @@ class CancelCommand extends GatewayCommand
     public function __construct()
     {
         parent::__construct(
-            new \Vipps\Payment\Gateway\Request\BuilderComposite\VippsCancelRequest(),
-            new \Vipps\Payment\Gateway\Http\TransferFactory('PUT', '/ecomm/v2/payments/:orderId/cancel', ['orderId' => 'orderId']),
-            new \Vipps\Payment\Gateway\Http\Client\Curl(),
-            new \Vipps\Payment\Gateway\Response\TransactionHandler(),
-            new \Vipps\Payment\Gateway\Validator\Composite\VippsGetPaymentDetailsValidator()
+            new Vipps_Payment_Gateway_Request_BuilderComposite_VippsCancelRequest(),
+            new Vipps_Payment_Gateway_Http_TransferFactory('PUT', '/ecomm/v2/payments/:orderId/cancel', ['orderId' => 'orderId']),
+            new Vipps_Payment_Gateway_Http_Client_Curl(),
+            new Vipps_Payment_Gateway_Response_TransactionHandler(),
+            new Vipps_Payment_Gateway_Validator_Composite_VippsGetPaymentDetailsValidator()
         );
 
-        $this->paymentDetailsProvider = new PaymentDetailsProvider();
-        $this->transactionBuilder = new TransactionBuilder();
+        $this->paymentDetailsProvider = new Vipps_Payment_Gateway_Command_PaymentDetailsProvider();
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
     }
 
     /**
      * @param array $commandSubject
-     * @return array|bool|ResultInterface|null
-     * @throws VippsException
+     * @return array|bool|Vipps_Payment_Gateway_Validator_Result|null
+     * @throws Mage_Core_Exception
      */
     public function execute(array $commandSubject)
     {
@@ -93,11 +82,11 @@ class CancelCommand extends GatewayCommand
      * Try to cancel based on GetPaymentDetails service.
      *
      * @param $commandSubject
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return bool
      */
-    private function cancelBasedOnPaymentDetails($commandSubject, Transaction $transaction)
+    private function cancelBasedOnPaymentDetails($commandSubject, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $payment = $this->subjectReader->readPayment($commandSubject);
 
@@ -119,18 +108,18 @@ class CancelCommand extends GatewayCommand
     /**
      * Get latest successful transaction log history item.
      *
-     * @param Transaction $transaction
+     * @param \Mage_Sales_Model_Order_Payment_Transaction $transaction
      *
-     * @return null|TransactionLogHistoryItem
+     * @return null|Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item
      */
-    private function findLatestSuccessHistoryItem(Transaction $transaction)
+    private function findLatestSuccessHistoryItem(Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         foreach ($transaction->getTransactionLogHistory()->getItems() as $item) {
             $inContext = in_array(
                 $item->getOperation(),
                 [
-                    Transaction::TRANSACTION_OPERATION_CANCEL,
-                    Transaction::TRANSACTION_OPERATION_VOID
+                    Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_CANCEL,
+                    Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_VOID
                 ]
             );
 
@@ -145,29 +134,29 @@ class CancelCommand extends GatewayCommand
     /**
      * Prepare response body based of GetPaymentDetails service data.
      *
-     * @param Transaction $transaction
-     * @param TransactionLogHistoryItem $item
+     * @param \Vipps_Payment_Gateway_Transaction_Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item $item
      * @param $orderId
      *
      * @return array|null
      */
-    private function prepareResponseBody(Transaction $transaction, TransactionLogHistoryItem $item, $orderId)
+    private function prepareResponseBody(Vipps_Payment_Gateway_Transaction_Transaction $transaction, Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item $item, $orderId)
     {
         return [
             'orderId'            => $orderId,
             'transactionInfo'    => [
                 'amount'          => $item->getAmount(),
-                'status'          => Transaction::TRANSACTION_STATUS_CANCELLED,
+                'status'          => Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_CANCELLED,
                 "timeStamp"       => $item->getTimeStamp(),
                 "transactionId"   => $item->getTransactionId(),
                 "transactionText" => $item->getTransactionText()
             ],
             'transactionSummary' => $transaction->getTransactionSummary()->toArray(
                 [
-                    TransactionSummary::CAPTURED_AMOUNT,
-                    TransactionSummary::REMAINING_AMOUNT_TO_CAPTURE,
-                    TransactionSummary::REFUNDED_AMOUNT,
-                    TransactionSummary::REMAINING_AMOUNT_TO_REFUND
+                    Vipps_Payment_Gateway_Transaction_TransactionSummary::CAPTURED_AMOUNT,
+                    Vipps_Payment_Gateway_Transaction_TransactionSummary::REMAINING_AMOUNT_TO_CAPTURE,
+                    Vipps_Payment_Gateway_Transaction_TransactionSummary::REFUNDED_AMOUNT,
+                    Vipps_Payment_Gateway_Transaction_TransactionSummary::REMAINING_AMOUNT_TO_REFUND
                 ]
             )
         ];
@@ -176,18 +165,18 @@ class CancelCommand extends GatewayCommand
     /**
      * Retrieve request id of last failed operation from transaction log history.
      *
-     * @param Transaction $transaction
+     * @param \Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return string|null
      */
-    private function getLastFailedRequestId(Transaction $transaction)
+    private function getLastFailedRequestId(Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         foreach ($transaction->getTransactionLogHistory()->getItems() as $item) {
             $inContext = in_array(
                 $item->getOperation(),
                 [
-                    Transaction::TRANSACTION_OPERATION_CANCEL,
-                    Transaction::TRANSACTION_OPERATION_VOID
+                    Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_CANCEL,
+                    Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_VOID
                 ]
             );
 

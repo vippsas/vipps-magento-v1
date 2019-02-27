@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request;
-
 /**
  * Class TransactionTextDataBuilder
  * @package Vipps\Payment\Gateway\Request
  */
-class TransactionTextDataBuilder extends AbstractBuilder
+class Vipps_Payment_Gateway_Request_TransactionTextDataBuilder extends Vipps_Payment_Gateway_Request_AbstractBuilder
 {
     /**
      * Transaction block name
@@ -79,8 +77,6 @@ class TransactionTextDataBuilder extends AbstractBuilder
      */
     private function getStoreName()
     {
-        return $this->scopeConfig->getValue(
-            'general/store_information/name'
-        );
+        return \Mage::getStoreConfig('general/store_information/name');
     }
 }

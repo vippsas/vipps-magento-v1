@@ -1,6 +1,6 @@
 <?php
 
-namespace Vipps\Payment\Model\Adapter\Quote\Command;
+namespace Vipps\Payment\Model\Adapter\Command;
 
 /**
  * Class RestartFactory

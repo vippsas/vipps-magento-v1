@@ -13,27 +13,23 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Transaction;
-
-use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item;
 
 /**
  * Class TransactionLogHistory
- * @package Vipps\Payment\Gateway\Transaction
  */
-class TransactionLogHistory extends \Varien_Object
+class Vipps_Payment_Gateway_Transaction_TransactionLogHistory extends \Varien_Object
 {
     /**
      * @var string
      */
     const ITEMS = 'items';
     /**
-     * @var Item
+     * @var Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item
      */
-    private $lastItem = null;
+    private $lastItem;
 
     /**
-     * @return Item[]
+     * @return Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item[]
      */
     public function getItems()
     {
@@ -57,7 +53,7 @@ class TransactionLogHistory extends \Varien_Object
     /**
      * Method to return last Item.
      *
-     * @return Item|null
+     * @return Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item
      */
     public function getLastItem()
     {

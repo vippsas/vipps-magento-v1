@@ -13,13 +13,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Exception;
 
 /**
  * Class MerchantException
  * @package Vipps\Payment\Gateway\Exception
  */
-class MerchantException extends VippsException //@codingStandardsIgnoreLine
+class Vipps_Payment_Gateway_Exception_MerchantException extends Vipps_Payment_Gateway_Exception_VippsException //@codingStandardsIgnoreLine
 {
     const ERROR_CODE_REQUESTED_ORDER_NOT_FOUND = 35;
 }

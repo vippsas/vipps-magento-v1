@@ -13,12 +13,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Exception;
 
 /**
  * Class WrongAmountException
  * @package Vipps\Payment\Gateway\Exception
  */
-class WrongAmountException extends VippsException //@codingStandardsIgnoreLine
+class Vipps_Payment_Gateway_Exception_WrongAmountException extends Vipps_Payment_Gateway_Exception_VippsException //@codingStandardsIgnoreLine
 {
 }

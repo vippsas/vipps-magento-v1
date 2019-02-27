@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model;
-
 /**
  * Class QuoteLocator
  */
-class QuoteLocator
+class Vipps_Payment_Model_QuoteLocator
 {
     /**
      * Retrieve a quote by increment id

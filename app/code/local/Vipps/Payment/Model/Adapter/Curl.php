@@ -18,9 +18,7 @@
 /**
  * Curl adapter.
  */
-namespace Vipps\Payment\Model\Adapter;
-
-class Curl implements \Zend_Http_Client_Adapter_Interface
+class Vipps_Payment_Model_Adapter_Curl implements \Zend_Http_Client_Adapter_Interface
 {
     /**
      * Parameters array

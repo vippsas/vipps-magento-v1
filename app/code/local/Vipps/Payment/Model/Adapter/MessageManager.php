@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Class MessageManager
  */
-class MessageManager
+class Vipps_Payment_Model_Adapter_MessageManager
 {
     /**
      * @var \Mage_Core_Model_Session

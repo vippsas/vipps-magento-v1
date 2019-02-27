@@ -14,18 +14,20 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\BuilderComposite;
-
-class VippsInitiateRequest extends \Vipps\Payment\Gateway\Request\BuilderComposite
+class Vipps_Payment_Gateway_Request_BuilderComposite_VippsInitiateRequest extends Vipps_Payment_Gateway_Request_BuilderComposite
 {
     public function __construct()
     {
+        /**
+         * @var $helper Vipps_Payment_Helper_Gateway
+         */
+        $helper = Mage::helper('vipps_payment/gateway');
         $builders = [
-            'customerInfo'         => new \Vipps\Payment\Gateway\Request\Initiate\CustomerDataBuilder(),
-            'merchantInfo'         => new \Vipps\Payment\Gateway\Request\Initiate\MerchantDataBuilder(),
-            'merchantSerialNumber' => new \Vipps\Payment\Gateway\Request\MerchantDataBuilder(),
-            'transaction'          => new \Vipps\Payment\Gateway\Request\Initiate\TransactionDataBuilder(),
-            'transactionText'      => new \Vipps\Payment\Gateway\Request\TransactionTextDataBuilder()
+            'customerInfo'         => $helper->getSingleton('request_initiate_customerDataBuilder'),
+            'merchantInfo'         => $helper->getSingleton('request_initiate_merchantDataBuilder'),
+            'merchantSerialNumber' => $helper->getSingleton('request_merchantDataBuilder'),
+            'transaction'          => $helper->getSingleton('request_initiate_transactionDataBuilder'),
+            'transactionText'      => $helper->getSingleton('request_transactionTextDataBuilder'),
         ];
 
         parent::__construct($builders);

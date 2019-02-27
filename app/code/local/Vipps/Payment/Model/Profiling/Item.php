@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Model\Profiling\ItemInterface;
-
 /**
  * Class Item
  * @package Vipps\Payment\Model\Profiling
  */
-class Vipps_Payment_Model_Profiling_Item extends \Mage_Core_Model_Abstract implements ItemInterface // Move in interface
+class Vipps_Payment_Model_Profiling_Item extends Mage_Core_Model_Abstract implements Vipps_Payment_Model_Profiling_ItemInterface // Move in interface
 {
     /**
      * Return date when item was created

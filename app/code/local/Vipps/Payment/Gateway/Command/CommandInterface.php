@@ -14,18 +14,14 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Validator\Result;
-
-interface CommandInterface
+interface Vipps_Payment_Gateway_Command_CommandInterface
 {
     /**
      * Executes command basing on business object
      *
      * @param array $commandSubject
-     * @return Result|array|null
-     * @throws CommandException
+     * @return Vipps_Payment_Gateway_Validator_Result|array|null
+     * @throws Vipps_Payment_Gateway_Command_CommandException
      */
     public function execute(array $commandSubject);
 }

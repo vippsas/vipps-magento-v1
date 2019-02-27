@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Emulate scope resolver.
  *
  * Class ScopeResolver
  */
-class ScopeResolver
+class Vipps_Payment_Model_Adapter_ScopeResolver
 {
     /**
      * @var
@@ -34,7 +32,7 @@ class ScopeResolver
     public function getScope()
     {
         if (!self::$scope) {
-            self::$scope = new Scope();
+            self::$scope = Mage::getSingleton('vipps_payment/adapter_scope');
         }
 
         return self::$scope;

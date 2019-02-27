@@ -14,9 +14,7 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
-interface OrderAdapterInterface
+interface Vipps_Payment_Gateway_Data_OrderAdapterInterface
 {
     /**
      * Returns currency code

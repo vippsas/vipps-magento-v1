@@ -14,10 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Request\Initiate\MerchantDataBuilder;
-use Vipps\Payment\Model\OrderPlace;
-use Vipps\Payment\Model\QuoteLocator;
-
 /**
  * Class Callback
  * @package Vipps\Payment\Controller\Payment
@@ -26,12 +22,12 @@ use Vipps\Payment\Model\QuoteLocator;
 class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller_Abstract
 {
     /**
-     * @var OrderPlace
+     * @var Vipps_Payment_Model_OrderPlace
      */
     private $orderPlace;
 
     /**
-     * @var QuoteLocator
+     * @var Vipps_Payment_Model_QuoteLocator
      */
     private $quoteLocator;
 
@@ -47,8 +43,8 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
     {
         parent::preDispatch();
 
-        $this->orderPlace = new OrderPlace();
-        $this->quoteLocator = new QuoteLocator();
+        $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
+        $this->quoteLocator = Mage::getSingleton('vipps_payment/quoteLocator');
 
         return $this;
     }
@@ -127,8 +123,8 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
         $quote = $this->getQuote($requestData);
         if ($quote) {
             $additionalInfo = $quote->getPayment()->getAdditionalInformation();
-            $authToken = isset($additionalInfo[MerchantDataBuilder::MERCHANT_AUTH_TOKEN]) ?
-                $additionalInfo[MerchantDataBuilder::MERCHANT_AUTH_TOKEN]
+            $authToken = isset($additionalInfo[Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder::MERCHANT_AUTH_TOKEN]) ?
+                $additionalInfo[Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder::MERCHANT_AUTH_TOKEN]
                 : null;
 
             if ($authToken === $this->getRequest()->getHeader('authorization')) {

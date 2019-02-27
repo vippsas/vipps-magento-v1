@@ -45,7 +45,7 @@ class Vipps_Payment_Model_Order_Cancellation_Config
      */
     public function isAutomatic($storeId = null)
     {
-        return $this->getType($storeId) === Vipps_Payment_Model_System_Config_Source_Cancellation_Type::AUTOMATIC;
+        return $this->getType($storeId) === \Vipps_Payment_Model_System_Config_Source_Cancellation_Type::AUTOMATIC;
     }
 
     /**
@@ -68,7 +68,7 @@ class Vipps_Payment_Model_Order_Cancellation_Config
      */
     private function getStoreConfig($path, $storeId = null)
     {
-        return Mage::getStoreConfig($path, $storeId);
+        return \Mage::getStoreConfig($path, $storeId);
     }
 
     /**
@@ -77,7 +77,7 @@ class Vipps_Payment_Model_Order_Cancellation_Config
      */
     public function isManual($storeId = null)
     {
-        return $this->getType($storeId) === Vipps_Payment_Model_System_Config_Source_Cancellation_Type::MANUAL;
+        return $this->getType($storeId) === \Vipps_Payment_Model_System_Config_Source_Cancellation_Type::MANUAL;
     }
 
     /**

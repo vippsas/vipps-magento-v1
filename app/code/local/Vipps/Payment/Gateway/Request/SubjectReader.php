@@ -13,24 +13,21 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request;
-
-use Vipps\Payment\Gateway\Data\PaymentDataObjectInterface;
 
 /**
  * Class SubjectReader
  * @package Vipps\Payment\Gateway\Response
  */
-class SubjectReader
+class Vipps_Payment_Gateway_Request_SubjectReader
 {
     /**
      * @param array $subject
      *
-     * @return PaymentDataObjectInterface|null
+     * @return Vipps_Payment_Gateway_Data_PaymentDataObjectInterface|null
      */
     public function readPayment($subject)
     {
-        if (isset($subject['payment']) && $subject['payment'] instanceof PaymentDataObjectInterface) {
+        if (isset($subject['payment']) && $subject['payment'] instanceof Vipps_Payment_Gateway_Data_PaymentDataObjectInterface) {
             return $subject['payment'];
         }
         return null;

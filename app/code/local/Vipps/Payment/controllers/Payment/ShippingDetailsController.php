@@ -14,13 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Transaction\ShippingDetails as TransactionShippingDetails;
-use Vipps\Payment\Model\Adapter\Quote\AddressFactory;
-use Vipps\Payment\Model\Adapter\Quote\ShippingMethodManagement;
-use Vipps\Payment\Model\Gdpr\Compliance;
-use Vipps\Payment\Model\Quote\AddressUpdater;
-use Vipps\Payment\Model\QuoteLocator;
-
 /**
  * Class ShippingDetails
  * @package Vipps\Payment\Controller\Payment
@@ -29,22 +22,17 @@ use Vipps\Payment\Model\QuoteLocator;
 class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Controller_Abstract
 {
     /**
-     * @var QuoteLocator
+     * @var Vipps_Payment_Model_QuoteLocator
      */
     private $quoteLocator;
 
     /**
-     * @var ShippingMethodManagement
+     * @var Vipps_Payment_Model_Adapter_ShippingMethodManagement
      */
     private $shipmentEstimation;
 
     /**
-     * @var AddressFactory
-     */
-    private $addressFactory;
-
-    /**
-     * @var AddressUpdater
+     * @var Vipps_Payment_Model_Quote_AddressUpdater
      */
     private $addressUpdater;
 
@@ -57,10 +45,9 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
     {
         parent::preDispatch();
 
-        $this->quoteLocator = new QuoteLocator();
-        $this->shipmentEstimation = new ShippingMethodManagement();
-        $this->addressFactory = new AddressFactory();
-        $this->addressUpdater = new AddressUpdater();
+        $this->quoteLocator = Mage::getSingleton('vipps_payment/quoteLocator');
+        $this->shipmentEstimation = Mage::getSingleton('vipps_payment/adapter_shippingMethodManagement');
+        $this->addressUpdater = Mage::getSingleton('vipps_payment/quote_addressUpdater');
 
         return $this;
     }
@@ -80,13 +67,13 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
             $quote = $this->getQuote($reservedOrderId);
 
             $vippsAddress = $this->serializer->unserialize($this->getRequest()->getRawBody());
-            $address = $this->addressFactory->create();
+            $address = \Mage::getModel('sales/quote_address');
             $address->addData([
                 'postcode'     => $vippsAddress['postCode'],
                 'street'       => $vippsAddress['addressLine1'] . PHP_EOL . $vippsAddress['addressLine2'],
                 'address_type' => 'shipping',
                 'city'         => $vippsAddress['city'],
-                'country_id'   => TransactionShippingDetails::NORWEGIAN_COUNTRY_ID
+                'country_id'   => Vipps_Payment_Gateway_Transaction_ShippingDetails::NORWEGIAN_COUNTRY_ID
             ]);
             /**
              * As Quote is deactivated, so we need to activate it for estimating shipping methods
@@ -152,6 +139,7 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
      * @param $reservedOrderId
      *
      * @return \Mage_Sales_Model_Quote
+     * @throws Mage_Core_Exception
      */
     private function getQuote($reservedOrderId)
     {

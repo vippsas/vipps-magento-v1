@@ -20,17 +20,6 @@
         </Vipps_Payment>
     </modules>
     <global>
-        <events>
-            <controller_front_init_before>
-                <observers>
-                    <vipps_payment>
-                        <type>singleton</type>
-                        <class>vipps_payment/autoloader</class>
-                        <method>addAutoloader</method>
-                    </vipps_payment>
-                </observers>
-            </controller_front_init_before>
-        </events>
         <helpers>
             <vipps_payment>
                 <class>Vipps_Payment_Helper</class>
@@ -67,6 +56,11 @@
                 </setup>
             </vipps_payment_setup>
         </resources>
+        <gateways>
+            <vipps_payment>
+                <class>Vipps_Payment_Gateway</class>
+            </vipps_payment>
+        </gateways>
     </global>
     <frontend>
         <routers>
@@ -85,7 +79,6 @@
                 <model>vipps_payment/standard</model>
                 <title>Vipps</title>
                 <active>1</active>
-                <is_gateway>1</is_gateway>
                 <can_use_checkout>1</can_use_checkout>
                 <can_initialize>0</can_initialize>
                 <can_authorize>1</can_authorize>
@@ -98,11 +91,11 @@
                 <can_cancel>1</can_cancel>
                 <can_use_internal>1</can_use_internal>
                 <environment>develop</environment>
-                <subscription_key1 backend_model="adminhtml/system_config_backend_encrypted" />
-                <subscription_key2 backend_model="adminhtml/system_config_backend_encrypted" />
-                <merchant_serial_number backend_model="adminhtml/system_config_backend_encrypted" />
-                <client_id backend_model="adminhtml/system_config_backend_encrypted" />
-                <client_secret backend_model="adminhtml/system_config_backend_encrypted" />
+                <subscription_key1 backend_model="adminhtml/system_config_backend_encrypted"/>
+                <subscription_key2 backend_model="adminhtml/system_config_backend_encrypted"/>
+                <merchant_serial_number backend_model="adminhtml/system_config_backend_encrypted"/>
+                <client_id backend_model="adminhtml/system_config_backend_encrypted"/>
+                <client_secret backend_model="adminhtml/system_config_backend_encrypted"/>
             </vipps>
         </payment>
         <vipps>
@@ -114,4 +107,12 @@
             </order_cancellation>
         </vipps>
     </default>
+    <crontab>
+        <jobs>
+            <vipps_payment_fetch_orders_from_vipps>
+                <schedule><cron_expr>*/10 * * * *</cron_expr></schedule>
+                <run><model>vipps_payment/cron_fetchOrderFromVipps::execute</model></run>
+            </vipps_payment_fetch_orders_from_vipps>
+        </jobs>
+    </crontab>
 </config>

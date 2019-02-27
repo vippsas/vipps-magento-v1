@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Helper;
-
 /**
  * Class Utility
  */
-class Utility
+class Vipps_Payment_Model_Helper_Utility
 {
     /**
      * Make sure addresses will be saved without validation errors

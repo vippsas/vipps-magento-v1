@@ -14,21 +14,13 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Command\CommandManager;
-use Vipps\Payment\Gateway\Config\Config;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
-use Vipps\Payment\Model\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Adapter\MessageManager;
-use Vipps\Payment\Model\Adapter\Logger;
-use Vipps\Payment\Model\Gdpr\Compliance;
-
 class Vipps_Payment_Controller_Abstract extends Mage_Core_Controller_Front_Action
 {
     const STATUS_CODE_200 = 200;
     const STATUS_CODE_500 = 500;
 
     /**
-     * @var CommandManager
+     * @var Vipps_Payment_Gateway_Command_CommandManager
      */
     protected $commandManager;
 
@@ -38,47 +30,55 @@ class Vipps_Payment_Controller_Abstract extends Mage_Core_Controller_Front_Actio
     protected $cart;
 
     /**
-     * @var Logger
+     * @var Vipps_Payment_Model_Adapter_Logger
      */
     protected $logger;
 
     /**
-     * @var Config
+     * @var Vipps_Payment_Gateway_Config_Config
      */
     protected $config;
 
     /**
-     * @var MessageManager
+     * @var Vipps_Payment_Model_Adapter_MessageManager
      */
     protected $messageManager;
 
     /**
-     * @var JsonEncoder
+     * @var Vipps_Payment_Model_Adapter_JsonEncoder
      */
     protected $serializer;
 
     /**
-     * @var Compliance
+     * @var Vipps_Payment_Model_Gdpr_Compliance
      */
     protected $gdprCompliance;
 
     /**
-     * @var TransactionBuilder
+     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
      */
     protected $transactionBuilder;
 
+    /**
+     * @var Vipps_Payment_Helper_Gateway
+     */
+    protected $helper;
+
+    /**
+     * @return $this|Mage_Core_Controller_Front_Action
+     */
     public function preDispatch()
     {
         parent::preDispatch();
-
+        $this->helper = Mage::helper('vipps_payment/gateway');
         $this->cart = Mage::getSingleton('checkout/cart');
-        $this->logger = new Logger();
-        $this->commandManager = new CommandManager();
-        $this->config = new Config();
-        $this->messageManager = new MessageManager();
-        $this->serializer = new JsonEncoder();
-        $this->gdprCompliance = new Compliance();
-        $this->transactionBuilder = new TransactionBuilder;
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+        $this->commandManager = $this->helper->getSingleton('command_commandManager');
+        $this->config = $this->helper->getSingleton('config_config');
+        $this->messageManager = Mage::getSingleton('vipps_payment/adapter_messageManager');
+        $this->serializer = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->gdprCompliance = Mage::getSingleton('vipps_payment/gdpr_compliance');
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder;
 
         return $this;
     }

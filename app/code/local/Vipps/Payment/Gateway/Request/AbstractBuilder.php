@@ -14,18 +14,27 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request;
-
-use Vipps\Payment\Model\Adapter\Config;
-
-abstract class AbstractBuilder implements BuilderInterface
+/**
+ * Class Vipps_Payment_Gateway_Request_AbstractBuilder
+ */
+abstract class Vipps_Payment_Gateway_Request_AbstractBuilder implements Vipps_Payment_Gateway_Request_BuilderInterface
 {
-    protected $scopeConfig;
+    /**
+     * @var \Vipps_Payment_Gateway_Request_SubjectReader
+     */
     protected $subjectReader;
 
+    /**
+     * @var Vipps_Payment_Helper_Gateway
+     */
+    protected $helper;
+
+    /**
+     * AbstractBuilder constructor.
+     */
     public function __construct()
     {
-        $this->scopeConfig = new Config();
-        $this->subjectReader = new SubjectReader();
+        $this->helper = Mage::helper('vipps_payment/gateway');
+        $this->subjectReader = $this->helper->getSingleton('request_subjectReader');
     }
 }

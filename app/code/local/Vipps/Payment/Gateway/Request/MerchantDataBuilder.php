@@ -13,23 +13,22 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request;
-
-use Vipps\Payment\Gateway\Config\Config;
 
 /**
  * Class MerchantDataBuilder
- * @package Vipps\Payment\Gateway\Request
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class MerchantDataBuilder extends AbstractBuilder
+class Vipps_Payment_Gateway_Request_MerchantDataBuilder extends Vipps_Payment_Gateway_Request_AbstractBuilder
 {
-    
+    /**
+     * @var Vipps_Payment_Gateway_Config_Config
+     */
+    private $gatewayConfig;
+
     public function __construct()
     {
         parent::__construct();
 
-        $this->gatewayConfig = new Config();
+        $this->gatewayConfig = $this->helper->getSingleton('config_config');
     }
 
     /**

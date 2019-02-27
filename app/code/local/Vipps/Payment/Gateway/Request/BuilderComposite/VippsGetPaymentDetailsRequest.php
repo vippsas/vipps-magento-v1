@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\BuilderComposite;
-
-class VippsGetPaymentDetailsRequest extends \Vipps\Payment\Gateway\Request\BuilderComposite
+class Vipps_Payment_Gateway_Request_BuilderComposite_VippsGetPaymentDetailsRequest extends Vipps_Payment_Gateway_Request_BuilderComposite
 {
     public function __construct()
     {
         parent::__construct([
-            'generic' => new \Vipps\Payment\Gateway\Request\GenericDataBuilder()
+            'generic' => Mage::helper('vipps_payment/gateway')->getSingleton('request_genericDataBuilder')
         ]);
     }
 }

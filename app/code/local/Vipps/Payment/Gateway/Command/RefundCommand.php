@@ -14,34 +14,23 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Transaction\Transaction;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
-use Vipps\Payment\Gateway\Transaction\TransactionLogHistory\Item as TransactionLogHistoryItem;
-use Vipps\Payment\Gateway\Transaction\TransactionSummary;
-use Vipps\Payment\Model\OrderRepository;
-
 /**
  * Class RefundCommand
- * @package Vipps\Payment\Gateway\Command
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class RefundCommand extends GatewayCommand
+class Vipps_Payment_Gateway_Command_RefundCommand extends Vipps_Payment_Gateway_Command_GatewayCommand
 {
     /**
-     * @var PaymentDetailsProvider
+     * @var \Vipps_Payment_Gateway_Command_PaymentDetailsProvider
      */
     private $paymentDetailsProvider;
 
     /**
-     * @var TransactionBuilder
+     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
      */
     private $transactionBuilder;
 
     /**
-     * @var OrderRepository
+     * @var \Vipps_Payment_Model_OrderRepository
      */
     private $orderRepository;
 
@@ -51,16 +40,16 @@ class RefundCommand extends GatewayCommand
     public function __construct() {
 
         parent::__construct(
-            new \Vipps\Payment\Gateway\Request\BuilderComposite\VippsRefundRequest(),
-            new \Vipps\Payment\Gateway\Http\TransferFactory('POST', '/ecomm/v2/payments/:orderId/refund', ['orderId' => 'orderId']),
-            new \Vipps\Payment\Gateway\Http\Client\Curl(),
-            new \Vipps\Payment\Gateway\Response\TransactionHandler(),
-            new \Vipps\Payment\Gateway\Validator\Composite\VippsRefundValidator()
+            new Vipps_Payment_Gateway_Request_BuilderComposite_VippsRefundRequest(),
+            new Vipps_Payment_Gateway_Http_TransferFactory('POST', '/ecomm/v2/payments/:orderId/refund', ['orderId' => 'orderId']),
+            new Vipps_Payment_Gateway_Http_Client_Curl(),
+            new Vipps_Payment_Gateway_Response_TransactionHandler(),
+            new Vipps_Payment_Gateway_Validator_Composite_VippsRefundValidator()
         );
 
-        $this->paymentDetailsProvider = new PaymentDetailsProvider();
-        $this->transactionBuilder = new TransactionBuilder();
-        $this->orderRepository = new OrderRepository();
+        $this->paymentDetailsProvider = new Vipps_Payment_Gateway_Command_PaymentDetailsProvider();
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
+        $this->orderRepository = Mage::getSingleton('vipps_payment/orderRepository');
     }
 
     /**
@@ -68,11 +57,8 @@ class RefundCommand extends GatewayCommand
      *
      * @param array $commandSubject
      *
-     * @return ResultInterface|array|bool|null
-     * @throws ClientException
-     * @throws ConverterException
-     * @throws LocalizedException
-     * @throws VippsException
+     * @return Vipps_Payment_Gateway_Validator_Result|array|bool|null
+     * @throws Mage_Core_Exception
      */
     public function execute(array $commandSubject)
     {
@@ -104,12 +90,12 @@ class RefundCommand extends GatewayCommand
      * Try to refund based on GetPaymentDetails service.
      *
      * @param $commandSubject
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return bool
-     * @throws LocalizedException
+     * @throws \Mage_Core_Exception
      */
-    private function refundBasedOnPaymentDetails($commandSubject, Transaction $transaction)
+    private function refundBasedOnPaymentDetails($commandSubject, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $payment = $this->subjectReader->readPayment($commandSubject);
         $amount = $this->subjectReader->readAmount($commandSubject);
@@ -163,13 +149,13 @@ class RefundCommand extends GatewayCommand
     /**
      * Prepare response body based of GetPaymentDetails service data.
      *
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      * @param $amount
      * @param $orderId
      *
      * @return array|null
      */
-    private function prepareResponseBody(Transaction $transaction, $amount, $orderId)
+    private function prepareResponseBody(Vipps_Payment_Gateway_Transaction_Transaction $transaction, $amount, $orderId)
     {
         $item = $this->findLatestSuccessHistoryItem($transaction, $amount);
         if ($item) {
@@ -177,17 +163,17 @@ class RefundCommand extends GatewayCommand
                 'orderId'            => $orderId,
                 'transaction'        => [
                     'amount'          => $item->getAmount(),
-                    'status'          => Transaction::TRANSACTION_STATUS_REFUND,
+                    'status'          => Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_REFUND,
                     "timeStamp"       => $item->getTimeStamp(),
                     "transactionId"   => $item->getTransactionId(),
                     "transactionText" => $item->getTransactionText()
                 ],
                 'transactionSummary' => $transaction->getTransactionSummary()->toArray(
                     [
-                        TransactionSummary::CAPTURED_AMOUNT,
-                        TransactionSummary::REMAINING_AMOUNT_TO_CAPTURE,
-                        TransactionSummary::REFUNDED_AMOUNT,
-                        TransactionSummary::REMAINING_AMOUNT_TO_REFUND
+                        Vipps_Payment_Gateway_Transaction_TransactionSummary::CAPTURED_AMOUNT,
+                        Vipps_Payment_Gateway_Transaction_TransactionSummary::REMAINING_AMOUNT_TO_CAPTURE,
+                        Vipps_Payment_Gateway_Transaction_TransactionSummary::REFUNDED_AMOUNT,
+                        Vipps_Payment_Gateway_Transaction_TransactionSummary::REMAINING_AMOUNT_TO_REFUND
                     ]
                 )
             ];
@@ -198,15 +184,15 @@ class RefundCommand extends GatewayCommand
     /**
      * Get latest successful transaction log history item.
      *
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      * @param $amount
      *
      * @return TransactionLogHistoryItem|null
      */
-    private function findLatestSuccessHistoryItem(Transaction $transaction, $amount)
+    private function findLatestSuccessHistoryItem(Vipps_Payment_Gateway_Transaction_Transaction $transaction, $amount)
     {
         foreach ($transaction->getTransactionLogHistory()->getItems() as $item) {
-            if ($item->getOperation() == Transaction::TRANSACTION_OPERATION_REFUND
+            if ($item->getOperation() == Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_REFUND
                 && $item->isOperationSuccess()
                 && $item->getAmount() == $amount
             ) {
@@ -219,15 +205,15 @@ class RefundCommand extends GatewayCommand
     /**
      * Retrieve request id of last failed operation from transaction log history.
      *
-     * @param Transaction $transaction
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      * @param int $amount
      *
      * @return string|null
      */
-    private function getLastFailedRequestId(Transaction $transaction, $amount)
+    private function getLastFailedRequestId(Vipps_Payment_Gateway_Transaction_Transaction $transaction, $amount)
     {
         foreach ($transaction->getTransactionLogHistory()->getItems() as $item) {
-            if ($item->getOperation() != Transaction::TRANSACTION_OPERATION_REFUND) {
+            if ($item->getOperation() != Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_OPERATION_REFUND) {
                 continue;
             }
             if (true !== $item->isOperationSuccess() && $item->getAmount() == $amount) {

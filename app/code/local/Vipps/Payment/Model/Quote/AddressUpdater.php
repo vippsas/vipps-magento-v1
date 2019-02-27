@@ -14,19 +14,14 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Quote;
-
-use Vipps\Payment\Gateway\Transaction\ShippingDetails;
-use Vipps\Payment\Model\Helper\Utility;
-
 /**
  * Class AddressUpdater
  * @package Vipps\Payment\Model\Quote
  */
-class AddressUpdater
+class Vipps_Payment_Model_Quote_AddressUpdater
 {
     /**
-     * @var Utility
+     * @var \Vipps_Payment_Model_Helper_Utility
      */
     private $utility;
 
@@ -35,7 +30,7 @@ class AddressUpdater
      */
     public function __construct()
     {
-        $this->utility = new Utility();
+        $this->utility = Mage::getSingleton('vipps_payment/helper_utility');
     }
 
     /**
@@ -82,7 +77,7 @@ class AddressUpdater
         $destAddress
             ->setStreet($sourceAddress->getStreet())
             ->setCity($sourceAddress->getCity())
-            ->setCountryId(ShippingDetails::NORWEGIAN_COUNTRY_ID)
+            ->setCountryId(Vipps_Payment_Gateway_Transaction_ShippingDetails::NORWEGIAN_COUNTRY_ID)
             ->setPostcode($sourceAddress->getPostcode())
             ->setSaveInAddressBook(false)
             ->setSameAsBilling(true)

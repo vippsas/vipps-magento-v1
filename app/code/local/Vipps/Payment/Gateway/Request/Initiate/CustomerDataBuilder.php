@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\Initiate;
-
 /**
  * Class CustomerInfo
  * @package Vipps\Payment\Gateway\Request\InitiateData
  */
-class CustomerDataBuilder extends AbstractDataBuilder
+class Vipps_Payment_Gateway_Request_Initiate_CustomerDataBuilder extends Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder
 {
     /**
      * Customer info block name

@@ -13,13 +13,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request;
 
 /**
  * Class GenericDataBuilder
  * @package Vipps\Payment\Gateway\Request
  */
-class GenericDataBuilder extends AbstractBuilder
+class Vipps_Payment_Gateway_Request_GenericDataBuilder extends Vipps_Payment_Gateway_Request_AbstractBuilder
 {
     /**
      * This builders for passing parameters into TransferFactory object.

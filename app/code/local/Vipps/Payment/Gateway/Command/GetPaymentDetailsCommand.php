@@ -14,23 +14,19 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
 /**
  * Class RefundCommand
- * @package Vipps\Payment\Gateway\Command
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class GetPaymentDetailsCommand extends GatewayCommand
+class Vipps_Payment_Gateway_Command_GetPaymentDetailsCommand extends Vipps_Payment_Gateway_Command_GatewayCommand
 {
     public function __construct()
     {
         parent::__construct(
-            new \Vipps\Payment\Gateway\Request\BuilderComposite\VippsGetPaymentDetailsRequest(),
-            new \Vipps\Payment\Gateway\Http\TransferFactory('GET', '/ecomm/v2/payments/:orderId/details', ['orderId' => 'orderId']),
-            new \Vipps\Payment\Gateway\Http\Client\Curl(),
+            new Vipps_Payment_Gateway_Request_BuilderComposite_VippsGetPaymentDetailsRequest(),
+            new Vipps_Payment_Gateway_Http_TransferFactory('GET', '/ecomm/v2/payments/:orderId/details', ['orderId' => 'orderId']),
+            new Vipps_Payment_Gateway_Http_Client_Curl(),
             null,
-            new \Vipps\Payment\Gateway\Validator\Composite\VippsGetPaymentDetailsValidator()
+            new Vipps_Payment_Gateway_Validator_Composite_VippsGetPaymentDetailsValidator()
         );
     }
 }

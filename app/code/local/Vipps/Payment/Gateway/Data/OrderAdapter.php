@@ -14,32 +14,23 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
 /**
  * Class OrderAdapter
  */
-class OrderAdapter implements OrderAdapterInterface
+class Vipps_Payment_Gateway_Data_OrderAdapter implements Vipps_Payment_Gateway_Data_OrderAdapterInterface
 {
     /**
-     * @var Order
+     * @var Mage_Sales_Model_Order
      */
     private $order;
 
     /**
-     * @var AddressAdapter
-     */
-    private $addressAdapterFactory;
-
-    /**
-     * @param Order $order
-     * @param AddressAdapterFactory $addressAdapterFactory
+     * @param Mage_Sales_Model_Order $order
      */
     public function __construct(
         \Mage_Sales_Model_Order $order
     ) {
         $this->order = $order;
-//        $this->addressAdapterFactory = $addressAdapterFactory;
     }
 
     /**

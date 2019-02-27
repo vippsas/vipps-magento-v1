@@ -14,16 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Exception\MerchantException;
-use Vipps\Payment\Gateway\Request\Initiate\MerchantDataBuilder;
-use Vipps\Payment\Model\Adapter\CartRepository;
-use Vipps\Payment\Model\OrderPlace;
-use Vipps\Payment\Model\OrderRepository;
-use Vipps\Payment\Model\Quote\AttemptManagement;
-use Vipps\Payment\Model\QuoteLocator;
-use Vipps\Payment\Model\QuoteManagement;
-use Vipps\Payment\Model\QuoteStatusInterface;
-
 /**
  * Class Fallback
  * @package Vipps\Payment\Controller\Payment
@@ -37,37 +27,37 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     private $checkoutSession;
 
     /**
-     * @var OrderPlace
+     * @var Vipps_Payment_Model_OrderPlace
      */
     private $orderPlace;
 
     /**
-     * @var CartRepository
+     * @var Vipps_Payment_Model_Adapter_CartRepository
      */
     private $cartRepository;
 
     /**
-     * @var QuoteLocator
+     * @var Vipps_Payment_Model_QuoteLocator
      */
     private $quoteLocator;
 
     /**
-     * @var OrderRepository
+     * @var Vipps_Payment_Model_OrderRepository
      */
     private $orderLocator;
 
     /**
-     * @var QuoteManagement
+     * @var Vipps_Payment_Model_QuoteManagement
      */
     private $vippsQuoteManagement;
 
     /**
-     * @var AttemptManagement
+     * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
     private $attemptManagement;
 
     /**
-     * @var \Mage_Sales_Model_Quote
+     * @var Mage_Sales_Model_Quote
      */
     private $quote;
 
@@ -83,13 +73,13 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     {
         parent::preDispatch();
 
-        $this->checkoutSession = \Mage::getSingleton('checkout/session');
-        $this->orderPlace = new OrderPlace();
-        $this->cartRepository = new CartRepository();
-        $this->quoteLocator = new QuoteLocator();
-        $this->orderLocator = new OrderRepository();
-        $this->vippsQuoteManagement = new QuoteManagement();
-        $this->attemptManagement = new AttemptManagement();
+        $this->checkoutSession = Mage::getSingleton('checkout/session');
+        $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
+        $this->quoteLocator = Mage::getSingleton('vipps_payment/quoteLocator');
+        $this->orderLocator = Mage::getSingleton('vipps_payment/orderRepository');
+        $this->vippsQuoteManagement = Mage::getSingleton('vipps_payment/quoteManagement');
+        $this->attemptManagement = Mage::getSingleton('vipps_payment/quote_attemptManagement');
 
         return $this;
     }
@@ -106,13 +96,13 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             $quote = $this->getQuote();
             $order = $this->getOrder();
             $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
-            $vippsQuote->setStatus(QuoteStatusInterface::STATUS_PROCESSING);
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING);
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
             if (!$order) {
                 $order = $this->placeOrder($quote, $vippsQuote, $attempt);
             }
             $attemptMessage = __('Placed');
-            $vippsQuote->setStatus(QuoteStatusInterface::STATUS_PLACED);
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED);
             $this->updateCheckoutSession($quote, $order);
             $redirectPath = 'checkout/onepage/success';
         } catch (Mage_Core_Exception $e) {
@@ -141,8 +131,8 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     /**
      * Request authorization process
      *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @return bool
+     * @throws Exception
      */
     private function authorize()
     {
@@ -152,13 +142,13 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             throw new Exception('Invalid request parameters');
         }
 
-        /** @var \Mage_Sales_Model_Quote $quote */
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote = $this->getQuote();
         if ($quote) {
             $additionalInfo = $quote->getPayment()->getAdditionalInformation();
 
-            $fallbackAuthToken = isset($additionalInfo[MerchantDataBuilder::FALLBACK_AUTH_TOKEN])
-                ? $additionalInfo[MerchantDataBuilder::FALLBACK_AUTH_TOKEN]
+            $fallbackAuthToken = isset($additionalInfo[Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder::FALLBACK_AUTH_TOKEN])
+                ? $additionalInfo[Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder::FALLBACK_AUTH_TOKEN]
                 : null;
             $accessToken = $this->getRequest()->getParam('access_token', '');
             if ($fallbackAuthToken === $accessToken) {
@@ -172,7 +162,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     /**
      * Retrieve quote from quote repository if no then from order
      *
-     * @return \Mage_Sales_Model_Quote|bool
+     * @return Mage_Sales_Model_Quote|bool
      * @throws NoSuchEntityException
      */
     private function getQuote()
@@ -206,20 +196,20 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      *
      * @param \Vipps_Payment_Model_Quote $vippsQuote
      * @param \Vipps_Payment_Model_Quote_Attempt $attempt
-     * @return OrderInterface|null
-     * @throws MerchantException
-     * @throws \Mage_Core_Exception
-     * @throws \Vipps\Payment\Gateway\Exception\VippsException
-     * @throws \Vipps\Payment\Gateway\Exception\WrongAmountException
+     * @return Mage_Sales_Model_Order|null
+     * @throws Vipps_Payment_Gateway_Exception_MerchantException
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Exception_VippsException
+     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
     private function placeOrder(
-        \Mage_Sales_Model_Quote $quote,
+        Mage_Sales_Model_Quote $quote,
         \Vipps_Payment_Model_Quote $vippsQuote,
         \Vipps_Payment_Model_Quote_Attempt $attempt)
     {
@@ -230,7 +220,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             $transaction = $this->transactionBuilder->setData($response)->build();
             if ($transaction->isTransactionAborted()) {
                 $attempt->setMessage('Transaction was cancelled in Vipps');
-                $vippsQuote->setStatus(QuoteStatusInterface::STATUS_CANCELED);
+                $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED);
                 $this->restoreQuote();
             }
             $order = $this->orderPlace->execute($quote, $transaction);
@@ -238,9 +228,9 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
                 Mage::throwException(__('Couldn\'t get information about order status right now. Please contact a store administrator.'));
             }
             return $order;
-        } catch (MerchantException $e) {
+        } catch (Vipps_Payment_Gateway_Exception_MerchantException $e) {
             //@todo workaround for vipps issue with order cancellation (delete this condition after fix) //@codingStandardsIgnoreLine
-            if ($e->getCode() == MerchantException::ERROR_CODE_REQUESTED_ORDER_NOT_FOUND) {
+            if ($e->getCode() == Vipps_Payment_Gateway_Exception_MerchantException::ERROR_CODE_REQUESTED_ORDER_NOT_FOUND) {
                 $this->restoreQuote();
             } else {
                 throw $e;
@@ -249,14 +239,13 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     }
 
     /**
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @throws Mage_Core_Exception
      */
     private function restoreQuote()
     {
         $quote = $this->getQuote();
 
-        /** @var \Mage_Sales_Model_Quote $quote */
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote->setIsActive(true);
         $quote->setReservedOrderId(null);
         $this->cartRepository->save($quote);
@@ -269,10 +258,10 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     /**
      * Method to update Checkout session for success page when order was placed with Callback Controller.
      *
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param \Mage_Sales_Model_Order $order
      */
-    private function updateCheckoutSession(\Mage_Sales_Model_Quote $quote, \Mage_Sales_Model_Order $order = null)
+    private function updateCheckoutSession(Mage_Sales_Model_Quote $quote, \Mage_Sales_Model_Order $order = null)
     {
         $this->checkoutSession->setLastQuoteId($quote->getId());
         if ($order) {

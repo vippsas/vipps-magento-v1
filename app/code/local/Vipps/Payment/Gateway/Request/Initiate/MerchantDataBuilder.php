@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\Initiate;
-
 /**
  * Class MerchantInfo
  * @package Vipps\Payment\Gateway\Request\InitiateData
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class MerchantDataBuilder extends AbstractDataBuilder
+class Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder extends Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder
 {
     /**
      * Merchant info block name

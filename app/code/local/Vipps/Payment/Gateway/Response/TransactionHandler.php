@@ -13,20 +13,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Response;
-
-//use Magento\Payment\Gateway\Response\HandlerInterface;
-//use Magento\Sales\Model\Order\{Payment, Payment\Transaction as PaymentTransaction};
-use Vipps\Payment\Gateway\Request\SubjectReader;
-use Vipps\Payment\Gateway\Transaction\Transaction;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
 
 /**
  * Class TransactionHandler
- * @package Vipps\Payment\Gateway\Response
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class TransactionHandler extends HandlerAbstract
+class Vipps_Payment_Gateway_Response_TransactionHandler extends Vipps_Payment_Gateway_Response_HandlerAbstract
 {
     /**
      * {@inheritdoc}
@@ -47,7 +38,7 @@ class TransactionHandler extends HandlerAbstract
             $status = $transaction->getTransactionInfo()->getStatus();
             $transactionId = $transaction->getTransactionInfo()->getTransactionId();
 
-            if ($status == Transaction::TRANSACTION_STATUS_CANCELLED) {
+            if ($status == Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_CANCELLED) {
                 $transactionId .= '-void';
             }
             $payment->setTransactionId($transactionId);

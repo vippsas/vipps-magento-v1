@@ -15,24 +15,11 @@
  *
  */
 
-namespace Vipps\Payment\Model\Quote;
-
-use Vipps\Payment\Model\Adapter\Quote\AttemptFactory;
-
 /**
  * Attempt Management.
  */
-class AttemptManagement
+class Vipps_Payment_Model_Quote_AttemptManagement
 {
-    /**
-     * AttemptManagement constructor.
-     *
-     */
-    public function __construct()
-    {
-        $this->attemptFactory = new AttemptFactory();
-    }
-
     /**
      * Create new saved attempt. Increment attempt count. Fill it with message later.
      *
@@ -44,13 +31,9 @@ class AttemptManagement
     public function createAttempt(\Vipps_Payment_Model_Quote $quote, $ignoreIncrement = false)
     {
         /** @var \Vipps_Payment_Model_Quote_Attempt $attempt */
-        $attempt = $this
-            ->attemptFactory
-            ->create(['parent_id' => $quote->getId()])
-            ->setDataChanges(true);
-
-        // Saving attempt right immediately after creation cause it's already happened.
-        $attempt->save();
+        $attempt = \Mage::getModel('vipps_payment/quote_attempt')
+            ->setParentId($quote->getId())
+            ->save();
 
         if (!$ignoreIncrement) {
             // Increase attempt counter.

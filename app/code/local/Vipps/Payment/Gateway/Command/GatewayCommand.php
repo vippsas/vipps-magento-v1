@@ -14,106 +14,97 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Http\Client\ClientInterface;
-use Vipps\Payment\Gateway\Http\Transfer;
-use Vipps\Payment\Gateway\Http\TransferFactory;
-use Vipps\Payment\Gateway\Request\BuilderInterface;
-use Vipps\Payment\Gateway\Request\SubjectReader;
-use Vipps\Payment\Gateway\Response\HandlerInterface;
-use Vipps\Payment\Gateway\Validator\Result;
-use Vipps\Payment\Gateway\Validator\ValidatorInterface;
-use Vipps\Payment\Model\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Adapter\Logger;
-use Vipps\Payment\Model\Helper\Formatter;
-use Vipps\Payment\Model\Profiling\Profiler;
-
-
 /**
  * Class GatewayCommand
- * @api
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class GatewayCommand implements CommandInterface
+class Vipps_Payment_Gateway_Command_GatewayCommand implements Vipps_Payment_Gateway_Command_CommandInterface
 {
-    use Formatter;
+    use Vipps_Payment_Model_Helper_Formatter;
 
     /**
-     * @var BuilderInterface
+     * @var Vipps_Payment_Gateway_Request_BuilderInterface
      */
     protected $requestBuilder;
 
     /**
-     * @var TransferFactory
+     * @var Vipps_Payment_Gateway_Http_TransferFactory
      */
     protected $transferFactory;
 
     /**
-     * @var ClientInterface
+     * @var Vipps_Payment_Gateway_Http_Client_ClientInterface
      */
     protected $client;
 
     /**
-     * @var HandlerInterface
+     * @var \Vipps_Payment_Gateway_Response_HandlerInterface
      */
     protected $handler;
 
     /**
-     * @var ValidatorInterface
+     * @var Vipps_Payment_Gateway_Validator_ValidatorInterface
      */
     protected $validator;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\Logger
+     * @var \Vipps_Payment_Model_Adapter_Logger
      */
     protected $logger;
 
     /**
-     * @var ExceptionFactory
+     * @var \Vipps_Payment_Gateway_Exception_ExceptionFactory
      */
     protected $exceptionFactory;
 
     /**
-     * @var JsonEncoder
+     * @var \Vipps_Payment_Model_Adapter_JsonEncoder
      */
     protected $jsonDecoder;
 
     /**
-     * @var Profiler
+     * @var \Vipps_Payment_Model_Profiling_Profiler
      */
     protected $profiler;
 
+    /**
+     * @var \Vipps_Payment_Gateway_Request_SubjectReader
+     */
     protected $subjectReader;
+
+    /**
+     * @var Vipps_Payment_Helper_Gateway
+     */
+    protected $helper;
 
     /**
      * GatewayCommand constructor.
      *
-     * @param BuilderInterface $requestBuilder
-     * @param TransferFactory $transferFactory
-     * @param ClientInterface $client
-     * @param Profiler $profiler
-     * @param HandlerInterface|null $handler
-     * @param ValidatorInterface|null $validator
+     * @param Vipps_Payment_Gateway_Request_BuilderInterface $requestBuilder
+     * @param \Vipps_Payment_Gateway_Http_TransferFactory $transferFactory
+     * @param Vipps_Payment_Gateway_Http_Client_ClientInterface $client
+     * @param \Vipps_Payment_Gateway_Response_HandlerInterface|null $handler
+     * @param Vipps_Payment_Gateway_Validator_ValidatorInterface|null $validator
+     * @throws Mage_Core_Exception
      */
     public function __construct(
-        BuilderInterface $requestBuilder,
-        TransferFactory $transferFactory,
-        ClientInterface $client,
-        HandlerInterface $handler = null,
-        ValidatorInterface $validator = null
+        Vipps_Payment_Gateway_Request_BuilderInterface $requestBuilder,
+        Vipps_Payment_Gateway_Http_TransferFactory $transferFactory,
+        Vipps_Payment_Gateway_Http_Client_ClientInterface $client,
+        Vipps_Payment_Gateway_Response_HandlerInterface $handler = null,
+        Vipps_Payment_Gateway_Validator_ValidatorInterface $validator = null
     ) {
+        $this->helper = Mage::helper('vipps_payment/gateway');
         $this->requestBuilder = $requestBuilder;
         $this->transferFactory = $transferFactory;
         $this->client = $client;
         $this->handler = $handler;
         $this->validator = $validator;
 
-        $this->logger = new Logger();
-        $this->exceptionFactory = new \Vipps\Payment\Gateway\Exception\ExceptionFactory();
-        $this->jsonDecoder = new JsonEncoder();
-        $this->subjectReader = new SubjectReader();
-        $this->profiler = new Profiler();
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+        $this->jsonDecoder = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->profiler = Mage::getModel('vipps_payment/profiling_profiler');
+        $this->exceptionFactory = $this->helper->getSingleton('exception_exceptionFactory');
+        $this->subjectReader = $this->helper->getSingleton('request_subjectReader');
     }
 
     /**
@@ -121,7 +112,7 @@ class GatewayCommand implements CommandInterface
      *
      * @param array $commandSubject
      *
-     * @return Result|array|null
+     * @return Vipps_Payment_Gateway_Validator_Result|array|null
      * @throws \Exception
      */
     public function execute(array $commandSubject)
@@ -161,7 +152,7 @@ class GatewayCommand implements CommandInterface
             );
             if (!$validationResult->isValid()) {
                 $this->logValidationFails($validationResult->getFailsDescription());
-                throw new CommandException(
+                throw new Vipps_Payment_Gateway_Command_CommandException(
                     __('Transaction validation failed.')
                 );
             }
@@ -191,7 +182,7 @@ class GatewayCommand implements CommandInterface
     }
 
     /**
-     * @param Transfer $transfer
+     * @param Vipps_Payment_Gateway_Http_Transfer $transfer
      * @param array $responseBody
      *
      * @return string|null

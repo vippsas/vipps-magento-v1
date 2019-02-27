@@ -14,20 +14,16 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Profiling;
-
 /**
- * Class ItemFactory
+ * Class Factory
  */
-class ItemFactory
+class Vipps_Payment_Model_Adapter_QuoteFactory
 {
     /**
-     * @param null $data
-     * @return false|\Mage_Core_Model_Abstract
+     * @return \Vipps_Payment_Model_Quote
      */
-    public function create($data = null)
+    public function create()
     {
-        return \Mage::getModel('vipps_payment/profiling_item', [$data]);
+        return \Mage::getModel('vipps_payment/quote');
     }
 }
-

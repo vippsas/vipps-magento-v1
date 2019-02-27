@@ -13,15 +13,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request;
 
 /**
  * Class Transaction
- * @package Vipps\Payment\Gateway\Request\InitiateData
  */
-class TransactionDataBuilder extends AbstractBuilder
+class Vipps_Payment_Gateway_Request_TransactionDataBuilder extends Vipps_Payment_Gateway_Request_AbstractBuilder
 {
-    use Vipps\Payment\Helper\Formatter;
+    use Vipps_Payment_Model_Helper_Formatter;
 
     /**
      * Amount in order. 32 Bit Integer (2147483647)

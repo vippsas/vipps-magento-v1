@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
-interface PaymentDataObjectInterface
+interface Vipps_Payment_Gateway_Data_PaymentDataObjectInterface
 {
     /**
      * Returns order
      *
-     * @return OrderAdapterInterface
+     * @return \Vipps_Payment_Gateway_Data_OrderAdapterInterface
      */
     public function getOrder();
 

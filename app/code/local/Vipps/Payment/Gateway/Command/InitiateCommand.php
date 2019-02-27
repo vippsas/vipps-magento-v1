@@ -14,23 +14,23 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
 /**
  * Class RefundCommand
- * @package Vipps\Payment\Gateway\Command
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class InitiateCommand extends GatewayCommand
+class Vipps_Payment_Gateway_Command_InitiateCommand extends Vipps_Payment_Gateway_Command_GatewayCommand
 {
+    /**
+     * Vipps_Payment_Gateway_Command_InitiateCommand constructor.
+     * @throws Mage_Core_Exception
+     */
     public function __construct()
     {
         parent::__construct(
-            new \Vipps\Payment\Gateway\Request\BuilderComposite\VippsInitiateRequest(),
-            new \Vipps\Payment\Gateway\Http\TransferFactory('POST', '/ecomm/v2/payments'),
-            new \Vipps\Payment\Gateway\Http\Client\Curl(),
-            new \Vipps\Payment\Gateway\Response\InitiateHandler(),
-            new \Vipps\Payment\Gateway\Validator\Composite\VippsInitiateValidator()
+            new Vipps_Payment_Gateway_Request_BuilderComposite_VippsInitiateRequest(),
+            new Vipps_Payment_Gateway_Http_TransferFactory('POST', '/ecomm/v2/payments'),
+            new Vipps_Payment_Gateway_Http_Client_Curl(),
+            new Vipps_Payment_Gateway_Response_InitiateHandler(),
+            new Vipps_Payment_Gateway_Validator_Composite_VippsInitiateValidator()
         );
     }
 }

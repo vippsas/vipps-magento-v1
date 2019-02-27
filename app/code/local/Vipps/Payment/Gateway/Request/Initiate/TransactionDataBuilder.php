@@ -13,20 +13,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Request\Initiate;
-
-use Vipps\Payment\Model\Helper\Formatter;
-
-//use Magento\Quote\Model\Quote\Payment;
 
 /**
  * Class Transaction
- * @package Vipps\Payment\Gateway\Request\InitiateData
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class TransactionDataBuilder extends AbstractDataBuilder
+class Vipps_Payment_Gateway_Request_Initiate_TransactionDataBuilder extends Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder
 {
-    use Formatter;
+    use Vipps_Payment_Model_Helper_Formatter;
 
     /**
      * Transaction block name

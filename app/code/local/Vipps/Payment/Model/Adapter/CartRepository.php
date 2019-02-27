@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Emulate magento cart repository.
  *
  * Class CartRepository
  */
-class CartRepository
+class Vipps_Payment_Model_Adapter_CartRepository
 {
     /**
      * @param int $quoteId

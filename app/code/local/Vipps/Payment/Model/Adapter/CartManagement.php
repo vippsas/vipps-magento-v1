@@ -14,20 +14,51 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
- * Class Config
+ * Class CartManagement
  */
-class Config
+class Vipps_Payment_Model_Adapter_CartManagement
 {
     /**
-     * @param $field
-     * @param null $storeId
-     * @return mixed
+     * @var \Mage_Checkout_Model_Cart_Api
      */
-    public function getValue($field, $storeId = null)
+    private $orderApi;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * CartManagement constructor.
+     */
+    public function __construct()
     {
-        return \Mage::getStoreConfig($field, $storeId);
+        $this->orderApi = \Mage::getModel('checkout/cart_api');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+    }
+
+    /**
+     * @param $cartId
+     * @return mixed
+     * @throws \Mage_Core_Exception
+     */
+    public function placeOrder($cartId)
+    {
+        try {
+            /** @var \Mage_Sales_Model_Order $order */
+            $order = $this->orderApi->createOrder($cartId);
+
+            if ($order !== null) {
+                return $order;
+            }
+        } catch (\Exception $e) {
+            $this->logger->critical($e->getMessage());
+        }
+
+        throw new \Mage_Core_Exception(
+            __('An error occurred on the server. Please try to place the order again.')
+        );
     }
 }
+

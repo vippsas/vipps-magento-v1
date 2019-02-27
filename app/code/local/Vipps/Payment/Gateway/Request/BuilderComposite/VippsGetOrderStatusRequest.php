@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\BuilderComposite;
-
-class VippsGetOrderStatusRequest extends \Vipps\Payment\Gateway\Request\BuilderComposite
+class Vipps_Payment_Gateway_Request_BuilderComposite_VippsGetOrderStatusRequest extends Vipps_Payment_Gateway_Request_BuilderComposite
 {
     public function __construct(array $builders = [])
     {
-        $builders['generic'] = new \Vipps\Payment\Gateway\Request\GenericDataBuilder();
+        $builders['generic'] = Mage::helper('vipps_payment/gateway')->getSingleton('request_genericDataBuilder');
 
         parent::__construct($builders);
     }

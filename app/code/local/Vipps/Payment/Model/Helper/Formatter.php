@@ -14,14 +14,12 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Helper;
-
 /**
  * Class Formatter
  * @api
  * @since 100.1.0
  */
-trait Formatter
+trait Vipps_Payment_Model_Helper_Formatter
 {
     /**
      * Format price to 0.00 format

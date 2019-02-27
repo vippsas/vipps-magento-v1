@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Transaction;
-
 /**
  * Class Transaction
  * @package Vipps\Payment\Gateway\Transaction
  */
-class Transaction
+class Vipps_Payment_Gateway_Transaction_Transaction
 {
     /**
      * @var string
@@ -123,45 +121,45 @@ class Transaction
     const TRANSACTION_OPERATION_VOID = 'void';
 
     /**
-     * @var TransactionInfo
+     * @var Vipps_Payment_Gateway_Transaction_TransactionInfo
      */
     private $transactionInfo;
 
     /**
-     * @var TransactionSummary
+     * @var Vipps_Payment_Gateway_Transaction_TransactionSummary
      */
     private $transactionSummary;
 
     /**
-     * @var TransactionLogHistory
+     * @var \Vipps_Payment_Gateway_Transaction_TransactionLogHistory
      */
     private $transactionLogHistory;
 
     /**
-     * @var UserDetails
+     * @var Vipps_Payment_Gateway_Transaction_UserDetails
      */
     private $userDetails;
 
     /**
-     * @var ShippingDetails
+     * @var \Vipps_Payment_Gateway_Transaction_ShippingDetails
      */
     private $shippingDetails;
 
     /**
      * Transaction constructor.
      *
-     * @param TransactionInfo $transactionInfo
-     * @param TransactionSummary $transactionSummary
-     * @param TransactionLogHistory $transactionLogHistory
-     * @param UserDetails|null $userDetails
-     * @param ShippingDetails|null $shippingDetails
+     * @param Vipps_Payment_Gateway_Transaction_TransactionInfo $transactionInfo
+     * @param Vipps_Payment_Gateway_Transaction_TransactionSummary $transactionSummary
+     * @param Vipps_Payment_Gateway_Transaction_TransactionLogHistory $transactionLogHistory
+     * @param \Vipps_Payment_Gateway_Transaction_UserDetails|null $userDetails
+     * @param \Vipps_Payment_Gateway_Transaction_ShippingDetails|null $shippingDetails
      */
     public function __construct(
-        TransactionInfo $transactionInfo,
-        TransactionSummary $transactionSummary,
-        TransactionLogHistory $transactionLogHistory,
-        UserDetails $userDetails = null,
-        ShippingDetails $shippingDetails = null
+        Vipps_Payment_Gateway_Transaction_TransactionInfo $transactionInfo,
+        Vipps_Payment_Gateway_Transaction_TransactionSummary $transactionSummary,
+        Vipps_Payment_Gateway_Transaction_TransactionLogHistory $transactionLogHistory,
+        \Vipps_Payment_Gateway_Transaction_UserDetails $userDetails = null,
+        \Vipps_Payment_Gateway_Transaction_ShippingDetails $shippingDetails = null
     ) {
         $this->transactionInfo = $transactionInfo;
         $this->transactionSummary = $transactionSummary;
@@ -171,7 +169,7 @@ class Transaction
     }
 
     /**
-     * @return TransactionSummary
+     * @return Vipps_Payment_Gateway_Transaction_TransactionSummary
      */
     public function getTransactionSummary()
     {
@@ -179,7 +177,7 @@ class Transaction
     }
 
     /**
-     * @return null|UserDetails
+     * @return null|\Vipps_Payment_Gateway_Transaction_UserDetails
      */
     public function getUserDetails()
     {
@@ -209,11 +207,11 @@ class Transaction
      */
     public function isInitiate()
     {
-        return $this->getTransactionInfo()->getStatus() === Transaction::TRANSACTION_STATUS_INITIATE;
+        return $this->getTransactionInfo()->getStatus() === self::TRANSACTION_STATUS_INITIATE;
     }
 
     /**
-     * @return TransactionInfo
+     * @return Vipps_Payment_Gateway_Transaction_TransactionInfo
      */
     public function getTransactionInfo()
     {
@@ -226,12 +224,12 @@ class Transaction
     public function isTransactionAborted()
     {
         $abortedStatuses = [
-            Transaction::TRANSACTION_STATUS_CANCEL,
-            Transaction::TRANSACTION_STATUS_CANCELLED,
-            Transaction::TRANSACTION_STATUS_AUTOCANCEL,
-            Transaction::TRANSACTION_STATUS_REJECTED,
-            Transaction::TRANSACTION_STATUS_FAILED,
-            Transaction::TRANSACTION_STATUS_VOID
+            self::TRANSACTION_STATUS_CANCEL,
+            self::TRANSACTION_STATUS_CANCELLED,
+            self::TRANSACTION_STATUS_AUTOCANCEL,
+            self::TRANSACTION_STATUS_REJECTED,
+            self::TRANSACTION_STATUS_FAILED,
+            self::TRANSACTION_STATUS_VOID
         ];
 
         return in_array($this->getTransactionInfo()->getStatus(), $abortedStatuses);
@@ -245,8 +243,8 @@ class Transaction
     public function isTransactionReserved()
     {
         $statuses = [
-            Transaction::TRANSACTION_STATUS_RESERVE,
-            Transaction::TRANSACTION_STATUS_RESERVED
+            self::TRANSACTION_STATUS_RESERVE,
+            self::TRANSACTION_STATUS_RESERVED
         ];
         if (in_array($this->getTransactionInfo()->getStatus(), $statuses)) {
             return true;
@@ -267,7 +265,7 @@ class Transaction
     }
 
     /**
-     * @return TransactionLogHistory
+     * @return Vipps_Payment_Gateway_Transaction_TransactionLogHistory
      */
     public function getTransactionLogHistory()
     {

@@ -14,29 +14,20 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Data;
-
-class QuoteAdapter implements OrderAdapterInterface
+class Vipps_Payment_Gateway_Data_QuoteAdapter implements \Vipps_Payment_Gateway_Data_OrderAdapterInterface
 {
     /**
-     * @var CartInterface
+     * @var Vipps_Payment_Model_Quote
      */
     private $quote;
 
     /**
-     * @var AddressAdapter
-     */
-    private $addressAdapterFactory;
-
-    /**
-     * @param CartInterface $quote
-     * @param AddressAdapterFactory $addressAdapterFactory
+     * @param Mage_Sales_Model_Quote $quote
      */
     public function __construct(
         \Mage_Sales_Model_Quote $quote
     ) {
         $this->quote = $quote;
-//        $this->addressAdapterFactory = $addressAdapterFactory;
     }
 
     /**
@@ -130,7 +121,7 @@ class QuoteAdapter implements OrderAdapterInterface
     /**
      * Returns list of line items in the cart
      *
-     * @return \Magento\Quote\Api\Data\CartItemInterface[]|null
+     * @return \Mage_Sales_Model_Quote_Item[]|null
      */
     public function getItems()
     {

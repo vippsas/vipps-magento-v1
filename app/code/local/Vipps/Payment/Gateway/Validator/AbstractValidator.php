@@ -14,21 +14,24 @@
  * IN THE SOFTWARE.
  */
 
-
-namespace Vipps\Payment\Gateway\Validator;
-
-use Vipps\Payment\Gateway\Request\SubjectReader;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
-
-abstract class AbstractValidator implements ValidatorInterface
+/**
+ * Class AbstractValidator
+ */
+abstract class Vipps_Payment_Gateway_Validator_AbstractValidator implements Vipps_Payment_Gateway_Validator_ValidatorInterface
 {
+    /**
+     * @var \Vipps_Payment_Gateway_Request_SubjectReader
+     */
     protected $subjectReader;
     protected $transactionBuilder;
 
+    /**
+     * AbstractValidator constructor.
+     */
     public function __construct()
     {
-        $this->subjectReader = new SubjectReader();
-        $this->transactionBuilder = new TransactionBuilder();
+        $this->subjectReader = Mage::helper('vipps_payment/gateway')->getSingleton('request_subjectReader');
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
 
     }
 
@@ -37,10 +40,10 @@ abstract class AbstractValidator implements ValidatorInterface
      *
      * @param bool $isValid
      * @param array $fails
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     protected function createResult($isValid, array $fails = [])
     {
-        return new Result((bool)$isValid, $fails);
+        return new Vipps_Payment_Gateway_Validator_Result((bool)$isValid, $fails);
     }
 }

@@ -14,38 +14,31 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Gdpr;
-
-use Vipps\Payment\Model\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Adapter\Logger;
-
 /**
  * Applies Gdpr compliance.
  *
  * Class Compliance
  * @package Vipps\Payment\Model\Gdpr
  */
-class Compliance
+class Vipps_Payment_Model_Gdpr_Compliance
 {
     /**
-     * @var JsonEncoder
+     * @var Vipps_Payment_Model_Adapter_JsonEncoder
      */
     private $serializer;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\Logger
+     * @var Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
 
     /**
      * Compliance constructor.
-     * @param JsonEncoder $serializer
-     * @param \Vipps\Payment\Model\Adapter\Logger $logger
      */
     public function __construct()
     {
-        $this->serializer = new JsonEncoder();
-        $this->logger = new Logger();
+        $this->serializer = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
     }
 
     /**

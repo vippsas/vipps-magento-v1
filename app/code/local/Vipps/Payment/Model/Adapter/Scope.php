@@ -14,12 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Class Scope
  */
-class Scope
+class Vipps_Payment_Model_Adapter_Scope
 {
     /**
      * @const string

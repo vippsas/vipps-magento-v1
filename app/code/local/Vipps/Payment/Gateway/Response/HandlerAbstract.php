@@ -14,26 +14,21 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Response;
-
-use Vipps\Payment\Gateway\Request\SubjectReader;
-use Vipps\Payment\Gateway\Transaction\TransactionBuilder;
-
-abstract class HandlerAbstract implements HandlerInterface
+abstract class Vipps_Payment_Gateway_Response_HandlerAbstract implements Vipps_Payment_Gateway_Response_HandlerInterface
 {
     /**
-     * @var SubjectReader
+     * @var \Vipps_Payment_Gateway_Request_SubjectReader
      */
     protected $subjectReader;
 
     /**
-     * @var TransactionBuilder
+     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
      */
     protected $transactionBuilder;
 
     public function __construct()
     {
-        $this->subjectReader = new SubjectReader();
-        $this->transactionBuilder = new TransactionBuilder();
+        $this->subjectReader = Mage::helper('vipps_payment/gateway')->getSingleton('request_subjectReader');
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
     }
 }

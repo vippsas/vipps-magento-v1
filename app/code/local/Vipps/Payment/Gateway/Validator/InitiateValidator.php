@@ -14,20 +14,17 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Validator;
-
 /**
  * Class InitiateValidator
- * @package Vipps\Payment\Gateway\Validator
  */
-class InitiateValidator extends AbstractValidator
+class Vipps_Payment_Gateway_Validator_InitiateValidator extends Vipps_Payment_Gateway_Validator_AbstractValidator
 {
     /**
      * @inheritdoc
      *
      * @param array $validationSubject
      *
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     public function validate(array $validationSubject)
     {

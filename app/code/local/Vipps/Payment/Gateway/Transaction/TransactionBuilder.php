@@ -14,14 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Transaction;
-
 /**
  * Class TransactionBuilder
- * @package Vipps\Payment\Gateway\Transaction
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class TransactionBuilder
+class Vipps_Payment_Gateway_Transaction_TransactionBuilder
 {
     /**
      * @var array
@@ -44,7 +40,7 @@ class TransactionBuilder
     /**
      * build transaction object
      *
-     * @return Transaction
+     * @return Vipps_Payment_Gateway_Transaction_Transaction
      */
     public function build()
     {
@@ -52,28 +48,28 @@ class TransactionBuilder
             $this->response['transactionInfo']
             : (isset($this->response['transaction']) ? $this->response['transaction'] : []);
 
-        $info = new TransactionInfo($infoData);
+        $info = new Vipps_Payment_Gateway_Transaction_TransactionInfo($infoData);
 
         $summaryData = isset($this->response['transactionSummary']) ? $this->response['transactionSummary'] : [];
-        $summary = new TransactionSummary($summaryData);
+        $summary = new Vipps_Payment_Gateway_Transaction_TransactionSummary($summaryData);
 
         $logHistoryData = isset($this->response['transactionLogHistory']) ? $this->response['transactionLogHistory'] : [];
         $items = [];
         foreach ($logHistoryData as $itemData) {
-            $items[] = new TransactionLogHistory\Item($itemData);
+            $items[] = new Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item($itemData);
         }
-        $logHistory = new TransactionLogHistory(['items' => $items]);
+        $logHistory = new Vipps_Payment_Gateway_Transaction_TransactionLogHistory(['items' => $items]);
 
         $userDetails = null;
         if (isset($this->response['userDetails'])) {
-            $userDetails = new UserDetails($this->response['userDetails']);
+            $userDetails = new Vipps_Payment_Gateway_Transaction_UserDetails($this->response['userDetails']);
         }
 
         $shippingDetails = null;
         if (isset($this->response['shippingDetails'])) {
-            $shippingDetails = new ShippingDetails($this->response['shippingDetails']);
+            $shippingDetails = new Vipps_Payment_Gateway_Transaction_ShippingDetails($this->response['shippingDetails']);
         }
 
-        return new Transaction($info, $summary, $logHistory, $userDetails, $shippingDetails);
+        return new Vipps_Payment_Gateway_Transaction_Transaction($info, $summary, $logHistory, $userDetails, $shippingDetails);
     }
 }

@@ -15,15 +15,13 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Validator;
-
-interface ValidatorInterface
+interface Vipps_Payment_Gateway_Validator_ValidatorInterface
 {
     /**
      * Performs domain-related validation for business object
      *
      * @param array $validationSubject
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     public function validate(array $validationSubject);
 }

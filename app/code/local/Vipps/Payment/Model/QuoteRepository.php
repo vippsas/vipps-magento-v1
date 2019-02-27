@@ -15,17 +15,13 @@
  *
  */
 
-namespace Vipps\Payment\Model;
-
-use Vipps\Payment\Model\Adapter\Quote\Factory;
-
 /**
  * Class QuoteRepository
  */
-class QuoteRepository
+class Vipps_Payment_Model_QuoteRepository
 {
     /**
-     * @var Factory
+     * @var \Vipps_Payment_Model_Adapter_QuoteFactory
      */
     private $quoteFactory;
 
@@ -34,7 +30,7 @@ class QuoteRepository
      */
     public function __construct()
     {
-        $this->quoteFactory = new Factory();
+        $this->quoteFactory = Mage::getSingleton('vipps_payment/adapter_quoteFactory');
     }
 
     /**

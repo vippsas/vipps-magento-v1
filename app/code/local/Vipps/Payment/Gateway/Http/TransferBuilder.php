@@ -13,14 +13,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Http;
 
 /**
  * Class TransferBuilder
- * @api
- * @since 100.0.2
  */
-class TransferBuilder
+class Vipps_Payment_Gateway_Http_TransferBuilder
 {
     /**
      * @var array
@@ -55,7 +52,7 @@ class TransferBuilder
     /**
      * @var array
      */
-    private $auth = [Transfer::AUTH_USERNAME => null, Transfer::AUTH_PASSWORD => null];
+    private $auth = [Vipps_Payment_Gateway_Http_Transfer::AUTH_USERNAME => null, Vipps_Payment_Gateway_Http_Transfer::AUTH_PASSWORD => null];
 
     /**
      * @param array $clientConfig
@@ -96,7 +93,7 @@ class TransferBuilder
      */
     public function setAuthUsername($username)
     {
-        $this->auth[Transfer::AUTH_USERNAME] = $username;
+        $this->auth[Vipps_Payment_Gateway_Http_Transfer::AUTH_USERNAME] = $username;
 
         return $this;
     }
@@ -107,7 +104,7 @@ class TransferBuilder
      */
     public function setAuthPassword($password)
     {
-        $this->auth[Transfer::AUTH_PASSWORD] = $password;
+        $this->auth[Vipps_Payment_Gateway_Http_Transfer::AUTH_PASSWORD] = $password;
 
         return $this;
     }
@@ -146,11 +143,11 @@ class TransferBuilder
     }
 
     /**
-     * @return Transfer
+     * @return Vipps_Payment_Gateway_Http_Transfer
      */
     public function build()
     {
-        return new Transfer(
+        return new Vipps_Payment_Gateway_Http_Transfer(
             $this->clientConfig,
             $this->headers,
             $this->body,

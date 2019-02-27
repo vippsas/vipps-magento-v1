@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter;
-
 /**
  * Class ResourceConnectionProvider
  * @package Vipps\Payment\Model\Adapter
  */
-class ResourceConnectionProvider
+class Vipps_Payment_Model_Adapter_ResourceConnectionProvider
 {
     /**
      * @return \Varien_Db_Adapter_Pdo_Mysql

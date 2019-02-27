@@ -15,7 +15,7 @@
  *
  */
 
-namespace Vipps\Payment\Model\Adapter\Quote;
+namespace Vipps\Payment\Model\Adapter;
 
 use Vipps\Payment\Model\Adapter\QuoteRepository;
 
@@ -61,7 +61,7 @@ class CancelFacade implements CancelFacadeInterface
      * @param QuoteInterface $vippsQuote
      * @param CartInterface $quote
      * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Throwable
+     * @throws \Exception
      */
     public function cancel(
         QuoteInterface $vippsQuote,
@@ -73,7 +73,7 @@ class CancelFacade implements CancelFacadeInterface
             $this->commandManager->cancel($quote->getPayment());
             $vippsQuote->setStatus(QuoteStatusInterface::STATUS_CANCELED);
             $attempt->setMessage('The order has been canceled.');
-        } catch (\Throwable $exception) {
+        } catch (\Exception $exception) {
             // Log the exception
             $vippsQuote->setStatus(QuoteStatusInterface::STATUS_CANCEL_FAILED);
             $attempt->setMessage($exception->getMessage());

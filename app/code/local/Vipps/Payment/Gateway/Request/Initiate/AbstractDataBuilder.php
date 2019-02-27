@@ -14,14 +14,14 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Request\Initiate;
-
-use Vipps\Payment\Gateway\Request\SubjectReader;
-
-abstract class AbstractDataBuilder implements InitiateBuilderInterface
+/**
+ * Class AbstractDataBuilder
+ * @package Vipps\Payment\Gateway\Request\Initiate
+ */
+abstract class Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder implements Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface
 {
     /**
-     * @var SubjectReader
+     * @var \Vipps_Payment_Gateway_Request_SubjectReader
      */
     protected $subjectReader;
 
@@ -31,14 +31,14 @@ abstract class AbstractDataBuilder implements InitiateBuilderInterface
     protected $urlBuilder;
 
     /**
-     * @var \Vipps\Payment\Model\Adapter\CartRepository
+     * @var \Vipps_Payment_Model_Adapter_CartRepository
      */
     protected $cartRepository;
 
     public function __construct()
     {
-        $this->subjectReader = new SubjectReader();
+        $this->subjectReader = Mage::helper('vipps_payment/gateway')->getSingleton('request_subjectReader');
         $this->urlBuilder = \Mage::getSingleton('core/url');
-        $this->cartRepository = new \Vipps\Payment\Model\Adapter\CartRepository();
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
     }
 }

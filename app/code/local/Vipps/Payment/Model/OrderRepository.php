@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model;
-
 /**
  * Class OrderRepository
  * @package Vipps\Payment\Model\Adapter
  */
-class OrderRepository
+class Vipps_Payment_Model_OrderRepository
 {
     /**
      * @param string $orderId

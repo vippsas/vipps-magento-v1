@@ -14,21 +14,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model;
-
-use Vipps\Payment\Gateway\Config\Config;
-use Vipps\Payment\Gateway\Exception\AuthenticationException;
-use Vipps\Payment\Gateway\Http\Client\Curl;
-use Vipps\Payment\Model\Adapter\JsonEncoder;
-use Vipps\Payment\Model\Adapter\Logger;
-use Vipps\Payment\Model\Adapter\ResourceConnectionProvider;
-use Vipps\Payment\Model\Adapter\ScopeResolver;
-use Vipps\Payment\Model\Adapter\ZendClient;
-
 /**
  * Class TokenProvider
  */
-class TokenProvider
+class Vipps_Payment_Model_TokenProvider
 {
     /**
      * Variable to reserve time for request duration.
@@ -43,32 +32,32 @@ class TokenProvider
     private static $endpointUrl = '/accessToken/get';
 
     /**
-     * @var ResourceConnectionProvider
+     * @var \Vipps_Payment_Model_Adapter_ResourceConnectionProvider
      */
     private $resourceConnection;
 
     /**
-     * @var Config
+     * @var Vipps_Payment_Gateway_Config_Config
      */
     private $config;
 
     /**
-     * @var UrlResolver
+     * @var Vipps_Payment_Model_UrlResolver
      */
     private $urlResolver;
 
     /**
-     * @var JsonEncoder
+     * @var \Vipps_Payment_Model_Adapter_JsonEncoder
      */
     private $serializer;
 
     /**
-     * @var Logger
+     * @var \Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
 
     /**
-     * @var ScopeResolver
+     * @var \Vipps_Payment_Model_Adapter_ScopeResolver
      */
     private $scopeResolver;
 
@@ -82,12 +71,12 @@ class TokenProvider
      */
     public function __construct()
     {
-        $this->resourceConnection = new Adapter\ResourceConnectionProvider();
-        $this->config = new Config();
-        $this->serializer = new Adapter\JsonEncoder();
-        $this->logger = new Logger();
-        $this->urlResolver = new UrlResolver();
-        $this->scopeResolver = new Adapter\ScopeResolver();
+        $this->resourceConnection = Mage::getSingleton('vipps_payment/adapter_resourceConnectionProvider');
+        $this->config = Mage::helper('vipps_payment/gateway')->getSingleton('config_config');
+        $this->serializer = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+        $this->urlResolver = Mage::getSingleton('vipps_payment/urlResolver');
+        $this->scopeResolver = Mage::getModel('vipps_payment/adapter_scopeResolver');
     }
 
     /**
@@ -177,22 +166,22 @@ class TokenProvider
      * Method to authenticate into Vipps API to retrieve access token(Json Web Token).
      *
      * @return array
-     * @throws AuthenticationException
+     * @throws Vipps_Payment_Gateway_Exception_AuthenticationException
      */
     private function readJwt()
     {
         /** Configuring headers for Vipps authentication method */
         $headers = [
-            Curl::HEADER_PARAM_CLIENT_ID        => $this->config->getValue('client_id'),
-            Curl::HEADER_PARAM_CLIENT_SECRET    => $this->config->getValue('client_secret'),
-            Curl::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
+            Vipps_Payment_Gateway_Http_Client_Curl::HEADER_PARAM_CLIENT_ID        => $this->config->getValue('client_id'),
+            Vipps_Payment_Gateway_Http_Client_Curl::HEADER_PARAM_CLIENT_SECRET    => $this->config->getValue('client_secret'),
+            Vipps_Payment_Gateway_Http_Client_Curl::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
         ];
-        /** @var ZendClient $client */
-        $client = new ZendClient();
+        /** @var Vipps_Payment_Model_Adapter_ZendClient $client */
+        $client = new Vipps_Payment_Model_Adapter_ZendClient();
         try {
             $client->setConfig(['strict' => false]);
             $client->setUri($this->urlResolver->getUrl(self::$endpointUrl));
-            $client->setMethod(ZendClient::POST);
+            $client->setMethod(Vipps_Payment_Model_Adapter_ZendClient::POST);
             $client->setHeaders($headers);
 
             /** Making request to Vipps
@@ -209,7 +198,9 @@ class TokenProvider
             $this->logger->debug('Token fetched from Vipps');
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
-            throw new AuthenticationException(__('Can\'t retrieve access token from Vipps.'));
+            throw new Vipps_Payment_Gateway_Exception_AuthenticationException(
+                __('Can\'t retrieve access token from Vipps.')
+            );
         }
         return $jwt;
     }

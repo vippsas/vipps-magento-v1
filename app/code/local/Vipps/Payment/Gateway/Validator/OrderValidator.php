@@ -13,19 +13,15 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Validator;
-
-use Vipps\Payment\Gateway\Request\SubjectReader;
 
 /**
  * Class OrderValidator
- * @package Vipps\Payment\Gateway\Validator
  */
-class OrderValidator extends AbstractValidator
+class Vipps_Payment_Gateway_Validator_OrderValidator extends Vipps_Payment_Gateway_Validator_AbstractValidator
 {
     /**
      * @param array $validationSubject
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     public function validate(array $validationSubject)
     {

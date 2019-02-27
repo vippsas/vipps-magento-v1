@@ -14,21 +14,13 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Validator\Composite;
-
-use Vipps\Payment\Gateway\Validator\AbstractValidator;
-use Vipps\Payment\Model\Helper\Pool;
-
 /**
  * Class ValidatorComposite
- * @package Magento\Payment\Gateway\Validator
- * @api
- * @since 100.0.2
  */
-class AbstractComposite extends AbstractValidator
+class Vipps_Payment_Gateway_Validator_Composite_AbstractComposite extends Vipps_Payment_Gateway_Validator_AbstractValidator
 {
     /**
-     * @var Pool
+     * @var \Vipps_Payment_Model_Helper_Pool
      */
     private $validatorsPool;
 
@@ -38,14 +30,15 @@ class AbstractComposite extends AbstractValidator
     public function __construct(
         array $validators = []
     ) {
-        $this->validatorsPool = new Pool($validators);
+        parent::__construct();
+        $this->validatorsPool = new Vipps_Payment_Model_Helper_Pool($validators);
     }
 
     /**
      * Performs domain level validation for business object
      *
      * @param array $validationSubject
-     * @return \Vipps\Payment\Gateway\Validator\Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     public function validate(array $validationSubject)
     {

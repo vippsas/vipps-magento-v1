@@ -14,9 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Request\Initiate\InitiateBuilderInterface;
-
 /**
  * Class Regular
  * @package Vipps\Payment\Controller\Payment
@@ -25,18 +22,19 @@ use Vipps\Payment\Gateway\Request\Initiate\InitiateBuilderInterface;
 class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_Abstract
 {
     /**
-     * @var \Mage_Checkout_Model_Session;
+     * @var Mage_Checkout_Model_Session;
      */
     private $session;
 
     /**
      * @return $this
+     * @throws Mage_Core_Exception
      */
     public function preDispatch()
     {
         parent::preDispatch();
 
-        $this->session = \Mage::getSingleton('checkout/session');
+        $this->session = Mage::getSingleton('checkout/session');
 
         return $this;
     }
@@ -56,15 +54,15 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
                 ->initiatePayment(
                     $quote->getPayment(), [
                         'amount' => $quote->getGrandTotal(),
-                        InitiateBuilderInterface::PAYMENT_TYPE_KEY
-                                 => InitiateBuilderInterface::PAYMENT_TYPE_REGULAR_PAYMENT
+                        Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_KEY
+                                 => Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_REGULAR_PAYMENT
                     ]
                 );
             if (isset($responseData['url'])) {
                 $this->session->clear();
                 return $this->_redirectUrl($responseData['url']);
             }
-        } catch (VippsException $e) {
+        } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
         } catch (\Mage_Core_Exception $e) {

@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Profiling;
-
 /**
  * Interface ItemInterface
  * @package Vipps\Payment\Api\Profiling\Data
  */
-interface ItemInterface
+interface Vipps_Payment_Model_Profiling_ItemInterface
 {
     /**
      * @var string

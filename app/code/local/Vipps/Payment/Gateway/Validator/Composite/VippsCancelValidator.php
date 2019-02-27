@@ -14,15 +14,13 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Validator\Composite;
-
-class VippsCancelValidator extends AbstractComposite
+class Vipps_Payment_Gateway_Validator_Composite_VippsCancelValidator extends Vipps_Payment_Gateway_Validator_Composite_AbstractComposite
 {
     public function __construct()
     {
         parent::__construct([
-            'order'       => new \Vipps\Payment\Gateway\Validator\OrderValidator(),
-            'transaction' => new \Vipps\Payment\Gateway\Validator\CancelTransactionValidator()
+            'order'       => new Vipps_Payment_Gateway_Validator_OrderValidator(),
+            'transaction' => new Vipps_Payment_Gateway_Validator_CancelTransactionValidator()
         ]);
     }
 }

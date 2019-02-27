@@ -18,7 +18,7 @@
 /**
  * Quote monitoring model.
  */
-class Vipps_Payment_Model_Quote extends Mage_Core_Model_Abstract implements \Vipps\Payment\Model\QuoteInterface
+class Vipps_Payment_Model_Quote extends Mage_Core_Model_Abstract implements Vipps_Payment_Model_QuoteInterface
 {
     /**
      * @param int $quoteId

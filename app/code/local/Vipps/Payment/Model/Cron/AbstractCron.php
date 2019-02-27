@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2019 Vipps
  *
@@ -13,21 +14,27 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
-namespace Vipps\Payment\Model\Adapter\Quote;
-
-/**
- * Class AttemptFactory
- * @package Vipps\Payment\Model\Adapter\Quote
- */
-class AttemptFactory
+class Vipps_Payment_Model_Cron_AbstractCron
 {
-    /**
-     * @param $data
-     * @return \Vipps_Payment_Model_Quote_Attempt
-     */
-    public function create($data)
+    protected $logger;
+    /** @var Mage_Core_Model_App_Emulation */
+    protected $storeEmulation;
+    protected $commandManager;
+
+    public function __construct()
     {
-        return \Mage::getModel('vipps_payment/quote_attempt', $data);
+        $this->registerAutoloader();
+
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+        $this->storeEmulation = Mage::getSingleton('core/app_emulation');
+        $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager');
+
+    }
+
+    private function registerAutoloader()
+    {
+        $autoloader = new Vipps_Payment_Model_Autoloader();
+        $autoloader->addAutoloader();
+
     }
 }

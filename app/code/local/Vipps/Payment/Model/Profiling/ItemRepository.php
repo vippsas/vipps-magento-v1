@@ -13,84 +13,70 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Model\Profiling;
 
 /**
  * Class ItemRepository
- * @package Vipps\Payment\Model\Profiling
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ItemRepository
+class Vipps_Payment_Model_Profiling_ItemRepository
 {
     /**
-     * @var ItemFactory
+     * @param Varien_Object $itemDo
+     * @return Mage_Core_Model_Abstract|
+     * @throws Mage_Core_Exception
      */
-    private $itemFactory;
-
-    /**
-     * ItemRepository constructor.
-     *
-     */
-    public function __construct() {
-        $this->itemFactory = new ItemFactory();
-    }
-
-    /**
-     * @param \Varien_Object $itemDo
-     * @return \Mage_Core_Model_Abstract|
-     * @throws \Mage_Core_Exception
-     */
-    public function save(\Varien_Object $itemDo)
+    public function save(Varien_Object $itemDo)
     {
         try {
-            $item = $this->itemFactory->create($itemDo->getData());
-            $item->save();
+            /** @var Vipps_Payment_Model_Profiling_Item $item */
+            $item = Mage::getModel('vipps_payment/profiling_item')
+                ->setData($itemDo->getData())
+                ->save();
         } catch (\Exception $exception) {
-            throw new \Mage_Core_Exception(__($exception->getMessage()));
+            throw new Mage_Core_Exception(__($exception->getMessage()));
         }
         return $item;
-    }
-
-    /**
-     * @param $itemId
-     *
-     * @return false|\Mage_Core_Model_Abstract
-     * @throws \Mage_Core_Exception
-     */
-    public function get($itemId)
-    {
-        $item = $this->itemFactory->create();
-        $item->load($itemId);
-        if (!$item->getId()) {
-            throw new \Mage_Core_Exception(__('Profiling item with id "%s" does not exist.', $itemId));
-        }
-        return $item;
-    }
-
-    /**
-     * @param \Vipps_Payment_Model_Profiling_Item $item
-     *
-     * @return bool
-     * @throws \Mage_Core_Exception
-     */
-    public function delete(\Vipps_Payment_Model_Profiling_Item $item)
-    {
-        try {
-            $item->delete();
-        } catch (\Exception $exception) {
-            throw new \Mage_Core_Exception(__($exception->getMessage()));
-        }
-        return true;
     }
 
     /**
      * @param int $itemId
      *
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function deleteById($itemId)
     {
         return $this->delete($this->get($itemId));
+    }
+
+    /**
+     * @param \Vipps_Payment_Model_Profiling_Item $item
+     *
+     * @return bool
+     * @throws Mage_Core_Exception
+     */
+    public function delete(\Vipps_Payment_Model_Profiling_Item $item)
+    {
+        try {
+            $item->delete();
+        } catch (\Exception $exception) {
+            throw new Mage_Core_Exception(__($exception->getMessage()));
+        }
+        return true;
+    }
+
+    /**
+     * @param $itemId
+     *
+     * @return false|Mage_Core_Model_Abstract
+     * @throws Mage_Core_Exception
+     */
+    public function get($itemId)
+    {
+        $item = $this->itemFactory->create();
+        $item->load($itemId);
+        if (!$item->getId()) {
+            throw new Mage_Core_Exception(__('Profiling item with id "%s" does not exist.', $itemId));
+        }
+        return $item;
     }
 }

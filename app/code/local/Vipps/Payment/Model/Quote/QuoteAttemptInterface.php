@@ -14,13 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Quote;
-
 /**
  * Interface QuoteInterface
  * @api
  */
-interface QuoteAttemptInterface
+interface Vipps_Payment_Model_Quote_QuoteAttemptInterface
 {
     /**
      * @const string Vipps Quote Id.

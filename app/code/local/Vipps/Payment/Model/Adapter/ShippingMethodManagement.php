@@ -14,17 +14,18 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Adapter\Quote;
-
 /**
  * Shipping method read service
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ShippingMethodManagement
+class Vipps_Payment_Model_Adapter_ShippingMethodManagement
 {
     /**
-     * @inheritdoc
+     * @param \Mage_Sales_Model_Quote $quote
+     * @param \Varien_Object $address
+     * @return array
+     * @throws \Mage_Core_Model_Store_Exception
      */
     public function estimateByExtendedAddress(\Mage_Sales_Model_Quote $quote, \Varien_Object $address)
     {
@@ -39,7 +40,7 @@ class ShippingMethodManagement
      * Get list of available shipping methods
      *
      * @param \Mage_Sales_Model_Quote $quote
-     * @param \Mage_Sales_Model_Quote_Address $address
+     * @param \Varien_Object $address
      * @return array
      * @throws \Mage_Core_Model_Store_Exception
      */

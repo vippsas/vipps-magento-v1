@@ -13,22 +13,18 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Payment\Gateway\Validator;
-
-use Vipps\Payment\Gateway\Transaction\Transaction;
 
 /**
  * Class CancelTransactionValidator
- * @package Vipps\Payment\Gateway\Validator
  */
-class CancelTransactionValidator extends AbstractValidator
+class Vipps_Payment_Gateway_Validator_CancelTransactionValidator extends Vipps_Payment_Gateway_Validator_AbstractValidator
 {
     /**
      * @inheritdoc
      *
      * @param array $validationSubject
      *
-     * @return Result
+     * @return Vipps_Payment_Gateway_Validator_Result
      */
     public function validate(array $validationSubject)
     {
@@ -38,7 +34,7 @@ class CancelTransactionValidator extends AbstractValidator
         $info = $transaction->getTransactionInfo();
 
         // if required fields configured - validate them
-        $isValid = $info->getStatus() == Transaction::TRANSACTION_STATUS_CANCELLED;
+        $isValid = $info->getStatus() == Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_CANCELLED;
 
         $errorMessages = $isValid ? [] : [__('Gateway response error. Incorrect transaction data.')];
         return $this->createResult($isValid, $errorMessages);

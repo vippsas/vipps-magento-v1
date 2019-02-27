@@ -14,9 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Gateway\Exception\VippsException;
-use Vipps\Payment\Gateway\Request\Initiate\InitiateBuilderInterface;
-
 class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
 {
     public function indexAction()
@@ -26,16 +23,19 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
                 throw new Mage_Core_Exception(__('Express Payment method is not available.'));
             }
             $quote = $this->cart->getQuote();
+
             $responseData = $this->commandManager->initiatePayment(
                 $quote->getPayment(),
                 [
-                    'amount'                                   => $quote->getGrandTotal(),
-                    InitiateBuilderInterface::PAYMENT_TYPE_KEY => InitiateBuilderInterface::PAYMENT_TYPE_EXPRESS_CHECKOUT
+                    'amount'
+                        => $quote->getGrandTotal(),
+                    Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_KEY
+                        => Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_EXPRESS_CHECKOUT
                 ]
             );
 
             return $this->_redirectUrl($responseData['url']);
-        } catch (VippsException $e) {
+        } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
         } catch (Mage_Core_Exception $e) {

@@ -14,48 +14,34 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Gateway\Command;
-
-use Vipps\Payment\Gateway\Exception\VippsException;
-
 /**
  * Class PaymentDetailsProvider
- * @package Vipps\Payment\Gateway\Command
- * @spi
  */
-class PaymentDetailsProvider
+class Vipps_Payment_Gateway_Command_PaymentDetailsProvider
 {
     /**
-     * @var CommandManager
+     * @var Vipps_Payment_Gateway_Command_CommandManager|null
      */
     private $commandManager;
-//
-//    /**
-//     * PaymentDetailsProvider constructor.
-//     *
-//     * @param CommandManagerInterface $commandManager
-//     */
-//    public function __construct(
-//        CommandManagerInterface $commandManager
-//    ) {
-//        $this->commandManager = $commandManager;
-//    }
 
     /**
      * @param array $arguments
      *
      * @return mixed
-     * @throws VippsException
+     * @throws \Exception
      */
     public function get(array $arguments)
     {
         return $this->getCommandManager()->getPaymentDetails($arguments);
     }
 
+    /**
+     * @return Vipps_Payment_Gateway_Command_CommandManager
+     */
     private function getCommandManager()
     {
         if (!$this->commandManager) {
-            $this->commandManager = new CommandManager(); // @TODO: Replace with async singleton loading
+            $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager'); // @TODO: Replace with async singleton loading
         }
 
         return $this->commandManager;
