@@ -137,7 +137,7 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
                     . PHP_EOL . ' It might be happened that previous operation was successfully completed in Vipps'
                     . PHP_EOL . ' but Magento did not receive a response.'
                     . PHP_EOL . ' To be in sync you have to capture the same amount that has been already captured'
-                    . PHP_EOL . ' in Vipps: %1',
+                    . PHP_EOL . ' in Vipps: %s',
                     $suggestedAmountToCapture
                 );
 

@@ -56,7 +56,7 @@ class Vipps_Payment_Gateway_Request_TransactionTextDataBuilder extends Vipps_Pay
 
         $storeName = $this->getStoreName();
         $text = $storeName ? __(
-            'Thank you for shopping at %1.',
+            'Thank you for shopping at %s.',
             $storeName
         ) : __(
             'Thank you for shopping.',
@@ -65,7 +65,7 @@ class Vipps_Payment_Gateway_Request_TransactionTextDataBuilder extends Vipps_Pay
         $transactionText[] = $text;
 
         if ($paymentDO) {
-            $text = __('Order Id: %1', $paymentDO->getOrder()->getOrderIncrementId());
+            $text = __('Order Id: %s', $paymentDO->getOrder()->getOrderIncrementId());
             $transactionText[] = $text;
         }
 

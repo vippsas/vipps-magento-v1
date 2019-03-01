@@ -35,7 +35,7 @@ class Vipps_Payment_Model_Cron_ClearQuotesHistory extends Vipps_Payment_Model_Cr
         try {
             $dateRemoveTo = new DateTime();
             $dateRemoveTo->sub(new \DateInterval("P{$days}D"));  //@codingStandardsIgnoreLine
-            $dateTimeFormatted = $dateRemoveTo->format(Varien_Db_Adapter_Interface::ISO_DATETIME_FORMAT);
+            $dateTimeFormatted = $dateRemoveTo->format(Varien_Date::DATETIME_PHP_FORMAT);
 
             $this->logger->debug('Remove quotes information till ' . $dateTimeFormatted);
 

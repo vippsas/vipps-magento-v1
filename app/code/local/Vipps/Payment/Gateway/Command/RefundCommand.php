@@ -135,7 +135,7 @@ class Vipps_Payment_Gateway_Command_RefundCommand extends Vipps_Payment_Gateway_
                     . PHP_EOL . ' It might be happened that previous operation was successfully completed in Vipps'
                     . PHP_EOL . ' but Magento did not receive a response.'
                     . PHP_EOL . ' To be in sync you have to refund the same amount that has been already refunded'
-                    . PHP_EOL . ' in Vipps: %1',
+                    . PHP_EOL . ' in Vipps: %s',
                     $suggestedAmountToRefund
                 );
 

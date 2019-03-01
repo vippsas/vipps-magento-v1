@@ -41,8 +41,8 @@ class Vipps_Payment_Model_Cron_CancelQuoteByAttempts extends Vipps_Payment_Model
      *
      * @throws Mage_Core_Exception
      */
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->cancellationFacade = Mage::getSingleton('vipps_payment/quote_cancelFacade');
@@ -127,26 +127,27 @@ class Vipps_Payment_Model_Cron_CancelQuoteByAttempts extends Vipps_Payment_Model
 
                 $attempt
                     ->setMessage(__(
-                        'Max number of attempts reached (%1)',
+                        'Max number of attempts reached (%s)',
                         $this->cancellationConfig->getAttemptsMaxCount()
                     ));
 
                 $this
                     ->cancellationFacade
                     ->cancel($vippsQuote, $quote);
+
+                $attempt->save();
             }
         } catch (\Exception $e) {
+            if (isset($attempt)) {
+                $attempt
+                    ->setMessage($e->getMessage())
+                    ->save();
+            }
             $this->logger->critical($e->getMessage(), ['quote_id' => $vippsQuote->getId()]);
         } finally {
-            if(isset($environmentInfo)) {
+            if (isset($environmentInfo)) {
                 $this->storeEmulation->stopEnvironmentEmulation($environmentInfo);
             }
-
-            if (isset($attempt)) {
-                $attempt->setMessage($e->getMessage());
-                $this->attemptManagement->save($attempt);
-            }
-
         }
     }
 }

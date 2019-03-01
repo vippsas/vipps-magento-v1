@@ -140,6 +140,22 @@
                     <model>vipps_payment/cron_fetchOrderFromVipps::execute</model>
                 </run>
             </vipps_payment_fetch_orders_from_vipps>
+            <vipps_payment_cancel_quotes>
+                <schedule>
+                    <cron_expr>0 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_cancelQuoteByAttempts::execute</model>
+                </run>
+            </vipps_payment_cancel_quotes>
+            <vipps_payment_clear_history>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_clearQuotesHistory::execute</model>
+                </run>
+            </vipps_payment_clear_history>
         </jobs>
     </crontab>
 </config>
