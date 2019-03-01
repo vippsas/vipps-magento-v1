@@ -68,14 +68,7 @@ class Vipps_Payment_Model_QuoteUpdater
 
         $this->updateQuoteAddress($quote, $transaction);
         $this->utility->disabledQuoteAddressValidation($quote);
-
-        /**
-         * Unset shipping assignment to prevent from saving / applying outdated data
-         * @see \Magento\Quote\Model\QuoteRepository\SaveHandler::processShippingAssignment
-         */
-        if ($quote->getExtensionAttributes()) {
-            $quote->getExtensionAttributes()->setShippingAssignments(null);
-        }
+        $quote->collectTotals();
         $this->cartRepository->save($quote);
         return $quote;
     }
@@ -108,6 +101,7 @@ class Vipps_Payment_Model_QuoteUpdater
         $shippingAddress->setTelephone($userDetails->getMobileNumber());
         $shippingAddress->setShippingMethod($shippingDetails->getShippingMethodId());
         $shippingAddress->setShippingAmount($shippingDetails->getShippingCost());
+        $shippingAddress->setCollectShippingRates(true);
 
         // try to obtain postCode one more time if it is not done before
         if (!$shippingAddress->getPostcode() && $shippingDetails->getPostcode()) {

@@ -38,7 +38,7 @@ class Restart
     {
         return in_array(
             $this->vippsQuote->getStatus(),
-            [QuoteStatusInterface::STATUS_PLACE_FAILED, QuoteStatusInterface::STATUS_EXPIRED],
+            [\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED, \Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED],
             true
         );
     }
@@ -53,7 +53,7 @@ class Restart
         $this
             ->vippsQuote
             ->clearAttempts()
-            ->setStatus(QuoteStatusInterface::STATUS_PROCESSING);
+            ->setStatus(\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING);
 
         $this->quoteRepository->save($this->vippsQuote);
     }

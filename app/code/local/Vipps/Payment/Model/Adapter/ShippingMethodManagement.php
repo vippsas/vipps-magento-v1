@@ -50,7 +50,6 @@ class Vipps_Payment_Model_Adapter_ShippingMethodManagement
         $shippingAddress = $quote->getShippingAddress();
         $shippingAddress->addData($address->getData());
         $shippingAddress->setCollectShippingRates(true);
-
         $shippingAddress->collectTotals();
 
         $shippingRates = $shippingAddress->getGroupedAllShippingRates();

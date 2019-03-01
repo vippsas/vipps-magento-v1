@@ -20,6 +20,11 @@
         </Vipps_Payment>
     </modules>
     <global>
+        <blocks>
+            <vipps_payment>
+                <class>Vipps_Payment_Block</class>
+            </vipps_payment>
+        </blocks>
         <helpers>
             <vipps_payment>
                 <class>Vipps_Payment_Helper</class>
@@ -72,6 +77,24 @@
                 </args>
             </vipps_payment>
         </routers>
+        <layout>
+            <updates>
+                <vipps_payment>
+                    <file>vippspayment.xml</file>
+                </vipps_payment>
+            </updates>
+        </layout>
+        <events>
+            <checkout_cart_add_product_complete>
+                <observers>
+                    <vipps_payment>
+                        <type>singleton</type>
+                        <class>vipps_payment/observer_checkoutCartAddProductComplete</class>
+                        <method>redirectToExpressCheckout</method>
+                    </vipps_payment>
+                </observers>
+            </checkout_cart_add_product_complete>
+        </events>
     </frontend>
     <default>
         <payment>
@@ -110,8 +133,12 @@
     <crontab>
         <jobs>
             <vipps_payment_fetch_orders_from_vipps>
-                <schedule><cron_expr>*/10 * * * *</cron_expr></schedule>
-                <run><model>vipps_payment/cron_fetchOrderFromVipps::execute</model></run>
+                <schedule>
+                    <cron_expr>*/10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_fetchOrderFromVipps::execute</model>
+                </run>
             </vipps_payment_fetch_orders_from_vipps>
         </jobs>
     </crontab>

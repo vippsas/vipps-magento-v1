@@ -97,7 +97,7 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
                 ];
             }
             $response->setHttpResponseCode(self::STATUS_CODE_200);
-        } catch (LocalizedException $e) {
+        } catch (Mage_Core_Exception $e) {
             $this->logger->critical($e->getMessage());
             $response->setHttpResponseCode(self::STATUS_CODE_500);
             $responseData = [

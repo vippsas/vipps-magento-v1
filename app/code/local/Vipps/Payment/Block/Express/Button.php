@@ -26,13 +26,6 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
 
     protected $_template = 'vippspayment/expressbutton.phtml';
 
-    /**
-     * Shortcut alias
-     *
-     * @var string
-     */
-    private $alias = 'vipps.express.minicart.button';
-
     public function __construct(array $args = array())
     {
         parent::__construct($args);
@@ -68,9 +61,11 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
      */
     public function getAlias()
     {
-        if ($this->getIsInCatalogProduct()) {
-            $this->alias = 'vipps.express.catalog_product.button';
-        }
-        return $this->alias;
+        $this->getNameInLayout();
+    }
+
+    public function isProduct()
+    {
+        return $this->getData('is_product');
     }
 }

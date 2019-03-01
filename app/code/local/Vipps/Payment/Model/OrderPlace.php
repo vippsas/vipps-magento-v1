@@ -185,11 +185,6 @@ class Vipps_Payment_Model_OrderPlace
                 return null;
             }
 
-            $this->prepareQuote($clonedQuote);
-
-            $clonedQuote->getShippingAddress()->setCollectShippingRates(true);
-            $clonedQuote->collectTotals();
-
             $this->validateAmount($clonedQuote, $transaction);
 
             // set quote active, collect totals and place order
@@ -227,8 +222,8 @@ class Vipps_Payment_Model_OrderPlace
      */
     private function validateAmount(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        $quoteAmount = (int)($this->formatPrice($quote->getGrandTotal()) * 100);
-        $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
+        $quoteAmount = round($this->formatPrice($quote->getGrandTotal()) * 100);
+        $vippsAmount = round($transaction->getTransactionInfo()->getAmount());
 
         if ($quoteAmount != $vippsAmount) {
             throw new Vipps_Payment_Gateway_Exception_WrongAmountException(
@@ -246,7 +241,7 @@ class Vipps_Payment_Model_OrderPlace
     {
         try {
             $vippsQuote = $this->quoteManagement->getByQuote($cart);
-            $vippsQuote->setStatus(QuoteStatusInterface::STATUS_PLACED);
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED);
             $this->quoteManagement->save($vippsQuote);
         } catch (\Exception $e) {
             // Order is submitted but failed to update Vipps Quote. It should not affect order flow.

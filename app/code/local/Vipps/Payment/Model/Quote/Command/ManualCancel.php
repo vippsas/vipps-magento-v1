@@ -59,7 +59,7 @@ class ManualCancel
     {
         return in_array(
             $this->vippsQuote->getStatus(),
-            [QuoteStatusInterface::STATUS_PLACE_FAILED, QuoteStatusInterface::STATUS_CANCEL_FAILED],
+            [\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED, \Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCEL_FAILED],
             true
         );
     }

@@ -25,7 +25,7 @@ class Vipps_Payment_Model_Adapter_CartManagement
     private $orderApi;
 
     /**
-     * @var Logger
+     * @var Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
 
@@ -52,11 +52,13 @@ class Vipps_Payment_Model_Adapter_CartManagement
             if ($order !== null) {
                 return $order;
             }
-        } catch (\Exception $e) {
+        }catch (Mage_Api_Exception $e){
+            $this->logger->critical($e->getMessage());
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
         }
 
-        throw new \Mage_Core_Exception(
+        throw new Mage_Core_Exception(
             __('An error occurred on the server. Please try to place the order again.')
         );
     }
