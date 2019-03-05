@@ -54,8 +54,8 @@ class Vipps_Payment_Model_Quote_CancelFacade
      * @throws Mage_Core_Exception
      */
     public function cancel(
-        \Vipps_Payment_Model_Quote $vippsQuote,
-        \Mage_Sales_Model_Quote $quote
+        Vipps_Payment_Model_Quote $vippsQuote,
+        Mage_Sales_Model_Quote $quote
     ) {
         try {
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);

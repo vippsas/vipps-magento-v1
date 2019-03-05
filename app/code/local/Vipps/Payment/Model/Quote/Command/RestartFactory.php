@@ -1,32 +1,16 @@
 <?php
 
-namespace Vipps\Payment\Model\Adapter\Command;
-
 /**
  * Class RestartFactory
  */
-class RestartFactory
+class Vipps_Payment_Model_Quote_Command_RestartFactory
 {
     /**
-     * @var ObjectManagerInterface
+     * @param Vipps_Payment_Model_Quote $vippsQuote
+     * @return false|Mage_Core_Model_Abstract
      */
-    private $objectManager;
-
-    /**
-     * RestartFactory constructor.
-     * @param ObjectManagerInterface $objectManager
-     */
-    public function __construct(ObjectManagerInterface $objectManager)
+    public function create(Vipps_Payment_Model_Quote $vippsQuote)
     {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param QuoteInterface $vippsQuote
-     * @return Restart
-     */
-    public function create(QuoteInterface $vippsQuote)
-    {
-        return $this->objectManager->create(Restart::class, ['vippsQuote' => $vippsQuote]); //@codingStandardsIgnoreLine
+        return Mage::getModel('vipps_payment/quote_command_restart', $vippsQuote);
     }
 }

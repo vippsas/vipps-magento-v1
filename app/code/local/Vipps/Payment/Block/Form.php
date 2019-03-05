@@ -14,15 +14,39 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Payment\Model\Quote;
-
-class AttemptCollectionFactory
+class Vipps_Payment_Block_Form extends Mage_Payment_Block_Form
 {
     /**
-     * @return \Vipps_Payment_Model_Resource_Quote_Attempt_Collection
+     * @return string
      */
-    public function create()
+    public function getMethodLabelAfterHtml()
     {
-        return \Mage::getModel('vipps_payment/quote_attempt')->getCollection();
+        $methodTitle = $this->getMethod()->getTitle();
+        $vippsNote = __('You will be redirected to the Vipps website.');
+        $imageUrl = $this->getSkinUrl('images/vippspayment/vipps_logo_rgb.png');
+
+        return <<<HTML
+            <label class="vipps-payment-label">
+                <img width="70" src="{$imageUrl}" class="payment-icon" alt="{$methodTitle}"/>
+            </label>
+            <div class="vipps-payment-method-note">{$vippsNote}</div>
+HTML;
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasMethodTitle()
+    {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethodTitle()
+    {
+        return '';
     }
 }

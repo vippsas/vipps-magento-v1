@@ -1,53 +1,39 @@
 <?php
 
-namespace Vipps\Payment\Model\Adapter\Command;
-
-use Magento\Framework\Exception\LocalizedException;
 use Vipps\Payment\Model\Adapter\CancelFacade;
 use Vipps\Payment\Model\Adapter\Order\Cancellation\Config;
 
 /**
  * Restart Vipps Quote processing.
  */
-class ManualCancel
+class Vipps_Payment_Model_Quote_Command_ManualCancel
 {
     /**
-     * @var QuoteInterface
+     * @var Vipps_Payment_Model_Quote
      */
     private $vippsQuote;
 
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var CartRepositoryInterface
+     * @var Vipps_Payment_Model_Adapter_CartRepository
      */
     private $cartRepository;
 
     /**
-     * @var CancelFacade
+     * @var Vipps_Payment_Model_Quote_CancelFacade
      */
     private $cancelFacade;
 
     /**
      * Restart constructor.
-     * @param QuoteInterface $vippsQuote
-     * @param CartRepositoryInterface $cartRepository
-     * @param CancelFacade $cancelFacade
-     * @param Config $config
+     * @param Vipps_Payment_Model_Quote $vippsQuote
+     * @throws Mage_Core_Exception
      */
     public function __construct(
-        QuoteInterface $vippsQuote,
-        CartRepositoryInterface $cartRepository,
-        CancelFacade $cancelFacade,
-        Config $config
+        Vipps_Payment_Model_Quote $vippsQuote
     ) {
         $this->vippsQuote = $vippsQuote;
-        $this->config = $config;
-        $this->cartRepository = $cartRepository;
-        $this->cancelFacade = $cancelFacade;
+        $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
+        $this->cancelFacade = Mage::getSingleton('vipps_payment/quote_cancelFacade');
     }
 
     /**
@@ -59,13 +45,16 @@ class ManualCancel
     {
         return in_array(
             $this->vippsQuote->getStatus(),
-            [\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED, \Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCEL_FAILED],
+            [
+                Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED,
+                Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCEL_FAILED
+            ],
             true
         );
     }
 
     /**
-     * @throws LocalizedException
+     * @throws Mage_Core_Exception
      */
     public function execute()
     {

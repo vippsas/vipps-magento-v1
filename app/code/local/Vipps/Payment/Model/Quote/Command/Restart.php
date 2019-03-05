@@ -1,32 +1,22 @@
 <?php
 
-namespace Vipps\Payment\Model\Adapter\Command;
-
-use Vipps\Payment\Model\Adapter\QuoteRepository;
-
 /**
  * Restart Vipps Quote processing.
  */
-class Restart
+class Vipps_Payment_Model_Quote_Command_Restart
 {
     /**
-     * @var Quote
+     * @var \Vipps_Payment_Model_Quote
      */
     private $vippsQuote;
 
     /**
-     * @var QuoteRepository
-     */
-    private $quoteRepository;
-
-    /**
      * Restart constructor.
-     * @param QuoteInterface $vippsQuote
+     * @param Vipps_Payment_Model_Quote $vippsQuote
      */
-    public function __construct(QuoteInterface $vippsQuote, QuoteRepository $quoteRepository)
+    public function __construct(Vipps_Payment_Model_Quote $vippsQuote)
     {
         $this->vippsQuote = $vippsQuote;
-        $this->quoteRepository = $quoteRepository;
     }
 
     /**
@@ -38,7 +28,7 @@ class Restart
     {
         return in_array(
             $this->vippsQuote->getStatus(),
-            [\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED, \Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED],
+            [Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED, Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED],
             true
         );
     }
@@ -46,7 +36,7 @@ class Restart
     /**
      * Mark Vipps Quote as ready for restart.
      *
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws Exception
      */
     public function execute()
     {
@@ -55,6 +45,6 @@ class Restart
             ->clearAttempts()
             ->setStatus(\Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING);
 
-        $this->quoteRepository->save($this->vippsQuote);
+        $this->vippsQuote->save();
     }
 }

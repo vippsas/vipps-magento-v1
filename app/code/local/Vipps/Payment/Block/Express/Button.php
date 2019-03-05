@@ -19,13 +19,26 @@
  */
 class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
 {
-    /** @var Vipps_Payment_Helper_Gateway */
+    /** @var
+     * Vipps_Payment_Helper_Gateway
+     */
     private $helper;
-    /** @var Vipps_Payment_Gateway_Config_Config */
+
+    /** @var
+     * Vipps_Payment_Gateway_Config_Config
+     */
     private $config;
 
+    /**
+     * @var string
+     */
     protected $_template = 'vippspayment/expressbutton.phtml';
 
+    /**
+     * Vipps_Payment_Block_Express_Button constructor.
+     * @param array $args
+     * @throws Mage_Core_Exception
+     */
     public function __construct(array $args = array())
     {
         parent::__construct($args);
@@ -64,6 +77,9 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
         $this->getNameInLayout();
     }
 
+    /**
+     * @return mixed
+     */
     public function isProduct()
     {
         return $this->getData('is_product');

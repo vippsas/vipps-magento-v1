@@ -130,6 +130,26 @@
             </order_cancellation>
         </vipps>
     </default>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <vipps_payment before="Mage_Adminhtml">Vipps_Payment_Adminhtml</vipps_payment>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <vipps_payment>
+                    <file>vippspayment.xml</file>
+                </vipps_payment>
+            </updates>
+        </layout>
+    </adminhtml>
     <crontab>
         <jobs>
             <vipps_payment_fetch_orders_from_vipps>

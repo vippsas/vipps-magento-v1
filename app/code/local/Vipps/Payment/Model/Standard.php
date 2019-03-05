@@ -30,6 +30,8 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
      * @var string
      */
     protected $_code = self::CODE;
+    protected $_formBlockType = 'vipps_payment/form';
+
 
     protected $_canAuthorize = true;
     protected $_canCapture = true;

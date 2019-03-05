@@ -1,32 +1,16 @@
 <?php
 
-namespace Vipps\Payment\Model\Adapter\Command;
-
 /**
  * Class RestartFactory
  */
-class ManualCancelFactory
+class Vipps_Payment_Model_Quote_Command_ManualCancelFactory
 {
     /**
-     * @var ObjectManagerInterface
+     * @param Vipps_Payment_Model_Quote $vippsQuote
+     * @return Vipps_Payment_Model_Quote_Command_ManualCancel
      */
-    private $objectManager;
-
-    /**
-     * RestartFactory constructor.
-     * @param ObjectManagerInterface $objectManager
-     */
-    public function __construct(ObjectManagerInterface $objectManager)
+    public function create(Vipps_Payment_Model_Quote $vippsQuote)
     {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param QuoteInterface $vippsQuote
-     * @return ManualCancel
-     */
-    public function create(QuoteInterface $vippsQuote)
-    {
-        return $this->objectManager->create(ManualCancel::class, ['vippsQuote' => $vippsQuote]); //@codingStandardsIgnoreLine
+        return Mage::getModel('vipps_payment/quote_command_manualCancel', $vippsQuote);
     }
 }
