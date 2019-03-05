@@ -47,7 +47,7 @@ class Vipps_Payment_Gateway_Request_TransactionDataBuilder extends Vipps_Payment
 
         $amount = $this->subjectReader->readAmount($buildSubject);
         if ($amount) {
-            $transactionData[self::$transaction][self::$amount] = (int)($this->formatPrice($amount) * 100);
+            $transactionData[self::$transaction][self::$amount] = (int)round($this->formatPrice($amount) * 100);
         }
 
         return $transactionData;

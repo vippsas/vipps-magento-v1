@@ -222,8 +222,8 @@ class Vipps_Payment_Model_OrderPlace
      */
     private function validateAmount(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        $quoteAmount = round($this->formatPrice($quote->getGrandTotal()) * 100);
-        $vippsAmount = round($transaction->getTransactionInfo()->getAmount());
+        $quoteAmount = (int)round($this->formatPrice($quote->getGrandTotal()) * 100);
+        $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
 
         if ($quoteAmount != $vippsAmount) {
             throw new Vipps_Payment_Gateway_Exception_WrongAmountException(

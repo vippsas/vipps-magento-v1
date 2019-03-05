@@ -57,14 +57,14 @@ class Vipps_Payment_Gateway_Request_Initiate_TransactionDataBuilder extends Vipp
         $quote = $payment->getQuote();
 
         $amount = $this->subjectReader->readAmount($buildSubject);
-        $amount = (int)($this->formatPrice($amount) * 100);
+        $amount = (int)round($this->formatPrice($amount) * 100);
 
         if ($buildSubject[self::PAYMENT_TYPE_KEY] == self::PAYMENT_TYPE_EXPRESS_CHECKOUT) {
             $shippingAddress = $quote->getShippingAddress();
             $shippingAddress->setShippingMethod(null);
             $quote->collectTotals();
 
-            $amount = (int)($this->formatPrice($quote->getGrandTotal()) * 100);
+            $amount = (int)round($this->formatPrice($quote->getGrandTotal()) * 100);
         }
 
         return [

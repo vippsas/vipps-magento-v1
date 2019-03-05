@@ -65,7 +65,7 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
     public function execute(array $commandSubject)
     {
         $amount = $this->subjectReader->readAmount($commandSubject);
-        $amount = (int)($this->formatPrice($amount) * 100);
+        $amount = (int)round($this->formatPrice($amount) * 100);
 
         $response = $this->paymentDetailsProvider->get($commandSubject);
         $transaction = $this->transactionBuilder->setData($response)->build();
@@ -101,14 +101,14 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
     {
         $payment = $this->subjectReader->readPayment($commandSubject);
         $amount = $this->subjectReader->readAmount($commandSubject);
-        $amount = (int)($this->formatPrice($amount) * 100);
+        $amount = (int)round($this->formatPrice($amount) * 100);
 
         $order = $payment->getOrder();
         $orderIncrementId = $order->getOrderIncrementId();
 
         $order = $this->orderRepository->get($order->getId());
 
-        $magentoTotalDue = (int)($this->formatPrice($order->getTotalDue()) * 100);
+        $magentoTotalDue = (int)round($this->formatPrice($order->getTotalDue()) * 100);
         $vippsTotalDue = $transaction->getTransactionSummary()->getRemainingAmountToCapture();
 
         $deltaTotalDue = $magentoTotalDue - $vippsTotalDue;
