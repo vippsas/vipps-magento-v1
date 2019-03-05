@@ -58,7 +58,7 @@ class Vipps_Payment_Model_Profiling_Profiler
      * @return string|null
      * @throws \Mage_Core_Exception
      */
-    public function save(Vipps_Payment_Gateway_Http_Transfer $transfer, \Zend_Http_Response $response)
+    public function save(Vipps_Payment_Gateway_Http_Transfer $transfer, Zend_Http_Response $response)
     {
         if (!$this->isProfilingEnabled()) {
             return null;
@@ -79,6 +79,7 @@ class Vipps_Payment_Model_Profiling_Profiler
         $itemDO->setStatusCode($response->getStatus());
         $itemDO->setIncrementId($orderId);
         $itemDO->setResponse($this->packArray($this->parseResponse($response)));
+        $itemDO->setCreatedAt(gmdate(Varien_Date::DATETIME_PHP_FORMAT));
 
         $item = $this->itemRepository->save($itemDO);
         return $item->getEntityId();

@@ -132,8 +132,8 @@ class Vipps_Payment_Gateway_Command_GatewayCommand implements Vipps_Payment_Gate
         if (!$response->isSuccessful()) {
             $error = $this->extractError($responseBody);
             $orderId = $this->extractOrderId($transfer, $responseBody);
-            $errorCode = isset($error['code']) ? $error['code'] : $response->getStatusCode();
-            $errorMessage = isset($error['message']) ? $error['message'] : $response->getReasonPhrase();
+            $errorCode = isset($error['code']) ? $error['code'] : $response->getStatus();
+            $errorMessage = isset($error['message']) ? $error['message'] : Zend_Http_Response::responseCodeAsText($response->getStatus());
             $exception = $this->exceptionFactory->create($errorCode, $errorMessage);
             $message = sprintf(
                 'Request error. Code: "%s", message: "%s", order id: "%s"',
@@ -167,6 +167,18 @@ class Vipps_Payment_Gateway_Command_GatewayCommand implements Vipps_Payment_Gate
     }
 
     /**
+     * @param array[] $fails
+     *
+     * @return void
+     */
+    protected function logValidationFails(array $fails)
+    {
+        foreach ($fails as $failPhrase) {
+            $this->logger->critical((string)$failPhrase);
+        }
+    }
+
+    /**
      * Method to extract error code and message from response.
      *
      * @param $responseBody
@@ -194,17 +206,5 @@ class Vipps_Payment_Gateway_Command_GatewayCommand implements Vipps_Payment_Gate
             $orderId = isset($matches[2]) ? $matches[2] : null;
         }
         return isset($orderId) ? $orderId : (isset($transfer->getBody()['transaction']['orderId']) ? $transfer->getBody()['transaction']['orderId'] : (isset($responseBody['orderId']) ? $responseBody['orderId'] : null));
-    }
-
-    /**
-     * @param array[] $fails
-     *
-     * @return void
-     */
-    protected function logValidationFails(array $fails)
-    {
-        foreach ($fails as $failPhrase) {
-            $this->logger->critical((string)$failPhrase);
-        }
     }
 }

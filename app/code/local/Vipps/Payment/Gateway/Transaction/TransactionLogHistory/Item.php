@@ -55,6 +55,11 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item extends \Vari
     const TRANSACTION_TEXT = 'transactionText';
 
     /**
+     * @var string
+     */
+    const CREATED_AT = 'created_at';
+
+    /**
      * @return string
      */
     public function getAmount()
@@ -109,4 +114,24 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item extends \Vari
     {
         return $this->getData(self::TRANSACTION_TEXT);
     }
+
+    /**
+     * Return date when item was created
+     *
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return (string)$this->getData(self::CREATED_AT);
+    }
+
+    /**
+     * @param string $value
+     * @return $this
+     */
+    public function setCreatedAt($value)
+    {
+        return $this->setData(self::CREATED_AT, $value);
+    }
+
 }

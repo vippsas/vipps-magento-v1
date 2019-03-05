@@ -46,11 +46,22 @@ class Vipps_Payment_Gateway_Http_TransferFactory
     private $urlParams = [];
 
     /**
+     * @var array
+     */
+    private $allowedFields = [
+        'orderId',
+        'customerInfo',
+        'merchantInfo',
+        'transaction',
+    ];
+
+    /**
      * TransferFactory constructor.
      *
      * @param string $method
      * @param string $endpointUrl
      * @param array $urlParams
+     * @throws Mage_Core_Exception
      */
     public function __construct(
         $method,
@@ -79,6 +90,8 @@ class Vipps_Payment_Gateway_Http_TransferFactory
                 : $this->generateRequestId()
         ));
 
+        $request = $this->filterPostFields($request);
+
         if (isset($request['requestId'])) {
             unset($request['requestId']);
         }
@@ -89,6 +102,23 @@ class Vipps_Payment_Gateway_Http_TransferFactory
             ->setUri($this->getUrl($request));
 
         return $this->transferBuilder->build();
+    }
+
+    /**
+     * Remove all fields that are not marked as allowed.
+     *
+     * @param array $fields
+     * @return array
+     */
+    private function filterPostFields($fields)
+    {
+        $allowedFields = $this->allowedFields;
+        $fields = array_filter($fields,
+            function ($key) use ($allowedFields) { return in_array($key, $allowedFields);},
+            ARRAY_FILTER_USE_KEY
+        );
+
+        return $fields;
     }
 
     /**

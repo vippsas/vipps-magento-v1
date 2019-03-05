@@ -86,11 +86,12 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
             $adapter = Mage::getModel('vipps_payment/adapter_curl');
 
             $options = $this->getBasicOptions();
-            if ($transfer->getMethod() === \Zend_Http_Client::PUT) {
-                $options = $options + [
-                        \CURLOPT_RETURNTRANSFER => true,
-                        \CURLOPT_CUSTOMREQUEST  => \Zend_Http_Client::PUT,
-                        \CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($transfer->getBody())
+            $requestBody = $transfer->getBody();
+            if ($transfer->getMethod() === Zend_Http_Client::PUT) {
+                $options += [
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_CUSTOMREQUEST  => Zend_Http_Client::PUT,
+                        CURLOPT_POSTFIELDS     => $this->jsonEncoder->encode($requestBody)
                     ];
             }
             $adapter->setOptions($options);
@@ -103,11 +104,11 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
                 $this->jsonEncoder->encode($transfer->getBody())
             );
             $responseSting = $adapter->read();
-            $response = \Zend_Http_Response::fromString($responseSting);
+            $response = Zend_Http_Response::fromString($responseSting);
 
             return $response;
         } finally {
-            isset($adapter) ? $adapter->close() : null;
+            $adapter ? $adapter->close() : null;
         }
     }
 
