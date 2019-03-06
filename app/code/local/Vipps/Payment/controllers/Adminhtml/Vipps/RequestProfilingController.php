@@ -42,11 +42,12 @@ class Vipps_Payment_Adminhtml_Vipps_RequestProfilingController extends Mage_Admi
      */
     public function indexAction()
     {
+        $this->_title($this->__("Vipps Payment"));
         $this->_title($this->__("Request Profiling"));
 
         $this->loadLayout();
 
-        $this->_setActiveMenu('Vipps_Payment/quote_monitoring');
+        $this->_setActiveMenu('Vipps_Payment/request_profiling');
 
         $this->renderLayout();
     }
@@ -56,7 +57,8 @@ class Vipps_Payment_Adminhtml_Vipps_RequestProfilingController extends Mage_Admi
      */
     public function viewAction()
     {
-        $this->_title($this->__("View Item"));
+        $this->_title($this->__("Vipps Payment"));
+        $this->_title($this->__("View Profiling Item"));
 
         try {
             $profilingItem = Mage::getModel('vipps_payment/profiling_item')->load($this->getRequest()->getParam('entity_id'));

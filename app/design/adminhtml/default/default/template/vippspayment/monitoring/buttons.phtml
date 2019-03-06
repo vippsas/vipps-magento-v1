@@ -18,34 +18,40 @@
 /** @var Vipps_Payment_Block_Adminhtml_QuoteMonitoring_Buttons $this */
 $vippsQuote = $this->getVippsQuote(); ?>
 <div class="content-header">
-    <p class="form-buttons">
-        <button
-                id="action-back"
-                title="Back"
-                type="button"
-                class="action- scalable back"
-                onclick="location.href='<?php echo $this->getUrl('*/*'); ?>'">
-            <span><?php echo __('Back') ?></span>
-        </button>
-        <?php if ($this->isRestartVisible()) : ?>
-            <button
-                    id="action-restart"
-                    title type="button"
-                    class="action-default primary"
-                    onclick="location.href='<?php echo $this->getUrl('*/*/restart', ['entity_id' => $vippsQuote->getEntityId()]); ?>'">
-                <span><?php echo __('Restart Processing') ?></span>
-            </button>
-        <?php endif; ?>
-        <?php if ($this->isCancelVisible()) : ?>
-            <button
-                    id="action-cancel"
-                    title type="button"
-                    onclick="doCancel()"
-                    class="action-scalable action-secondary">
-                <span><?php echo __('Cancel') ?></span>
-            </button>
-        <?php endif; ?>
-    </p>
+    <table cellspacing="0">
+        <tbody><tr>
+            <td style="width:50%;"><h3 class="icon-head"><?php echo __('Quote Information #%s', $vippsQuote->getId()) ?></h3></td>
+            <td class="form-buttons">
+                <button
+                        id="action-back"
+                        title="Back"
+                        type="button"
+                        class="action- scalable back"
+                        onclick="location.href='<?php echo $this->getUrl('*/*'); ?>'">
+                    <span><?php echo __('Back') ?></span>
+                </button>
+                <?php if ($this->isRestartVisible()) : ?>
+                    <button
+                            id="action-restart"
+                            title type="button"
+                            class="action-default primary"
+                            onclick="location.href='<?php echo $this->getUrl('*/*/restart', ['entity_id' => $vippsQuote->getEntityId()]); ?>'">
+                        <span><?php echo __('Restart Processing') ?></span>
+                    </button>
+                <?php endif; ?>
+                <?php if ($this->isCancelVisible()) : ?>
+                    <button
+                            id="action-cancel"
+                            title type="button"
+                            onclick="doCancel()"
+                            class="action-scalable action-secondary">
+                        <span><?php echo __('Cancel') ?></span>
+                    </button>
+                <?php endif; ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <script>
     function doCancel() {

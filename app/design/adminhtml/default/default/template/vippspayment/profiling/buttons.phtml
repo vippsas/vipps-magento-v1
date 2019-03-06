@@ -15,15 +15,26 @@
  */
 /** @var Mage_Adminhtml_Block_Template $this */ ?>
 <div class="content-header">
-    <p class="form-buttons">
-        <button
-                id="action-back"
-                title="Back"
-                type="button"
-                class="action- scalable back"
-                onclick="location.href='<?php echo $this->getUrl('*/*'); ?>'">
-            <span><?php echo __('Back') ?></span>
-        </button>
-    </p>
+
+    <table cellspacing="0">
+        <tbody><tr>
+            <td style="width:50%;">
+                <h3 class="icon-head">
+                    <?php echo __('Profiling Item #%s', $this->getRequest()->getParam('entity_id')) ?>
+                </h3>
+            </td>
+            <td class="form-buttons">
+                <button
+                        id="action-back"
+                        title="Back"
+                        type="button"
+                        class="action- scalable back"
+                        onclick="location.href='<?php echo $this->getUrl('*/*'); ?>'">
+                    <span><?php echo __('Back') ?></span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 

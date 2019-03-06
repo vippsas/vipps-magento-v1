@@ -50,6 +50,7 @@ class Vipps_Payment_Adminhtml_Vipps_QuoteMonitoringController extends Mage_Admin
      */
     public function indexAction()
     {
+        $this->_title($this->__("Vipps Payment"));
         $this->_title($this->__("Quote Monitoring"));
 
         $this->loadLayout();
@@ -64,7 +65,8 @@ class Vipps_Payment_Adminhtml_Vipps_QuoteMonitoringController extends Mage_Admin
      */
     public function viewAction()
     {
-        $this->_title($this->__("View Quote"));
+        $this->_title($this->__("Vipps Payment"));
+        $this->_title($this->__("View Quote Information"));
 
         try {
             $vippsQuote = $this->quoteRepository->load($this->getRequest()->getParam('entity_id'));
