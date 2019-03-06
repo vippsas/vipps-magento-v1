@@ -28,7 +28,7 @@ class Vipps_Payment_Model_QuoteLocator
      */
     public function get($incrementId)
     {
-        $quote = \Mage::getModel('sales/quote')->load($incrementId, 'reserved_order_id');
+        $quote = Mage::getModel('sales/quote')->load($incrementId, 'reserved_order_id');
 
         if (!$quote->getId()) {
             return null;

@@ -105,6 +105,16 @@ class Vipps_Payment_Gateway_Http_TransferFactory
     }
 
     /**
+     * Generate value of request id for current request
+     *
+     * @return string
+     */
+    private function generateRequestId()
+    {
+        return uniqid('req-id-', true);
+    }
+
+    /**
      * Remove all fields that are not marked as allowed.
      *
      * @param array $fields
@@ -113,22 +123,8 @@ class Vipps_Payment_Gateway_Http_TransferFactory
     private function filterPostFields($fields)
     {
         $allowedFields = $this->allowedFields;
-        $fields = array_filter($fields,
-            function ($key) use ($allowedFields) { return in_array($key, $allowedFields);},
-            ARRAY_FILTER_USE_KEY
-        );
 
-        return $fields;
-    }
-
-    /**
-     * Generate value of request id for current request
-     *
-     * @return string
-     */
-    private function generateRequestId()
-    {
-        return uniqid('req-id-', true);
+        return array_intersect_key($fields, array_flip($allowedFields));
     }
 
     /**

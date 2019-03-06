@@ -191,6 +191,8 @@ class Vipps_Payment_Model_OrderPlace
             $clonedQuote->setIsActive(true);
             $orderId = $this->cartManagement->placeOrder($clonedQuote->getId());
             $order = $this->orderRepository->getByIncrement($orderId);
+            $clonedQuote->setIsActive(false);
+            $quote->setIsActive(false);
         }
 
         $clonedQuote->setReservedOrderId(null);

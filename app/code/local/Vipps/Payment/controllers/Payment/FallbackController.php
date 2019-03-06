@@ -227,6 +227,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             if (!$order) {
                 Mage::throwException(__('Couldn\'t get information about order status right now. Please contact a store administrator.'));
             }
+            $this->updateCheckoutSession($quote, $order);
             return $order;
         } catch (Vipps_Payment_Gateway_Exception_MerchantException $e) {
             //@todo workaround for vipps issue with order cancellation (delete this condition after fix) //@codingStandardsIgnoreLine
@@ -261,14 +262,15 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      * @param Mage_Sales_Model_Quote $quote
      * @param \Mage_Sales_Model_Order $order
      */
-    private function updateCheckoutSession(Mage_Sales_Model_Quote $quote, \Mage_Sales_Model_Order $order = null)
+    private function updateCheckoutSession(Mage_Sales_Model_Quote $quote, Mage_Sales_Model_Order $order = null)
     {
         $this->checkoutSession->setLastQuoteId($quote->getId());
         if ($order) {
-            $this->checkoutSession->setLastSuccessQuoteId($quote->getId());
-            $this->checkoutSession->setLastOrderId($order->getEntityId());
-            $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
-            $this->checkoutSession->setLastOrderStatus($order->getStatus());
+            $this->checkoutSession
+                ->setLastSuccessQuoteId($quote->getId())
+                ->setLastOrderId($order->getEntityId())
+                ->setLastRealOrderId($order->getIncrementId())
+                ->setLastOrderStatus($order->getStatus());
         }
     }
 }
