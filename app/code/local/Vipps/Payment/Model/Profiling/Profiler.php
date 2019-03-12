@@ -56,7 +56,7 @@ class Vipps_Payment_Model_Profiling_Profiler
      * @param \Zend_Http_Response $response
      *
      * @return string|null
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function save(Vipps_Payment_Gateway_Http_Transfer $transfer, Zend_Http_Response $response)
     {
@@ -64,7 +64,7 @@ class Vipps_Payment_Model_Profiling_Profiler
             return null;
         }
         /** @var \Vipps_Payment_Model_Resource_Profiling_Item $itemDO */
-        $itemDO = \Mage::getModel('vipps_payment/profiling_item');
+        $itemDO = Mage::getModel('vipps_payment/profiling_item');
 
         $data = $this->parseDataFromTransferObject($transfer);
 

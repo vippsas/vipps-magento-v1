@@ -22,7 +22,7 @@
 class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller_Abstract
 {
     /**
-     * @var \Mage_Checkout_Model_Session
+     * @var Mage_Checkout_Model_Session
      */
     private $checkoutSession;
 
@@ -62,12 +62,12 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     private $quote;
 
     /**
-     * @var \Mage_Sales_Model_Order
+     * @var Mage_Sales_Model_Order
      */
     private $order;
 
     /**
-     * @return $this|\Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
+     * @return $this|Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
      */
     public function preDispatch()
     {
@@ -185,7 +185,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     /**
      * Retrieve order object from repository based on increment id
      *
-     * @return bool|\Mage_Sales_Model_Order
+     * @return bool|Mage_Sales_Model_Order
      */
     private function getOrder()
     {
@@ -260,7 +260,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      * Method to update Checkout session for success page when order was placed with Callback Controller.
      *
      * @param Mage_Sales_Model_Quote $quote
-     * @param \Mage_Sales_Model_Order $order
+     * @param Mage_Sales_Model_Order $order
      */
     private function updateCheckoutSession(Mage_Sales_Model_Quote $quote, Mage_Sales_Model_Order $order = null)
     {

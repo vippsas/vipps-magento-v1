@@ -67,7 +67,7 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
             $quote = $this->getQuote($reservedOrderId);
 
             $vippsAddress = $this->serializer->unserialize($this->getRequest()->getRawBody());
-            $address = \Mage::getModel('sales/quote_address');
+            $address = Mage::getModel('sales/quote_address');
             $address->addData([
                 'postcode'     => $vippsAddress['postCode'],
                 'street'       => $vippsAddress['addressLine1'] . PHP_EOL . $vippsAddress['addressLine2'],
@@ -138,7 +138,7 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
      *
      * @param $reservedOrderId
      *
-     * @return \Mage_Sales_Model_Quote
+     * @return Mage_Sales_Model_Quote
      * @throws Mage_Core_Exception
      */
     private function getQuote($reservedOrderId)

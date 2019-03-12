@@ -77,7 +77,7 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
 
         // try to capture based on capture service itself
         if ($transaction->getTransactionSummary()->getRemainingAmountToCapture() < $amount) {
-            \Mage::throwException(__('Captured amount is higher then remaining amount to capture'));
+            Mage::throwException(__('Captured amount is higher then remaining amount to capture'));
         }
 
         $requestId = $this->getLastFailedRequestId($transaction, $amount);

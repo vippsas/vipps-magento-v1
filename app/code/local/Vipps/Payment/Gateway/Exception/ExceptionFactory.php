@@ -47,7 +47,7 @@ class Vipps_Payment_Gateway_Exception_ExceptionFactory
     {
         $groupName = $this->findErrorGroupByCode($errorCode);
         if (!$groupName) {
-            return new \Mage_Core_Exception(__($errorMessage), $errorCode);
+            return new Mage_Core_Exception(__($errorMessage), $errorCode);
         }
 
         return new $groupName(__($errorMessage), (int)$errorCode); //@codingStandardsIgnoreLine
@@ -80,7 +80,7 @@ class Vipps_Payment_Gateway_Exception_ExceptionFactory
      * @param $errorCode
      * @param $errorMessage
      *
-     * @return \Magento\Framework\Phrase|null
+     * @return Magento\Framework\Phrase|null
      */
     public function getMessageByErrorCode($errorCode, $errorMessage)
     {

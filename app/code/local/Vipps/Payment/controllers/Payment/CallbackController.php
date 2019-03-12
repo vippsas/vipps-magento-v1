@@ -32,12 +32,12 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
     private $quoteLocator;
 
     /**
-     * @var \Mage_Sales_Model_Quote
+     * @var Mage_Sales_Model_Quote
      */
     private $quote;
 
     /**
-     * @return $this|\Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
+     * @return $this|Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
      */
     public function preDispatch()
     {
@@ -139,7 +139,7 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
      *
      * @param $requestData
      *
-     * @return \Mage_Sales_Model_Quote|null
+     * @return Mage_Sales_Model_Quote|null
      */
     private function getQuote($requestData)
     {

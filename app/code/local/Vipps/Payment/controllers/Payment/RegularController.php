@@ -65,7 +65,7 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
         } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
-        } catch (\Mage_Core_Exception $e) {
+        } catch (Mage_Core_Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());

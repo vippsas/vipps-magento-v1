@@ -40,11 +40,11 @@ class Vipps_Payment_Model_QuoteManagement
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $cart
-     * @return \Mage_Core_Model_Abstract
+     * @param Mage_Sales_Model_Quote $cart
+     * @return Mage_Core_Model_Abstract
      * @throws Exception
      */
-    public function create(\Mage_Sales_Model_Quote $cart)
+    public function create(Mage_Sales_Model_Quote $cart)
     {
         /** @var Quote $monitoringQuote */
         $monitoringQuote = $this->quoteFactory->create();
@@ -58,11 +58,11 @@ class Vipps_Payment_Model_QuoteManagement
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @return \Vipps_Payment_Model_Quote
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
-    public function getByQuote(\Mage_Sales_Model_Quote $quote)
+    public function getByQuote(Mage_Sales_Model_Quote $quote)
     {
         try {
             $vippsQuote = $this->quoteRepository->loadByQuote($quote->getId());

@@ -26,7 +26,7 @@ interface Vipps_Payment_Gateway_Data_PaymentDataObjectInterface
     /**
      * Returns payment
      *
-     * @return \Mage_Payment_Model_Info
+     * @return Mage_Payment_Model_Info
      */
     public function getPayment();
 }

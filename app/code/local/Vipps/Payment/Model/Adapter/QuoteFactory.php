@@ -24,6 +24,6 @@ class Vipps_Payment_Model_Adapter_QuoteFactory
      */
     public function create()
     {
-        return \Mage::getModel('vipps_payment/quote');
+        return Mage::getModel('vipps_payment/quote');
     }
 }

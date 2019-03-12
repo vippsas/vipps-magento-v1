@@ -77,6 +77,6 @@ class Vipps_Payment_Gateway_Request_TransactionTextDataBuilder extends Vipps_Pay
      */
     private function getStoreName()
     {
-        return \Mage::getStoreConfig('general/store_information/name');
+        return Mage::getStoreConfig('general/store_information/name');
     }
 }

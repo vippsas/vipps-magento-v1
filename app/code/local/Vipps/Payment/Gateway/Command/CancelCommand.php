@@ -108,7 +108,7 @@ class Vipps_Payment_Gateway_Command_CancelCommand extends Vipps_Payment_Gateway_
     /**
      * Get latest successful transaction log history item.
      *
-     * @param \Mage_Sales_Model_Order_Payment_Transaction $transaction
+     * @param Mage_Sales_Model_Order_Payment_Transaction $transaction
      *
      * @return null|Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item
      */

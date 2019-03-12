@@ -27,6 +27,6 @@ class Vipps_Payment_Gateway_Config_Config
      */
     public function getValue($field, $storeId = null)
     {
-        return \Mage::getStoreConfig(sprintf('payment/vipps/%s', $field), $storeId);
+        return Mage::getStoreConfig(sprintf('payment/vipps/%s', $field), $storeId);
     }
 }

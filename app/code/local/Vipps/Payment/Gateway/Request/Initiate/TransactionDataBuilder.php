@@ -51,9 +51,9 @@ class Vipps_Payment_Gateway_Request_Initiate_TransactionDataBuilder extends Vipp
     public function build(array $buildSubject)
     {
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
-        /** @var \Mage_Sales_Model_Quote_Payment $payment */
+        /** @var Mage_Sales_Model_Quote_Payment $payment */
         $payment = $paymentDO->getPayment();
-        /** @var \Mage_Sales_Model_Quote $quote */
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote = $payment->getQuote();
 
         $amount = $this->subjectReader->readAmount($buildSubject);

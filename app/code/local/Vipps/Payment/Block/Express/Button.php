@@ -58,7 +58,7 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
             || !$this->config->getValue('express_checkout')) {
             return '';
         }
-        if (!$this->getIsInCatalogProduct() &&
+        if (!$this->getData('is_product') &&
             !$this->config->getValue('checkout_cart_display')
         ) {
             return '';

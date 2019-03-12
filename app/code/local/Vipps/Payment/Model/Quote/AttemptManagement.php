@@ -31,7 +31,7 @@ class Vipps_Payment_Model_Quote_AttemptManagement
     public function createAttempt(\Vipps_Payment_Model_Quote $quote, $ignoreIncrement = false)
     {
         /** @var \Vipps_Payment_Model_Quote_Attempt $attempt */
-        $attempt = \Mage::getModel('vipps_payment/quote_attempt')
+        $attempt = Mage::getModel('vipps_payment/quote_attempt')
             ->setParentId($quote->getId())
             ->save();
 
@@ -46,7 +46,7 @@ class Vipps_Payment_Model_Quote_AttemptManagement
 
     /**
      * @param \Vipps_Payment_Model_Quote_Attempt $attempt
-     * @return \Mage_Core_Model_Abstract
+     * @return Mage_Core_Model_Abstract
      * @throws \Exception
      */
     public function save(\Vipps_Payment_Model_Quote_Attempt $attempt)

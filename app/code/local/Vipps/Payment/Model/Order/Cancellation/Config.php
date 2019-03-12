@@ -68,7 +68,7 @@ class Vipps_Payment_Model_Order_Cancellation_Config
      */
     private function getStoreConfig($path, $storeId = null)
     {
-        return \Mage::getStoreConfig($path, $storeId);
+        return Mage::getStoreConfig($path, $storeId);
     }
 
     /**

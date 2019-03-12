@@ -36,11 +36,11 @@ class Vipps_Payment_Model_Quote_AddressUpdater
     /**
      * Update quote addresses from source address.
      *
-     * @param \Mage_Sales_Model_Quote $quote
-     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
+     * @param Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote_Address $sourceAddress
      * @throws \Exception
      */
-    public function fromSourceAddress(\Mage_Sales_Model_Quote $quote, \Varien_Object $sourceAddress)
+    public function fromSourceAddress(Mage_Sales_Model_Quote $quote, \Varien_Object $sourceAddress)
     {
         $quote->setMayEditShippingAddress(false);
         $this->utility->disabledQuoteAddressValidation($quote);
@@ -50,11 +50,11 @@ class Vipps_Payment_Model_Quote_AddressUpdater
     /**
      * Update quote addresses from source address.
      *
-     * @param \Mage_Sales_Model_Quote $quote
-     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
+     * @param Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote_Address $sourceAddress
      * @throws \Exception
      */
-    private function updateQuoteAddresses(\Mage_Sales_Model_Quote $quote, \Mage_Sales_Model_Quote_Address $sourceAddress)
+    private function updateQuoteAddresses(Mage_Sales_Model_Quote $quote, Mage_Sales_Model_Quote_Address $sourceAddress)
     {
         if (!$quote->getIsVirtual()) {
             $shippingAddress = $quote->getShippingAddress();
@@ -69,10 +69,10 @@ class Vipps_Payment_Model_Quote_AddressUpdater
     /**
      * Update destination address from source.
      *
-     * @param \Mage_Sales_Model_Quote_Address $destAddress
-     * @param \Mage_Sales_Model_Quote_Address $sourceAddress
+     * @param Mage_Sales_Model_Quote_Address $destAddress
+     * @param Mage_Sales_Model_Quote_Address $sourceAddress
      */
-    private function updateAddress(\Mage_Sales_Model_Quote_Address $destAddress, \Mage_Sales_Model_Quote_Address $sourceAddress)
+    private function updateAddress(Mage_Sales_Model_Quote_Address $destAddress, Mage_Sales_Model_Quote_Address $sourceAddress)
     {
         $destAddress
             ->setStreet($sourceAddress->getStreet())

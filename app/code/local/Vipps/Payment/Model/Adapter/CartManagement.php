@@ -20,7 +20,7 @@
 class Vipps_Payment_Model_Adapter_CartManagement
 {
     /**
-     * @var \Mage_Checkout_Model_Cart_Api
+     * @var Mage_Checkout_Model_Cart_Api
      */
     private $orderApi;
 
@@ -34,19 +34,19 @@ class Vipps_Payment_Model_Adapter_CartManagement
      */
     public function __construct()
     {
-        $this->orderApi = \Mage::getModel('checkout/cart_api');
+        $this->orderApi = Mage::getModel('checkout/cart_api');
         $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
     }
 
     /**
      * @param $cartId
      * @return mixed
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function placeOrder($cartId)
     {
         try {
-            /** @var \Mage_Sales_Model_Order $order */
+            /** @var Mage_Sales_Model_Order $order */
             $order = $this->orderApi->createOrder($cartId);
 
             if ($order !== null) {

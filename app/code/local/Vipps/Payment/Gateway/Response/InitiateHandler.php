@@ -25,7 +25,7 @@ class Vipps_Payment_Gateway_Response_InitiateHandler extends Vipps_Payment_Gatew
     private $cartRepository;
 
     /**
-     * @var \Mage_Customer_Model_Session
+     * @var Mage_Customer_Model_Session
      */
     private $customerSession;
 
@@ -67,16 +67,16 @@ class Vipps_Payment_Gateway_Response_InitiateHandler extends Vipps_Payment_Gatew
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
         /** @var Payment $payment */
         $payment = $paymentDO->getPayment();
-        /** @var \Mage_Sales_Model_Quote $quote */
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote = $payment->getQuote();
 
         if (!$quote->getCheckoutMethod()) {
             if ($this->customerSession->isLoggedIn()) {
-                $quote->setCheckoutMethod(\Mage_Sales_Model_Quote::CHECKOUT_METHOD_LOGIN_IN);
+                $quote->setCheckoutMethod(Mage_Sales_Model_Quote::CHECKOUT_METHOD_LOGIN_IN);
             } elseif ($quote->isAllowedGuestCheckout()) {
-                $quote->setCheckoutMethod(\Mage_Sales_Model_Quote::CHECKOUT_METHOD_GUEST);
+                $quote->setCheckoutMethod(Mage_Sales_Model_Quote::CHECKOUT_METHOD_GUEST);
             } else {
-                $quote->setCheckoutMethod(\Mage_Sales_Model_Quote::CHECKOUT_METHOD_GUEST);
+                $quote->setCheckoutMethod(Mage_Sales_Model_Quote::CHECKOUT_METHOD_GUEST);
             }
         }
         $payment->setMethod('vipps');

@@ -66,7 +66,7 @@ class Vipps_Payment_Model_Adapter_Curl implements \Zend_Http_Client_Adapter_Inte
     /**
      * Apply current configuration array to transport resource
      *
-     * @return \Magento\Framework\HTTP\Adapter\Curl
+     * @return Magento\Framework\HTTP\Adapter\Curl
      */
     protected function _applyConfig()
     {

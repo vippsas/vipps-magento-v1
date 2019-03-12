@@ -24,7 +24,7 @@ class Vipps_Payment_Model_QuoteLocator
      *
      * @param string $incrementId
      *
-     * @return \Mage_Sales_Model_Quote
+     * @return Mage_Sales_Model_Quote
      */
     public function get($incrementId)
     {

@@ -18,7 +18,7 @@
 /**
  * Quote cancellation model.
  */
-class Vipps_Payment_Model_Quote_Attempt extends \Mage_Core_Model_Abstract implements Vipps_Payment_Model_Quote_QuoteAttemptInterface
+class Vipps_Payment_Model_Quote_Attempt extends Mage_Core_Model_Abstract implements Vipps_Payment_Model_Quote_QuoteAttemptInterface
 {
     /**
      * @param int $parentId

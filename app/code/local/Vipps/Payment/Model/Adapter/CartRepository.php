@@ -23,11 +23,12 @@ class Vipps_Payment_Model_Adapter_CartRepository
 {
     /**
      * @param int $quoteId
-     * @return \Mage_Sales_Model_Quote
+     * @return Mage_Sales_Model_Quote
      */
     public function get($quoteId)
     {
-        $quote = \Mage::getModel('sales/quote')->load($quoteId);
+        $quote = Mage::getModel('sales/quote');
+        $quote->loadByIdWithoutStore($quoteId);
 
         return $quote;
     }

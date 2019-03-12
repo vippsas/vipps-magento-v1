@@ -25,7 +25,7 @@ class Vipps_Payment_Model_Adapter_ResourceConnectionProvider
      */
     public function getConnection()
     {
-        return \Mage::getSingleton('core/resource')->getConnection('core_write');
+        return Mage::getSingleton('core/resource')->getConnection('core_write');
     }
 
     /**
@@ -38,11 +38,11 @@ class Vipps_Payment_Model_Adapter_ResourceConnectionProvider
     }
 
     /**
-     * @return \Mage_Core_Model_Resource
+     * @return Mage_Core_Model_Resource
      */
     protected function getResource()
     {
-        return \Mage::getSingleton('core/resource');
+        return Mage::getSingleton('core/resource');
     }
 
     /**
@@ -50,6 +50,6 @@ class Vipps_Payment_Model_Adapter_ResourceConnectionProvider
      */
     public function getTablePrefix()
     {
-        return (string)\Mage::getConfig()->getTablePrefix();
+        return (string)Mage::getConfig()->getTablePrefix();
     }
 }

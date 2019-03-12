@@ -60,7 +60,7 @@ class Vipps_Payment_Gateway_Command_CommandManager
      * @throws Mage_Core_Exception
      * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    public function initiatePayment(\Mage_Sales_Model_Quote_Payment $payment, $arguments)
+    public function initiatePayment(Mage_Sales_Model_Quote_Payment $payment, $arguments)
     {
         return $this->executeByCode('initiate', $payment, $arguments);
     }
