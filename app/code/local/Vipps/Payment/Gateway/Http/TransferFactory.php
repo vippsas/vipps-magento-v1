@@ -36,7 +36,7 @@ class Vipps_Payment_Gateway_Http_TransferFactory
     private $transferBuilder;
 
     /**
-     * @var \Mage_Core_Model_Url
+     * @var Mage_Core_Model_Url
      */
     private $urlResolver;
 

@@ -28,7 +28,7 @@ class Vipps_Payment_Gateway_Data_OrderAdapter implements Vipps_Payment_Gateway_D
      * @param Mage_Sales_Model_Order $order
      */
     public function __construct(
-        \Mage_Sales_Model_Order $order
+        Mage_Sales_Model_Order $order
     ) {
         $this->order = $order;
     }
@@ -124,7 +124,7 @@ class Vipps_Payment_Gateway_Data_OrderAdapter implements Vipps_Payment_Gateway_D
     /**
      * Returns list of line items in the cart
      *
-     * @return \Magento\Sales\Api\Data\OrderItemInterface[]
+     * @return Magento\Sales\Api\Data\OrderItemInterface[]
      */
     public function getItems()
     {

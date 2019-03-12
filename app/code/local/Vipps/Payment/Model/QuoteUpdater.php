@@ -51,12 +51,12 @@ class Vipps_Payment_Model_QuoteUpdater
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      *
-     * @return \Mage_Sales_Model_Quote
+     * @return Mage_Sales_Model_Quote
      * @throws Exception
      */
-    public function execute(\Mage_Sales_Model_Quote $quote)
+    public function execute(Mage_Sales_Model_Quote $quote)
     {
         $response = $this->paymentDetailsProvider->get(['orderId' => $quote->getReservedOrderId()]);
         $transaction = $this->transactionBuilder->setData($response)->build();
@@ -74,10 +74,10 @@ class Vipps_Payment_Model_QuoteUpdater
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      */
-    private function updateQuoteAddress(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function updateQuoteAddress(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         if (!$quote->getIsVirtual()) {
             $this->updateShippingAddress($quote, $transaction);
@@ -87,10 +87,10 @@ class Vipps_Payment_Model_QuoteUpdater
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      */
-    private function updateShippingAddress(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function updateShippingAddress(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $userDetails = $transaction->getUserDetails();
         $shippingDetails = $transaction->getShippingDetails();
@@ -115,10 +115,10 @@ class Vipps_Payment_Model_QuoteUpdater
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      */
-    private function updateBillingAddress(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function updateBillingAddress(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $userDetails = $transaction->getUserDetails();
         $billingAddress = $quote->getBillingAddress();

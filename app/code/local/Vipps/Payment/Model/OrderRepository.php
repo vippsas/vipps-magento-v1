@@ -23,26 +23,26 @@ class Vipps_Payment_Model_OrderRepository
     /**
      * @param string $orderId
      * @param string|null $field
-     * @return \Mage_Core_Model_Abstract
-     * @throws \Mage_Core_Exception
+     * @return Mage_Core_Model_Abstract
+     * @throws Mage_Core_Exception
      */
     public function get($orderId, $field = null)
     {
-        $order = \Mage::getModel('sales/order')->load($orderId, $field);
+        $order = Mage::getModel('sales/order')->load($orderId, $field);
 
         if (!$order->getId()) {
-            \Mage::throwException('Order is not found');
+            Mage::throwException('Order is not found');
         }
 
         return $order;
     }
 
     /**
-     * @param \Mage_Sales_Model_Order $order
-     * @return \Mage_Core_Model_Abstract
+     * @param Mage_Sales_Model_Order $order
+     * @return Mage_Core_Model_Abstract
      * @throws \Exception
      */
-    public function save(\Mage_Sales_Model_Order $order)
+    public function save(Mage_Sales_Model_Order $order)
     {
         return $order->save();
     }
@@ -55,7 +55,7 @@ class Vipps_Payment_Model_OrderRepository
     {
         try {
             return $this->get($incrementId, 'increment_id');
-        } catch (\Mage_Core_Exception $e) {
+        } catch (Mage_Core_Exception $e) {
         }
 
         return null;

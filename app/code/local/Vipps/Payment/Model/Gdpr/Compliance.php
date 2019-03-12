@@ -80,7 +80,7 @@ class Vipps_Payment_Model_Gdpr_Compliance
             }
 
             if (!\is_array($responseData)) {
-                \Mage::throwException(__('Unserialization result is not an array'));
+                Mage::throwException(__('Unserialization result is not an array'));
             }
 
             array_walk_recursive($responseData, function (&$item, $key, $schema) {

@@ -26,7 +26,7 @@ abstract class Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder implem
     protected $subjectReader;
 
     /**
-     * @var \Mage_Core_Model_Url
+     * @var Mage_Core_Model_Url
      */
     protected $urlBuilder;
 
@@ -38,7 +38,7 @@ abstract class Vipps_Payment_Gateway_Request_Initiate_AbstractDataBuilder implem
     public function __construct()
     {
         $this->subjectReader = Mage::helper('vipps_payment/gateway')->getSingleton('request_subjectReader');
-        $this->urlBuilder = \Mage::getSingleton('core/url');
+        $this->urlBuilder = Mage::getSingleton('core/url');
         $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
     }
 }

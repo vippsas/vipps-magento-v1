@@ -20,7 +20,7 @@
 class Vipps_Payment_Model_Adapter_MessageManager
 {
     /**
-     * @var \Mage_Core_Model_Session
+     * @var Mage_Core_Model_Session
      */
     private $session;
 
@@ -29,7 +29,7 @@ class Vipps_Payment_Model_Adapter_MessageManager
      */
     public function __construct()
     {
-        $this->session = \Mage::getSingleton('core/session');
+        $this->session = Mage::getSingleton('core/session');
     }
 
     /**

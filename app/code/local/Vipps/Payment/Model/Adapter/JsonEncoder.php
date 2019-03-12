@@ -20,7 +20,7 @@
 class Vipps_Payment_Model_Adapter_JsonEncoder
 {
     /**
-     * @var \Mage_Core_Helper_Data
+     * @var Mage_Core_Helper_Data
      */
     private $helper;
 
@@ -29,7 +29,7 @@ class Vipps_Payment_Model_Adapter_JsonEncoder
      */
     public function __construct()
     {
-        $this->helper = \Mage::helper('core');
+        $this->helper = Mage::helper('core');
     }
 
     /**

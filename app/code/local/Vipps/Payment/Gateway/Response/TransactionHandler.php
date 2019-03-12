@@ -43,7 +43,7 @@ class Vipps_Payment_Gateway_Response_TransactionHandler extends Vipps_Payment_Ga
             }
             $payment->setTransactionId($transactionId);
             $payment->setTransactionAdditionalInfo(
-                \Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
+                Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
                 $transaction->getTransactionInfo()->getData() + $transaction->getTransactionSummary()->getData()
             );
         }

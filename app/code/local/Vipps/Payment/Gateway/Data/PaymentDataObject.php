@@ -17,22 +17,22 @@
 class Vipps_Payment_Gateway_Data_PaymentDataObject implements Vipps_Payment_Gateway_Data_PaymentDataObjectInterface
 {
     /**
-     * @var \Mage_Core_Model_Abstract
+     * @var Mage_Core_Model_Abstract
      */
     private $order;
 
     /**
-     * @var \Mage_Payment_Model_Info
+     * @var Mage_Payment_Model_Info
      */
     private $payment;
 
     /**
-     * @param \Mage_Core_Model_Abstract $order
-     * @param \Mage_Payment_Model_Info $payment
+     * @param Mage_Core_Model_Abstract $order
+     * @param Mage_Payment_Model_Info $payment
      */
     public function __construct(
         Vipps_Payment_Gateway_Data_OrderAdapterInterface $order = null,
-        \Mage_Payment_Model_Info $payment = null
+        Mage_Payment_Model_Info $payment = null
     ) {
         $this->order = $order;
         $this->payment = $payment;
@@ -51,7 +51,7 @@ class Vipps_Payment_Gateway_Data_PaymentDataObject implements Vipps_Payment_Gate
     /**
      * Returns payment
      *
-     * @return \Mage_Payment_Model_Info
+     * @return Mage_Payment_Model_Info
      */
     public function getPayment()
     {

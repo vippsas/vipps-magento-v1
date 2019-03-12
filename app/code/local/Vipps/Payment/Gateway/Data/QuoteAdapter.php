@@ -25,7 +25,7 @@ class Vipps_Payment_Gateway_Data_QuoteAdapter implements \Vipps_Payment_Gateway_
      * @param Mage_Sales_Model_Quote $quote
      */
     public function __construct(
-        \Mage_Sales_Model_Quote $quote
+        Mage_Sales_Model_Quote $quote
     ) {
         $this->quote = $quote;
     }
@@ -121,7 +121,7 @@ class Vipps_Payment_Gateway_Data_QuoteAdapter implements \Vipps_Payment_Gateway_
     /**
      * Returns list of line items in the cart
      *
-     * @return \Mage_Sales_Model_Quote_Item[]|null
+     * @return Mage_Sales_Model_Quote_Item[]|null
      */
     public function getItems()
     {

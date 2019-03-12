@@ -22,10 +22,10 @@ class Vipps_Payment_Gateway_Data_PaymentDataObjectFactory
     /**
      * Create payment data Object.
      *
-     * @param \Mage_Payment_Model_Info $paymentInfo
+     * @param Mage_Payment_Model_Info $paymentInfo
      * @return Vipps_Payment_Gateway_Data_PaymentDataObject
      */
-    public function create(\Mage_Payment_Model_Info $paymentInfo)
+    public function create(Mage_Payment_Model_Info $paymentInfo)
     {
         $order = null;
         if ($paymentInfo instanceof Mage_Sales_Model_Order_Payment) {

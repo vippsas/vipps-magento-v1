@@ -22,10 +22,10 @@ class Vipps_Payment_Model_Helper_Utility
     /**
      * Make sure addresses will be saved without validation errors
      *
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @return void
      */
-    public function disabledQuoteAddressValidation(\Mage_Sales_Model_Quote $quote)
+    public function disabledQuoteAddressValidation(Mage_Sales_Model_Quote $quote)
     {
         $billingAddress = $quote->getBillingAddress();
         $billingAddress->setShouldIgnoreValidation(true);

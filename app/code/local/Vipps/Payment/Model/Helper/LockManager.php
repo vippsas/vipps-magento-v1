@@ -51,7 +51,7 @@ class Vipps_Payment_Model_Helper_LockManager
      * @param string $name lock name
      * @param int $timeout How long to wait lock acquisition in seconds, negative value means infinite timeout
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
@@ -65,7 +65,7 @@ class Vipps_Payment_Model_Helper_LockManager
          * currently we support MySQL 5.6 way only.
          */
         if ($this->currentLock) {
-            \Mage::throwException(
+            Mage::throwException(
                 sprintf(
                     'Current connection is already holding lock for $1, only single lock allowed',
                     $this->currentLock
@@ -92,14 +92,14 @@ class Vipps_Payment_Model_Helper_LockManager
      *
      * @param string $name
      * @return string $name
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     private function addPrefix($name)
     {
         $name = $this->getPrefix() . '_' . $name;
 
         if (strlen($name) > 64) {
-            \Mage::throwException(sprintf('Lock name too long: %s...', substr($name, 0, 64)));
+            Mage::throwException(sprintf('Lock name too long: %s...', substr($name, 0, 64)));
         }
 
         return $name;
@@ -124,7 +124,7 @@ class Vipps_Payment_Model_Helper_LockManager
      *
      * @param string $name lock name
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
@@ -149,7 +149,7 @@ class Vipps_Payment_Model_Helper_LockManager
      *
      * @param string $name lock name
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */

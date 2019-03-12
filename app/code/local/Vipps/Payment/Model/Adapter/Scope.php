@@ -26,7 +26,7 @@ class Vipps_Payment_Model_Adapter_Scope
 
     /**
      * @return int
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function getId()
     {
@@ -34,12 +34,12 @@ class Vipps_Payment_Model_Adapter_Scope
     }
 
     /**
-     * @return \Mage_Core_Model_Store_Group
-     * @throws \Mage_Core_Exception
+     * @return Mage_Core_Model_Store_Group
+     * @throws Mage_Core_Exception
      */
     private function getGroup()
     {
-        return \Mage::app()->getGroup();
+        return Mage::app()->getGroup();
     }
 
     /**

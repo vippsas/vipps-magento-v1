@@ -84,17 +84,17 @@ class Vipps_Payment_Model_OrderPlace
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
-     * @return \Mage_Sales_Model_Order|null
+     * @return Mage_Sales_Model_Order|null
      * @throws Vipps_Payment_Gateway_Exception_VippsException
      * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
-    public function execute(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    public function execute(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         if (!$this->canPlaceOrder($transaction)) {
             return null;
@@ -139,14 +139,14 @@ class Vipps_Payment_Model_OrderPlace
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      *
      * @return bool|string
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */
-    private function acquireLock(\Mage_Sales_Model_Quote $quote)
+    private function acquireLock(Mage_Sales_Model_Quote $quote)
     {
         $reservedOrderId = $quote->getReservedOrderId();
         if ($reservedOrderId) {
@@ -159,15 +159,15 @@ class Vipps_Payment_Model_OrderPlace
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
-     * @return \Mage_Sales_Model_Order
+     * @return Mage_Sales_Model_Order
      * @throws Vipps_Payment_Gateway_Exception_VippsException
      * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
-    private function placeOrder(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function placeOrder(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $clonedQuote = clone $quote;
         $reservedOrderId = $clonedQuote->getReservedOrderId();
@@ -179,7 +179,7 @@ class Vipps_Payment_Model_OrderPlace
         if (!$order) {
             //this is used only for express checkout
             $this->quoteUpdater->execute($clonedQuote);
-            /** @var \Mage_Sales_Model_Quote $clonedQuote */
+            /** @var Mage_Sales_Model_Quote $clonedQuote */
             $clonedQuote = $this->cartRepository->get($clonedQuote->getId());
             if ($clonedQuote->getReservedOrderId() !== $reservedOrderId) {
                 return null;
@@ -202,7 +202,7 @@ class Vipps_Payment_Model_OrderPlace
     }
 
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      */
     private function prepareQuote($quote)
     {
@@ -216,13 +216,13 @@ class Vipps_Payment_Model_OrderPlace
     /**
      * Check if reserved Order amount in vipps is the same as in Magento.
      *
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return void
      * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
      */
-    private function validateAmount(\Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function validateAmount(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
         $quoteAmount = (int)round($this->formatPrice($quote->getGrandTotal()) * 100);
         $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
@@ -237,9 +237,9 @@ class Vipps_Payment_Model_OrderPlace
     /**
      * Update vipps quote with success.
      *
-     * @param \Mage_Sales_Model_Quote $cart
+     * @param Mage_Sales_Model_Quote $cart
      */
-    private function updateVippsQuote(\Mage_Sales_Model_Quote $cart)
+    private function updateVippsQuote(Mage_Sales_Model_Quote $cart)
     {
         try {
             $vippsQuote = $this->quoteManagement->getByQuote($cart);
@@ -254,13 +254,13 @@ class Vipps_Payment_Model_OrderPlace
     /**
      * Capture
      *
-     * @param \Mage_Sales_Model_Order $order
+     * @param Mage_Sales_Model_Order $order
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
-    private function capture(\Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function capture(Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
+        if ($order->getState() !== Mage_Sales_Model_Order::STATE_NEW) {
             return;
         }
 
@@ -268,7 +268,7 @@ class Vipps_Payment_Model_OrderPlace
         $totalDue = $order->getTotalDue();
         $baseTotalDue = $order->getBaseTotalDue();
 
-        /** @var \Mage_Sales_Model_Order_Payment $payment */
+        /** @var Mage_Sales_Model_Order_Payment $payment */
         $payment = $order->getPayment();
         $payment->setAmountAuthorized($totalDue);
         $payment->setBaseAmountAuthorized($baseTotalDue);
@@ -276,7 +276,7 @@ class Vipps_Payment_Model_OrderPlace
         $transactionId = $transaction->getTransactionId();
         $payment->setTransactionId($transactionId);
         $payment->setTransactionAdditionalInfo(
-            \Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
+            Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
             $transaction->getTransactionInfo()->getData()
         );
 
@@ -290,9 +290,9 @@ class Vipps_Payment_Model_OrderPlace
     /**
      * Send order conformation email if not sent
      *
-     * @param \Mage_Sales_Model_Order $order
+     * @param Mage_Sales_Model_Order $order
      */
-    private function notify(\Mage_Sales_Model_Order $order)
+    private function notify(Mage_Sales_Model_Order $order)
     {
         if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
             $order->sendOrderUpdateEmail(true);
@@ -302,17 +302,17 @@ class Vipps_Payment_Model_OrderPlace
     /**
      * Authorize action
      *
-     * @param \Mage_Sales_Model_Order $order
+     * @param Mage_Sales_Model_Order $order
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      * @throws Exception
      */
-    private function authorize(\Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    private function authorize(Mage_Sales_Model_Order $order, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        if ($order->getState() !== \Mage_Sales_Model_Order::STATE_NEW) {
+        if ($order->getState() !== Mage_Sales_Model_Order::STATE_NEW) {
             return;
         }
 
-        /** @var \Mage_Sales_Model_Order_Payment $payment */
+        /** @var Mage_Sales_Model_Order_Payment $payment */
         $payment = $order->getPayment();
         $transactionId = $transaction->getTransactionId();
         $payment->setTransactionId($transactionId);
@@ -339,7 +339,7 @@ class Vipps_Payment_Model_OrderPlace
      * @param $lockName
      *
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
      */

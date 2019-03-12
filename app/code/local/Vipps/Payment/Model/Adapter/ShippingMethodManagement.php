@@ -22,12 +22,12 @@
 class Vipps_Payment_Model_Adapter_ShippingMethodManagement
 {
     /**
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param \Varien_Object $address
      * @return array
-     * @throws \Mage_Core_Model_Store_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
-    public function estimateByExtendedAddress(\Mage_Sales_Model_Quote $quote, \Varien_Object $address)
+    public function estimateByExtendedAddress(Mage_Sales_Model_Quote $quote, \Varien_Object $address)
     {
         // no methods applicable for empty carts or carts with virtual products
         if ($quote->isVirtual() || 0 == $quote->getItemsCount()) {
@@ -39,12 +39,12 @@ class Vipps_Payment_Model_Adapter_ShippingMethodManagement
     /**
      * Get list of available shipping methods
      *
-     * @param \Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Quote $quote
      * @param \Varien_Object $address
      * @return array
-     * @throws \Mage_Core_Model_Store_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
-    private function getShippingMethods(\Mage_Sales_Model_Quote $quote, \Varien_Object $address)
+    private function getShippingMethods(Mage_Sales_Model_Quote $quote, \Varien_Object $address)
     {
         $output = [];
         $shippingAddress = $quote->getShippingAddress();
@@ -62,33 +62,33 @@ class Vipps_Payment_Model_Adapter_ShippingMethodManagement
     }
 
     /**
-     * @return \Mage_Directory_Model_Currency
-     * @throws \Mage_Core_Model_Store_Exception
+     * @return Mage_Directory_Model_Currency
+     * @throws Mage_Core_Model_Store_Exception
      */
     private function getBaseCurrency()
     {
-        return \Mage::app()->getStore()->getBaseCurrency();
+        return Mage::app()->getStore()->getBaseCurrency();
     }
 
 
     /**
      * Converts a specified rate model to a shipping method data object.
      *
-     * @param \Mage_Sales_Model_Quote_Address_Rate $rate The rate model.
+     * @param Mage_Sales_Model_Quote_Address_Rate $rate The rate model.
      * @param string $quoteCurrencyCode The quote currency code.
      * @return \Varien_Object Shipping method data object.
-     * @throws \Mage_Core_Model_Store_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
-    public function modelToDataObject(\Mage_Sales_Model_Quote_Address_Rate $rate, $quoteCurrencyCode)
+    public function modelToDataObject(Mage_Sales_Model_Quote_Address_Rate $rate, $quoteCurrencyCode)
     {
-        /** @var \Mage_Directory_Model_Currency $currency */
+        /** @var Mage_Directory_Model_Currency $currency */
         $currency = $this->getBaseCurrency();
 
         $dataObject = new \Varien_Object();
         $amount = (float)$rate->getPrice();
         $errorMessage = $rate->getErrorMessage();
-        $amountExclTax = \Mage::helper('tax')->getShippingPrice($amount, false, $rate->getAddress());
-        $amountInclTax = \Mage::helper('tax')->getShippingPrice($amount, true, $rate->getAddress());
+        $amountExclTax = Mage::helper('tax')->getShippingPrice($amount, false, $rate->getAddress());
+        $amountInclTax = Mage::helper('tax')->getShippingPrice($amount, true, $rate->getAddress());
 
         $dataObject
             ->setCarrierCode($rate->getCarrier())

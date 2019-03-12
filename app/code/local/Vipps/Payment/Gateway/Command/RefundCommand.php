@@ -75,7 +75,7 @@ class Vipps_Payment_Gateway_Command_RefundCommand extends Vipps_Payment_Gateway_
 
         // try to refund based on refund service itself
         if ($transaction->getTransactionSummary()->getRemainingAmountToRefund() < $amount) {
-            \Mage::throwException(__('Refund amount is higher then remaining amount to refund'));
+            Mage::throwException(__('Refund amount is higher then remaining amount to refund'));
         }
 
         $requestId = $this->getLastFailedRequestId($transaction, $amount);
@@ -93,7 +93,7 @@ class Vipps_Payment_Gateway_Command_RefundCommand extends Vipps_Payment_Gateway_
      * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @return bool
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     private function refundBasedOnPaymentDetails($commandSubject, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {

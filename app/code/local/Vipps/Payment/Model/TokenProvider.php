@@ -83,7 +83,7 @@ class Vipps_Payment_Model_TokenProvider
      * {@inheritdoc}
      *
      * @return mixed|string
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function get()
     {
@@ -98,7 +98,7 @@ class Vipps_Payment_Model_TokenProvider
      * Method to load latest token record from storage.
      *
      * @return array
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     private function loadTokenRecord()
     {
@@ -130,7 +130,7 @@ class Vipps_Payment_Model_TokenProvider
      * Return current scope Id.
      *
      * @return int
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     private function getScopeId()
     {
@@ -230,7 +230,7 @@ class Vipps_Payment_Model_TokenProvider
      * and insert a new one in another case.
      *
      * @param $jwt
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     private function refreshJwt($jwt)
     {
@@ -255,7 +255,7 @@ class Vipps_Payment_Model_TokenProvider
             $this->logger->debug(__('Refreshed Jwt data.'));
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
-            \Mage::throwException(__('Can\'t save jwt data to database.' . $e->getMessage()));
+            Mage::throwException(__('Can\'t save jwt data to database.' . $e->getMessage()));
         }
     }
 }

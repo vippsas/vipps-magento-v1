@@ -38,7 +38,7 @@ class Vipps_Payment_Model_QuoteRepository
      *
      * @param \Vipps_Payment_Model_Quote $quote
      * @return \Vipps_Payment_Model_Quote
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function save(\Vipps_Payment_Model_Quote $quote)
     {
@@ -47,7 +47,7 @@ class Vipps_Payment_Model_QuoteRepository
 
             return $quote;
         } catch (\Exception $e) {
-            throw new \Mage_Core_Exception(__('Could not save Vipps Quote: %s', $e->getMessage()));
+            throw new Mage_Core_Exception(__('Could not save Vipps Quote: %s', $e->getMessage()));
         }
     }
 
@@ -55,8 +55,8 @@ class Vipps_Payment_Model_QuoteRepository
      * Load monitoring quote by quote.
      *
      * @param $quoteId
-     * @return false|\Mage_Core_Model_Abstract
-     * @throws \Mage_Core_Exception
+     * @return false|Mage_Core_Model_Abstract
+     * @throws Mage_Core_Exception
      */
     public function loadByQuote($quoteId)
     {
@@ -65,7 +65,7 @@ class Vipps_Payment_Model_QuoteRepository
         $monitoringQuote->load($quoteId, 'quote_id');
 
         if (!$monitoringQuote->getId()) {
-            throw new \Mage_Core_Exception(__('No such entity with quote_id = %s', $quoteId));
+            throw new Mage_Core_Exception(__('No such entity with quote_id = %s', $quoteId));
         }
 
         return $monitoringQuote;
@@ -74,7 +74,7 @@ class Vipps_Payment_Model_QuoteRepository
     /**
      * @param int $monitoringQuoteId
      * @return \Vipps_Payment_Model_Quote
-     * @throws \Mage_Core_Exception
+     * @throws Mage_Core_Exception
      */
     public function load($monitoringQuoteId)
     {
@@ -83,7 +83,7 @@ class Vipps_Payment_Model_QuoteRepository
         $monitoringQuote->load($monitoringQuoteId);
 
         if (!$monitoringQuote->getId()) {
-            throw new \Mage_Core_Exception(__('No such entity with entity_id = %s', $monitoringQuoteId));
+            throw new Mage_Core_Exception(__('No such entity with entity_id = %s', $monitoringQuoteId));
         }
 
         return $monitoringQuote;

@@ -14,6 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-class Vipps_Payment_Gateway_Command_CommandException extends \Mage_Core_Exception
+class Vipps_Payment_Gateway_Command_CommandException extends Mage_Core_Exception
 {
 }

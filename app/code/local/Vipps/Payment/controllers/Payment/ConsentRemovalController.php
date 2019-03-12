@@ -18,7 +18,7 @@
  * Class ConsentRemoval
  * @package Vipps\Payment\Controller\Payment
  */
-class Vipps_Payment_ConsentRemovalController extends \Mage_Core_Controller_Front_Action
+class Vipps_Payment_ConsentRemovalController extends Mage_Core_Controller_Front_Action
 {
     /**
      * {@inheritdoc}
