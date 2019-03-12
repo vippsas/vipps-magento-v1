@@ -10,8 +10,6 @@
         }
     ],
     "require": {
-        "vaimo/magento": "*",
-        "magento-hackathon/magento-composer-installer": "*",
         "ext-curl": "*"
     },
     "extra": {
