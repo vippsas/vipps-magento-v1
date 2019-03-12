@@ -17,7 +17,7 @@
     <modules>
         <Vipps_Payment>
             <active>true</active>
-            <codePool>local</codePool>
+            <codePool>community</codePool>
         </Vipps_Payment>
     </modules>
 </config>
