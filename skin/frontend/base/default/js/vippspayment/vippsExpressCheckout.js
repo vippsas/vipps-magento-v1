@@ -40,7 +40,6 @@ VippsExpressCheckout.prototype = {
     },
 
     cartHandler: function () {
-        Event.stop(event);
         setLocation(this.options.redirectUrl);
     },
 
@@ -49,7 +48,6 @@ VippsExpressCheckout.prototype = {
      * @param event
      */
     productViewHandler: function (event) {
-        Event.stop(event);
         var productAddToCartForm = this.getAddToCartForm();
         if (!productAddToCartForm) {
             alert('productAddToCartForm form is not defined');
