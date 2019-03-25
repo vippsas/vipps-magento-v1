@@ -95,6 +95,15 @@
                 </observers>
             </checkout_cart_add_product_complete>
         </events>
+        <translate>
+            <modules>
+                <vipps_payment>
+                    <files>
+                        <default>Vipps_Payment.csv</default>
+                    </files>
+                </vipps_payment>
+            </modules>
+        </translate>
     </frontend>
     <default>
         <payment>
@@ -149,6 +158,15 @@
                 </vipps_payment>
             </updates>
         </layout>
+        <translate>
+            <modules>
+                <vipps_payment>
+                    <files>
+                        <default>Vipps_Payment.csv</default>
+                    </files>
+                </vipps_payment>
+            </modules>
+        </translate>
     </adminhtml>
     <crontab>
         <jobs>
