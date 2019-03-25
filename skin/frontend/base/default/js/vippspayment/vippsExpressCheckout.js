@@ -9,13 +9,17 @@ VippsExpressCheckout.prototype = {
      * @param button
      */
     initialize: function (button) {
-        if(typeof button != 'undefined') {
+        this.options = $H({isProduct: '0', redirectUrl: '#'});
+
+        if (typeof button != 'undefined') {
             this.button = $(button);
             var handler;
-            if(this.button.readAttribute('data-is-product')) {
+
+            this.options.merge(this.button.readAttribute('data-options'));
+            if (this.options.isProduct) {
                 handler = this.productViewHandler.bindAsEventListener(this);
             } else {
-                handler = this.cartHandler;
+                handler = this.cartHandler.bindAsEventListener(this);
             }
             this.button.observe('click', handler);
         }
@@ -35,9 +39,9 @@ VippsExpressCheckout.prototype = {
 
     },
 
-    cartHandler: function(){
+    cartHandler: function () {
         Event.stop(event);
-        setLocation(this.readAttribute('data-redirect-url'));
+        setLocation(this.options.redirectUrl);
     },
 
     /**
@@ -66,7 +70,7 @@ VippsExpressCheckout.prototype = {
 
 $(document).observe('dom:loaded', function () {
 
-    $$('.vipps-express-checkout .vipps-checkout').each(function(button){
+    $$('.vipps-express-checkout .vipps-checkout').each(function (button) {
         new VippsExpressCheckout(button);
     });
 });

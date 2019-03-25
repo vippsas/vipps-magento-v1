@@ -17,13 +17,12 @@
 <?php /** @var $this Vipps_Payment_Block_Express_Button */ ?>
 <div class="vipps-express-checkout">
     <a class="vipps-checkout"
-       href="#"
-        <?php if($this->isProduct()): ?>data-is-product="1"<?php endif; ?>
-       data-redirect-url="<?php echo $this->escapeUrl($this->getUrl('vipps/express')); ?>">
+       href="<?php echo $this->getHref() ?>"
+        data-options="<?php echo $this->escapeHtml($this->getDataOptions()) ?>">
         <svg width="253px" height="48px" viewBox="0 0 253 48" role="img"
              aria-labelledby="vipps-checkout-title vipps-checkout-desc">
-            <title id="vipps-checkout-title">Vipps hurtigkasse</title>
-            <desc id="vipps-checkout-desc">Kjøp nå med Vipps hurtigkasse</desc>
+            <title class="vipps-checkout-title">Vipps hurtigkasse</title>
+            <desc class="vipps-checkout-desc">Kjøp nå med Vipps hurtigkasse</desc>
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g>
                     <rect fill="#FE5B24" x="0" y="0" width="253" height="48" rx="24"></rect>

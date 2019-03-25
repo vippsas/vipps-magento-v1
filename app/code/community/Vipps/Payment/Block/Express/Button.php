@@ -19,20 +19,18 @@
  */
 class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
 {
-    /** @var
-     * Vipps_Payment_Helper_Gateway
-     */
-    private $helper;
-
-    /** @var
-     * Vipps_Payment_Gateway_Config_Config
-     */
-    private $config;
-
     /**
      * @var string
      */
     protected $_template = 'vippspayment/expressbutton.phtml';
+    /** @var
+     * Vipps_Payment_Helper_Gateway
+     */
+    private $helper;
+    /** @var
+     * Vipps_Payment_Gateway_Config_Config
+     */
+    private $config;
 
     /**
      * Vipps_Payment_Block_Express_Button constructor.
@@ -47,6 +45,53 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
         $this->helper = $this->helper('vipps_payment/gateway');
         /** @var Vipps_Payment_Gateway_Config_Config gatewayConfig */
         $this->config = $this->helper->getSingleton('config_config');
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        $this->getNameInLayout();
+    }
+
+    /**
+     * @return string
+     */
+    public function getHref()
+    {
+        return $this->getIsProduct() ? '#' : $this->getVippsExpressUrl();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsProduct()
+    {
+        return $this->getData('is_product');
+    }
+
+    /**
+     * @return string
+     */
+    public function getVippsExpressUrl()
+    {
+        return $this->getUrl('vipps/express');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataOptions()
+    {
+        return $this
+            ->helper('core')
+            ->jsonEncode(array(
+                'isProduct'   => (int)$this->getIsProduct(),
+                'redirectUrl' => $this->escapeUrl($this->getUrl())
+            ));
     }
 
     /**
@@ -65,23 +110,5 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
         }
 
         return parent::_toHtml();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     */
-    public function getAlias()
-    {
-        $this->getNameInLayout();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function isProduct()
-    {
-        return $this->getData('is_product');
     }
 }
