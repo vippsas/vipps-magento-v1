@@ -4,8 +4,8 @@ var VippsExpressCheckout = Class.create();
  * @type {{buttonObserver: VippsExpressCheckout.buttonObserver, getAddToCartForm: VippsExpressCheckout.getAddToCartForm, initialize: VippsExpressCheckout.initialize}}
  */
 VippsExpressCheckout.prototype = {
+
     /**
-     *
      * @param button
      */
     initialize: function (button) {
@@ -16,7 +16,7 @@ VippsExpressCheckout.prototype = {
             var handler;
 
             this.options.merge(this.button.readAttribute('data-options'));
-            if (this.options.isProduct) {
+            if (this.options.get('isProduct')) {
                 handler = this.productViewHandler.bindAsEventListener(this);
             } else {
                 handler = this.cartHandler.bindAsEventListener(this);
@@ -39,15 +39,21 @@ VippsExpressCheckout.prototype = {
 
     },
 
-    cartHandler: function () {
-        setLocation(this.options.redirectUrl);
+    /**
+     * Handler cart button.
+     * @param event
+     */
+    cartHandler: function (event) {
+        Event.stop(event);
+        setLocation(this.options.get('redirectUrl'));
     },
 
     /**
-     *
+     * Handler product view button.
      * @param event
      */
     productViewHandler: function (event) {
+        Event.stop(event);
         var productAddToCartForm = this.getAddToCartForm();
         if (!productAddToCartForm) {
             alert('productAddToCartForm form is not defined');
@@ -67,7 +73,6 @@ VippsExpressCheckout.prototype = {
 };
 
 $(document).observe('dom:loaded', function () {
-
     $$('.vipps-express-checkout .vipps-checkout').each(function (button) {
         new VippsExpressCheckout(button);
     });

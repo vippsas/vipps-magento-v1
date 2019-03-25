@@ -47,7 +47,7 @@ class Vipps_Payment_Model_Adapter_CartManagement
     {
         try {
             /** @var Mage_Sales_Model_Order $order */
-            $order = $this->orderApi->createOrder($cartId);
+            $order = $this->orderApi->createOrder($cartId, null, Mage::helper('checkout')->getRequiredAgreementIds());
 
             if ($order !== null) {
                 return $order;
