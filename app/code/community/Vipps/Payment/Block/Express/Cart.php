@@ -17,20 +17,22 @@
 /**
  * Class Vipps_Payment_Block_Express_Button
  */
-class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
+class Vipps_Payment_Block_Express_Cart extends Mage_Core_Block_Template
 {
     /**
      * @var string
      */
-    protected $_template = 'vippspayment/expressbutton.phtml';
-    /** @var
-     * Vipps_Payment_Helper_Gateway
+    protected $_template = 'vippspayment/expresslink.phtml';
+
+    /**
+     * @var Vipps_Payment_Helper_Express
      */
-    private $helper;
-    /** @var
-     * Vipps_Payment_Gateway_Config_Config
+    protected $helper;
+
+    /**
+     * @var Vipps_Payment_Gateway_Config_Config
      */
-    private $config;
+    protected $config;
 
     /**
      * Vipps_Payment_Block_Express_Button constructor.
@@ -41,36 +43,11 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
     {
         parent::__construct($args);
 
-        /** @var Vipps_Payment_Helper_Gateway helper */
-        $this->helper = $this->helper('vipps_payment/gateway');
+        /** @var Vipps_Payment_Helper_Gateway $helper */
+        $helper = $this->helper('vipps_payment/gateway');
         /** @var Vipps_Payment_Gateway_Config_Config gatewayConfig */
-        $this->config = $this->helper->getSingleton('config_config');
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     */
-    public function getAlias()
-    {
-        $this->getNameInLayout();
-    }
-
-    /**
-     * @return string
-     */
-    public function getHref()
-    {
-        return $this->getIsProduct() ? '#' : $this->getVippsExpressUrl();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIsProduct()
-    {
-        return $this->getData('is_product');
+        $this->config = $helper->getSingleton('config_config');
+        $this->helper = $this->helper('vipps_payment/express');
     }
 
     /**
@@ -78,20 +55,7 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
      */
     public function getVippsExpressUrl()
     {
-        return $this->getUrl('vipps/express');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDataOptions()
-    {
-        return $this
-            ->helper('core')
-            ->jsonEncode(array(
-                'isProduct'   => (int)$this->getIsProduct(),
-                'redirectUrl' => $this->escapeUrl($this->getUrl())
-            ));
+        return $this->helper->getExpressCheckoutUrl();
     }
 
     /**
@@ -99,12 +63,9 @@ class Vipps_Payment_Block_Express_Button extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if (!$this->config->getValue('active')
-            || !$this->config->getValue('express_checkout')) {
-            return '';
-        }
-        if (!$this->getData('is_product') &&
-            !$this->config->getValue('checkout_cart_display')
+        if (
+            !$this->helper->isActive()
+            || !$this->config->getValue('checkout_cart_display')
         ) {
             return '';
         }

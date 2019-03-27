@@ -14,6 +14,34 @@
  * IN THE SOFTWARE.
  */
 
-class Vipps_Payment_Helper_Data extends Mage_Core_Helper_Abstract
+class Vipps_Payment_Helper_Express extends Mage_Core_Helper_Abstract
 {
+    /**
+     * @var Vipps_Payment_Gateway_Config_Config
+     */
+    private $config;
+
+    public function __construct()
+    {
+        /** @var Vipps_Payment_Helper_Gateway $helper */
+        $helper = Mage::helper('vipps_payment/gateway');
+        /** @var Vipps_Payment_Gateway_Config_Config gatewayConfig */
+        $this->config = $helper->getSingleton('config_config');
+    }
+
+    /**
+     * @return string
+     */
+    public function getExpressCheckoutUrl()
+    {
+        return Mage::getUrl('vipps/express');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->config->getValue('active') && $this->config->getValue('express_checkout');
+    }
 }
