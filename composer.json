@@ -12,5 +12,10 @@
     "require": {},
     "extra": {
         "vaimo-module-category": "Integration"
+    },
+    "require": {
+        "vaimo/magento": "*",
+        "magento-hackathon/magento-composer-installer": "*",
+        "ext-curl": "*"
     }
 }
