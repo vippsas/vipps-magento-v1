@@ -23,9 +23,9 @@ class Vipps_Payment_Block_Adminhtml_QuoteMonitoring_Grid extends Mage_Adminhtml_
     {
         parent::__construct();
 
-        $this->setDefaultSort('id');
+        $this->setDefaultSort('entity_id');
         $this->setId('vipps_quotemonitoring_grid');
-        $this->setDefaultDir('asc');
+        $this->setDefaultDir('desc');
         $this->setSaveParametersInSession(false);
     }
 
