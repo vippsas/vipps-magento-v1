@@ -26,10 +26,11 @@ class Vipps_Payment_Block_Form extends Mage_Payment_Block_Form
         $imageUrl = $this->getSkinUrl('images/vippspayment/vipps_logo_rgb.png');
 
         return <<<HTML
-            <label class="vipps-payment-label">
-                <img width="70" src="{$imageUrl}" class="payment-icon" alt="{$methodTitle}"/>
-            </label>
-            <div class="vipps-payment-method-note">{$vippsNote}</div>
+            <span class="vipps-payment-label">
+                <img width="170" src="{$imageUrl}" class="payment-icon" alt="{$methodTitle}"/>
+                <span class="clearfix"></span>
+                <span class="vipps-payment-method-note">{$vippsNote}</span>
+            </span>
 HTML;
 
     }
