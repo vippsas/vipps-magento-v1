@@ -16,7 +16,6 @@
 
 /**
  * Class Item
- * @package Vipps\Payment\Model\ResourceModel\Profiling
  */
 class Vipps_Payment_Model_Resource_Profiling_Item extends Mage_Core_Model_Resource_Db_Abstract
 {
@@ -36,5 +35,7 @@ class Vipps_Payment_Model_Resource_Profiling_Item extends Mage_Core_Model_Resour
     protected function _construct() //@codingStandardsIgnoreLine
     {
         $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
+
+        $this->_setResource(array('write' => 'vipps', 'read' => 'vipps'));
     }
 }
