@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Copyright 2019 Vipps
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  ~    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+  ~  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+  ~ TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+  ~ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+  ~ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  ~ IN THE SOFTWARE.
+  -->
+<config>
+    <modules>
+        <Vipps_Payment>
+            <version>0.1.0</version>
+        </Vipps_Payment>
+    </modules>
+    <global>
+        <blocks>
+            <vipps_payment>
+                <class>Vipps_Payment_Block</class>
+            </vipps_payment>
+        </blocks>
+        <helpers>
+            <vipps_payment>
+                <class>Vipps_Payment_Helper</class>
+            </vipps_payment>
+        </helpers>
+        <models>
+            <vipps_payment>
+                <class>Vipps_Payment_Model</class>
+                <resourceModel>vipps_payment_resource</resourceModel>
+            </vipps_payment>
+            <vipps_payment_resource>
+                <class>Vipps_Payment_Model_Resource</class>
+                <entities>
+                    <jwt>
+                        <table>vipps_payment_jwt</table>
+                    </jwt>
+                    <profiling>
+                        <table>vipps_profiling</table>
+                    </profiling>
+                    <quote>
+                        <table>vipps_quote</table>
+                    </quote>
+                    <quote_attempt>
+                        <table>vipps_quote_attempt</table>
+                    </quote_attempt>
+                </entities>
+            </vipps_payment_resource>
+        </models>
+        <resources>
+            <vipps_payment_setup>
+                <setup>
+                    <module>Vipps_Payment</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </vipps_payment_setup>
+        </resources>
+        <gateways>
+            <vipps_payment>
+                <class>Vipps_Payment_Gateway</class>
+            </vipps_payment>
+        </gateways>
+    </global>
+    <frontend>
+        <routers>
+            <vipps_payment>
+                <use>standard</use>
+                <args>
+                    <module>Vipps_Payment</module>
+                    <frontName>vipps</frontName>
+                </args>
+            </vipps_payment>
+        </routers>
+        <layout>
+            <updates>
+                <vipps_payment>
+                    <file>vippspayment.xml</file>
+                </vipps_payment>
+            </updates>
+        </layout>
+        <events>
+            <checkout_cart_add_product_complete>
+                <observers>
+                    <vipps_payment>
+                        <type>singleton</type>
+                        <class>vipps_payment/observer_checkoutCartAddProductComplete</class>
+                        <method>redirectToExpressCheckout</method>
+                    </vipps_payment>
+                </observers>
+            </checkout_cart_add_product_complete>
+        </events>
+        <translate>
+            <modules>
+                <vipps_payment>
+                    <files>
+                        <default>Vipps_Payment.csv</default>
+                    </files>
+                </vipps_payment>
+            </modules>
+        </translate>
+    </frontend>
+    <default>
+        <payment>
+            <vipps>
+                <model>vipps_payment/standard</model>
+                <title>Vipps</title>
+                <active>1</active>
+                <can_use_checkout>1</can_use_checkout>
+                <can_initialize>0</can_initialize>
+                <can_authorize>1</can_authorize>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+                <can_capture_partial>1</can_capture_partial>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_fetch_transaction_information>1</can_fetch_transaction_information>
+                <can_void>1</can_void>
+                <can_cancel>1</can_cancel>
+                <can_use_internal>1</can_use_internal>
+                <environment>develop</environment>
+                <subscription_key1 backend_model="adminhtml/system_config_backend_encrypted"/>
+                <subscription_key2 backend_model="adminhtml/system_config_backend_encrypted"/>
+                <merchant_serial_number backend_model="adminhtml/system_config_backend_encrypted"/>
+                <client_id backend_model="adminhtml/system_config_backend_encrypted"/>
+                <client_secret backend_model="adminhtml/system_config_backend_encrypted"/>
+            </vipps>
+        </payment>
+        <vipps>
+            <order_cancellation>
+                <type>manual</type>
+                <attempts_count>3</attempts_count>
+                <customer_inactivity_time>10</customer_inactivity_time>
+                <quote_storage_period>60</quote_storage_period>
+            </order_cancellation>
+        </vipps>
+    </default>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <vipps_payment before="Mage_Adminhtml">Vipps_Payment_Adminhtml</vipps_payment>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <vipps_payment>
+                    <file>vippspayment.xml</file>
+                </vipps_payment>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <vipps_payment>
+                    <files>
+                        <default>Vipps_Payment.csv</default>
+                    </files>
+                </vipps_payment>
+            </modules>
+        </translate>
+    </adminhtml>
+    <crontab>
+        <jobs>
+            <vipps_payment_fetch_orders_from_vipps>
+                <schedule>
+                    <cron_expr>*/10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_fetchOrderFromVipps::execute</model>
+                </run>
+            </vipps_payment_fetch_orders_from_vipps>
+            <vipps_payment_cancel_quotes>
+                <schedule>
+                    <cron_expr>0 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_cancelQuoteByAttempts::execute</model>
+                </run>
+            </vipps_payment_cancel_quotes>
+            <vipps_payment_clear_history>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>vipps_payment/cron_clearQuotesHistory::execute</model>
+                </run>
+            </vipps_payment_clear_history>
+        </jobs>
+    </crontab>
+</config>
