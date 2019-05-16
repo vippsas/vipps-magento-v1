@@ -8,6 +8,10 @@ Vipps Payment is used by large and small companies. From years of shopping safel
 
 For more information about Vipps Payment and Magento 1, please visit our [Vipps Payment for Magento](https://www.vipps.no/bedrift/vipps-pa-nett) site.
 
+### Magento 2
+
+Please see: https://github.com/vippsas/vipps-magento
+
 ## Pre-Requisites
 1. [Magento 1.7+](https://devdocs.magento.com/guides/m1x/install/installing_install.html)
 1. SSL is installed on your site and active on the Checkout page
