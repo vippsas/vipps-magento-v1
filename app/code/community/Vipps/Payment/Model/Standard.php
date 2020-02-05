@@ -100,4 +100,14 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
 
         return $this;
     }
+
+    /**
+     * @param null $quote
+     *
+     * @return bool
+     */
+    public function isAvailable($quote = null)
+    {
+        return (bool)(int)$this->getConfigData('enabled', $quote ? $quote->getStoreId() : null);
+    }
 }
