@@ -139,6 +139,18 @@
             </order_cancellation>
         </vipps>
     </default>
+    <klarna>
+        <external_payment_methods>
+            <vipps translate="label description" ifconfig="payment/vipps/enabled">
+                <label>Vipps</label>
+                <name>Vipps</name>
+                <redirect_url><![CDATA[{{secure_base_url}}vipps/payment/regular]]></redirect_url>
+                <image_url><![CDATA[{{secure_base_url}skin/images/vippspayment/vipps_logo_100x26.png]]></image_url>
+                <description>Checkout using Vipps.</description>
+                <fee>0</fee>
+            </vipps>
+        </external_payment_methods>
+    </klarna>
     <admin>
         <routers>
             <adminhtml>
