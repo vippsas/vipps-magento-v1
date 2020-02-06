@@ -38,6 +38,7 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
     protected $_canCapturePartial = true;
     protected $_canRefund = true;
     protected $_canRefundInvoicePartial = true;
+    protected $_canVoid = true;
     protected $_canFetchTransactionInfo = true;
 
     private $commandManager;
