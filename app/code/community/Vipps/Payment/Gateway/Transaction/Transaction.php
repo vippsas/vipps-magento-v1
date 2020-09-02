@@ -98,6 +98,11 @@ class Vipps_Payment_Gateway_Transaction_Transaction
     /**
      * @var string
      */
+    const TRANSACTION_OPERATION_INITIATE = 'initiate';
+
+    /**
+     * @var string
+     */
     const TRANSACTION_OPERATION_RESERVE = 'reserve';
 
     /**
@@ -246,10 +251,120 @@ class Vipps_Payment_Gateway_Transaction_Transaction
             self::TRANSACTION_STATUS_RESERVE,
             self::TRANSACTION_STATUS_RESERVED
         ];
-        if (in_array($this->getTransactionInfo()->getStatus(), $statuses)) {
+        $item = $this->transactionLogHistory->getLastSuccessItem();
+        if (in_array($item->getOperation(), $statuses)) {
             return true;
         }
 
+        return false;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getTransactionStatus()
+    {
+        if ($this->transactionWasCancelled() || $this->transactionWasVoided()) {
+            return self::TRANSACTION_STATUS_CANCELLED;
+        }
+
+        if ($this->transactionWasReserved()) {
+            return self::TRANSACTION_STATUS_RESERVED;
+        }
+
+        if ($this->transactionWasInitiated()) {
+            return self::TRANSACTION_STATUS_INITIATED;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTransactionInitiated()
+    {
+        $item = $this->getTransactionLogHistory()->getLastSuccessItem();
+        if ($item && $item->getOperation() == self::TRANSACTION_OPERATION_INITIATE) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function isTransactionExpired()
+    {
+        $item = $this->getTransactionLogHistory()->getLastSuccessItem();
+
+        $now = new \DateTime(); //@codingStandardsIgnoreLine
+        $createdAt = new \DateTimeImmutable($item->getTimeStamp()); //@codingStandardsIgnoreLine
+
+        $interval = new \DateInterval("PT5M");  //@codingStandardsIgnoreLine
+        $expiredAt = $createdAt->add($interval);
+
+        return $expiredAt < $now;
+    }
+
+    /**
+     * Check that transaction has been initiated
+     *
+     * @return bool
+     */
+    public function transactionWasInitiated()
+    {
+        $item = $this->transactionLogHistory
+            ->findSuccessItemWithOperation(self::TRANSACTION_OPERATION_INITIATE);
+        if ($item) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check that transaction has been cancelled
+     *
+     * @return bool
+     */
+    public function transactionWasCancelled()
+    {
+        $item = $this->transactionLogHistory
+            ->findSuccessItemWithOperation(self::TRANSACTION_OPERATION_CANCEL);
+        if ($item) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check that transaction has been cancelled
+     *
+     * @return bool
+     */
+    public function transactionWasVoided()
+    {
+        $item = $this->transactionLogHistory
+            ->findSuccessItemWithOperation(self::TRANSACTION_OPERATION_VOID);
+        if ($item) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check that transaction has been reserved
+     *
+     * @return bool
+     */
+    public function transactionWasReserved()
+    {
+        $item = $this->getTransactionLogHistory()
+            ->findSuccessItemWithOperation(self::TRANSACTION_OPERATION_RESERVE);
+        if ($item) {
+            return true;
+        }
         return false;
     }
 

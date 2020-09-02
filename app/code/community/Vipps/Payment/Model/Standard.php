@@ -51,14 +51,6 @@ class Vipps_Payment_Model_Standard extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-     * @return string
-     */
-    public function getCheckoutRedirectUrl()
-    {
-        return Mage::getUrl('vipps/payment_regular');
-    }
-
-    /**
      * @param Varien_Object $payment
      * @param float $amount
      * @return $this|Mage_Payment_Model_Abstract

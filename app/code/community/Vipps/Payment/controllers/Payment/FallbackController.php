@@ -14,6 +14,8 @@
  * IN THE SOFTWARE.
  */
 
+use Vipps\Payment\Api\Data\QuoteStatusInterface;
+
 /**
  * Class Fallback
  * @package Vipps\Payment\Controller\Payment
@@ -91,8 +93,8 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     public function indexAction()
     {
         try {
+            $attemptMessage = '';
             $this->authorize();
-
             $quote = $this->getQuote();
             $order = $this->getOrder();
             $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
@@ -105,6 +107,12 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED);
             $this->updateCheckoutSession($quote, $order);
             $redirectPath = 'checkout/onepage/success';
+        } catch (Vipps_Payment_Model_Exception_TransactionExpired $e) {
+            $attemptMessage = __('Transaction was expired. Please, place your order again');
+            $this->messageManager->addErrorMessage(
+                __('Transaction was expired. Please, place your order again')
+            );
+            $redirectPath = 'checkout/cart';
         } catch (Mage_Core_Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
@@ -118,7 +126,6 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
         } finally {
             $compliant = $this->gdprCompliance->process($this->getRequest()->getRequestString());
             $this->logger->debug($compliant);
-
             if (isset($attempt)) {
                 $attempt->setMessage($attemptMessage);
                 $this->attemptManagement->save($attempt);
@@ -207,6 +214,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
      * @throws \Zend_Db_Adapter_Exception
      * @throws \Zend_Db_Statement_Exception
+     * @throws Vipps_Payment_Model_Exception_TransactionExpired
      */
     private function placeOrder(
         Mage_Sales_Model_Quote $quote,
@@ -214,15 +222,23 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
         \Vipps_Payment_Model_Quote_Attempt $attempt)
     {
         try {
-            $response = $this->commandManager->getOrderStatus(
-                $this->getRequest()->getParam('order_id')
+            $response = $this->commandManager->getPaymentDetails(
+                ['orderId' => $this->getRequest()->getParam('order_id')]
             );
             $transaction = $this->transactionBuilder->setData($response)->build();
-            if ($transaction->isTransactionAborted()) {
+            if ($transaction->isTransactionAborted() || $transaction->transactionWasCancelled()) {
                 $attempt->setMessage('Transaction was cancelled in Vipps');
                 $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED);
                 $this->restoreQuote();
+                Mage::throwException(__('Your order was canceled in Vipps.'));
             }
+            if ($transaction->isTransactionExpired()) {
+                $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED);
+                $vippsQuote->save();
+                $this->restoreQuote();
+                throw new Vipps_Payment_Model_Exception_TransactionExpired();
+            }
+
             $order = $this->orderPlace->execute($quote, $transaction);
             if (!$order) {
                 Mage::throwException(__('Couldn\'t get information about order status right now. Please contact a store administrator.'));
@@ -249,11 +265,14 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
         /** @var Mage_Sales_Model_Quote $quote */
         $quote->setIsActive(true);
         $quote->setReservedOrderId(null);
+        $quote->getPayment()->setAdditionalInformation(
+            Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY,
+            null
+        );
         $this->cartRepository->save($quote);
 
         $this->checkoutSession->setLastQuoteId($quote->getId());
         $this->checkoutSession->replaceQuote($quote);
-        Mage::throwException(__('Your order was canceled in Vipps.'));
     }
 
     /**

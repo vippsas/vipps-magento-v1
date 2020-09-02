@@ -178,7 +178,7 @@ class Vipps_Payment_Model_OrderPlace
         $order = $this->orderRepository->getByIncrement($reservedOrderId);
         if (!$order) {
             //this is used only for express checkout
-            $this->quoteUpdater->execute($clonedQuote);
+            $this->quoteUpdater->execute($clonedQuote, $transaction);
             /** @var Mage_Sales_Model_Quote $clonedQuote */
             $clonedQuote = $this->cartRepository->get($clonedQuote->getId());
             if ($clonedQuote->getReservedOrderId() !== $reservedOrderId) {
@@ -224,8 +224,9 @@ class Vipps_Payment_Model_OrderPlace
      */
     private function validateAmount(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        $quoteAmount = (int)round($this->formatPrice($quote->getGrandTotal()) * 100);
-        $vippsAmount = (int)$transaction->getTransactionInfo()->getAmount();
+        $grandTotal = $quote->getGrandTotal();
+        $quoteAmount = (int)round($this->formatPrice($grandTotal) * 100);
+        $vippsAmount = (int)$transaction->getTransactionSummary()->getRemainingAmountToCapture();
 
         if ($quoteAmount != $vippsAmount) {
             throw new Vipps_Payment_Gateway_Exception_WrongAmountException(

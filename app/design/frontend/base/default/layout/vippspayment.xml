@@ -59,4 +59,12 @@
             </block>
         </reference>
     </checkout_cart_index>
+    <checkout_onepage_index>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/vippspayment/initVippsRegular.js</name>
+            </action>
+        </reference>
+    </checkout_onepage_index>
 </layout>

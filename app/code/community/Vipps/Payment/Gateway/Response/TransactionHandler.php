@@ -35,10 +35,9 @@ class Vipps_Payment_Gateway_Response_TransactionHandler extends Vipps_Payment_Ga
             ->build();
 
         if ($payment) { // check for instance of.
-            $status = $transaction->getTransactionInfo()->getStatus();
             $transactionId = $transaction->getTransactionInfo()->getTransactionId();
 
-            if ($status == Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_CANCELLED) {
+            if ($transaction->getTransactionStatus() == Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_CANCELLED) {
                 $transactionId .= '-void';
             }
             $payment->setTransactionId($transactionId);
