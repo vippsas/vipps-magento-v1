@@ -52,22 +52,21 @@ class Vipps_Payment_Model_QuoteUpdater
 
     /**
      * @param Mage_Sales_Model_Quote $quote
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $quote
      *
      * @return Mage_Sales_Model_Quote
      * @throws Exception
      */
-    public function execute(Mage_Sales_Model_Quote $quote)
+    public function execute(Mage_Sales_Model_Quote $quote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
     {
-        $response = $this->paymentDetailsProvider->get(['orderId' => $quote->getReservedOrderId()]);
-        $transaction = $this->transactionBuilder->setData($response)->build();
         if (!$transaction->isExpressCheckout()) {
             return false;
         }
         $quote->setMayEditShippingAddress(false);
         $quote->setMayEditShippingMethod(true);
-
         $this->updateQuoteAddress($quote, $transaction);
         $this->utility->disabledQuoteAddressValidation($quote);
+        $quote->setTotalsCollectedFlag(false);
         $quote->collectTotals();
         $this->cartRepository->save($quote);
         return $quote;
@@ -100,8 +99,7 @@ class Vipps_Payment_Model_QuoteUpdater
         $shippingAddress->setEmail($userDetails->getEmail());
         $shippingAddress->setTelephone($userDetails->getMobileNumber());
         $shippingAddress->setShippingMethod($shippingDetails->getShippingMethodId());
-        $shippingAddress->setShippingAmount($shippingDetails->getShippingCost());
-        $shippingAddress->setCollectShippingRates(true);
+        $shippingAddress->setShippingAmount($shippingDetails->getShippingCost(), true);
 
         // try to obtain postCode one more time if it is not done before
         if (!$shippingAddress->getPostcode() && $shippingDetails->getPostcode()) {

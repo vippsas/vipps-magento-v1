@@ -135,27 +135,24 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
 
             // Get Magento Quote for processing.
-            $transaction = $this->fetchOrderStatus($vippsQuote->getReservedOrderId());
-            if ($transaction->isTransactionAborted()) {
+            $transaction = $this->getTransaction($vippsQuote->getReservedOrderId());
+            if ($transaction->transactionWasCancelled() || $transaction->transactionWasVoided()) {
                 $attemptMessage = __('Transaction was cancelled in Vipps');
                 $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED;
-            } else {
+            } elseif ($transaction->isTransactionReserved()) {
                 $order = $this->placeOrder($vippsQuote, $transaction);
                 if ($order) {
                     $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED;
                     $attemptMessage = __('Placed');
                 }
-
-                if ($transaction->isInitiate() && $this->isQuoteExpired($vippsQuote)) {
-                    $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED;
-                    $attemptMessage = __('Transaction has been expired');
-                }
+            } elseif ($transaction->isTransactionExpired()) {
+                $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED;
+                $attemptMessage = __('Transaction has been expired');
             }
         } catch (\Exception $e) {
             $vippsQuoteStatus = $this->isMaxAttemptsReached($vippsQuote)
                 ? Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED
                 : Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING;
-
             $this->logger->critical($e->getMessage(), ['vipps_quote_id' => $vippsQuote->getId()]);
             $attemptMessage = $e->getMessage();
         } finally {
@@ -178,9 +175,11 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
      * @return Vipps_Payment_Gateway_Transaction_Transaction
      * @throws Vipps_Payment_Gateway_Command_CommandException
      */
-    private function fetchOrderStatus($orderId)
+    private function getTransaction($orderId)
     {
-        $response = $this->commandManager->getOrderStatus($orderId);
+        $response = $this->commandManager->getPaymentDetails(
+            ['orderId' => $orderId]
+        );
         return $this->transactionBuilder->setData($response)->build();
     }
 

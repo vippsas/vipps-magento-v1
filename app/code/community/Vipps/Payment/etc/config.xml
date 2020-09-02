@@ -94,6 +94,14 @@
                     </vipps_payment>
                 </observers>
             </checkout_cart_add_product_complete>
+            <checkout_submit_all_after>
+                <observers>
+                    <vipps_set_redirect_url>
+                        <class>vipps_payment/observer_CheckoutSubmitAllAfter</class>
+                        <method>setRedirectUrl</method>
+                    </vipps_set_redirect_url>
+                </observers>
+            </checkout_submit_all_after>
         </events>
         <translate>
             <modules>
@@ -145,7 +153,7 @@
                 <label>Vipps</label>
                 <name>Vipps</name>
                 <redirect_url><![CDATA[{{secure_base_url}}vipps/payment_regular]]></redirect_url>
-                <image_url><![CDATA[{{secure_base_url}skin/images/vippspayment/vipps_logo_100x26.png]]></image_url>
+                <image_url><![CDATA[{{secure_base_url}}skin/frontend/base/default/images/vippspayment/vipps_logo_100x26.png]]></image_url>
                 <description>Checkout using Vipps.</description>
                 <fee>0</fee>
             </vipps>

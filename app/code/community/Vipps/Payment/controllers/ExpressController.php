@@ -16,6 +16,22 @@
 
 class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
 {
+    /**
+     * @var Mage_Checkout_Model_Session
+     */
+    protected $checkoutSession;
+
+    /**
+     * @var Mage_Checkout_Helper_Data
+     */
+    protected $checkoutHelper;
+
+    public function preDispatch()
+    {
+        return parent::preDispatch();
+        $this->checkoutHelper = Mage::helper('checkout');
+    }
+
     public function indexAction()
     {
         try {
@@ -23,6 +39,22 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
                 throw new Mage_Core_Exception(__('Express Payment method is not available.'));
             }
             $quote = $this->cart->getQuote();
+            $vippsUrl = $quote->getPayment()->getAdditionalInformation(
+                Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY
+            );
+
+            if ($vippsUrl) {
+                return $this->_redirectUrl($vippsUrl);
+            }
+
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_KEY,
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_EXPRESS_CHECKOUT
+            );
+
+            $shippingAddress = $quote->getShippingAddress();
+            $shippingAddress->setShippingMethod(null);
+            $quote->collectTotals();
 
             $responseData = $this->commandManager->initiatePayment(
                 $quote->getPayment(),
@@ -33,8 +65,26 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
                         => Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_EXPRESS_CHECKOUT
                 ]
             );
+            $vippsUrl = $responseData['url'] ?? '';
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY,
+                $vippsUrl
+            );
 
-            return $this->_redirectUrl($responseData['url']);
+            if (!$quote->getCheckoutMethod()) {
+                if ($this->customerSession->isLoggedIn()) {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_CUSTOMER);
+                } elseif ($this->checkoutHelper->isAllowedGuestCheckout($quote)) {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
+                } else {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_REGISTER);
+                }
+            }
+            $quote->setIsActive(true);
+            $quote->save();
+
+
+            return $this->_redirectUrl($vippsUrl);
         } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());

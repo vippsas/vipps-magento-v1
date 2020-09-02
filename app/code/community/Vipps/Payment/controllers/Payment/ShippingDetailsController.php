@@ -78,7 +78,6 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
             /**
              * As Quote is deactivated, so we need to activate it for estimating shipping methods
              */
-//            $quote = $this->cartRepository->get($quote->getId());
             $this->addressUpdater->fromSourceAddress($quote, $address);
             $quote->setIsActive(true);
             $shippingMethods = $this->shipmentEstimation->estimateByExtendedAddress($quote, $address);
@@ -88,12 +87,14 @@ class Vipps_Payment_Payment_ShippingDetailsController extends \Vipps_Payment_Con
                 'shippingDetails' => []
             ];
             foreach ($shippingMethods as $key => $shippingMethod) {
+                $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
+
                 $responseData['shippingDetails'][] = [
                     'isDefault'        => 'N',
                     'priority'         => $key,
                     'shippingCost'     => $shippingMethod->getAmount(),
                     'shippingMethod'   => $shippingMethod->getMethodCode(),
-                    'shippingMethodId' => $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode(),
+                    'shippingMethodId' => $methodFullCode,
                 ];
             }
             $response->setHttpResponseCode(self::STATUS_CODE_200);
