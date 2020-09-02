@@ -9,7 +9,7 @@
             "email": "oleg.malichenko@vaimo.com"
         }
     ],
-    "require": {},
+    "version": "1.1.0",
     "extra": {
         "vaimo-module-category": "Integration"
     },
