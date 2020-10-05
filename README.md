@@ -1,6 +1,6 @@
 # Vipps Payment Module for Magento 1
 
-## Important notice
+## Important notice 💥
 Adobe and Magento announced in 2018 that Magento 1 will become end of life from June 30, 2020. 
 
 This means there will be no more security patches to the plattform. 
