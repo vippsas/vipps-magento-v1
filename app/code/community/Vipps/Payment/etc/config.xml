@@ -132,7 +132,6 @@
                 <can_use_internal>1</can_use_internal>
                 <environment>develop</environment>
                 <subscription_key1 backend_model="adminhtml/system_config_backend_encrypted"/>
-                <subscription_key2 backend_model="adminhtml/system_config_backend_encrypted"/>
                 <merchant_serial_number backend_model="adminhtml/system_config_backend_encrypted"/>
                 <client_id backend_model="adminhtml/system_config_backend_encrypted"/>
                 <client_secret backend_model="adminhtml/system_config_backend_encrypted"/>
@@ -152,7 +151,7 @@
             <vipps translate="label description" ifconfig="payment/vipps/enabled">
                 <label>Vipps</label>
                 <name>Vipps</name>
-                <redirect_url><![CDATA[{{secure_base_url}}vipps/payment_regular]]></redirect_url>
+                <redirect_url><![CDATA[{{secure_base_url}}vipps/payment_klarna]]></redirect_url>
                 <image_url><![CDATA[{{secure_base_url}}skin/frontend/base/default/images/vippspayment/vipps_logo_100x26.png]]></image_url>
                 <description>Checkout using Vipps.</description>
                 <fee>0</fee>

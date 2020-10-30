@@ -62,6 +62,7 @@ class Vipps_Payment_Model_QuoteUpdater
         if (!$transaction->isExpressCheckout()) {
             return false;
         }
+
         $quote->setMayEditShippingAddress(false);
         $quote->setMayEditShippingMethod(true);
         $this->updateQuoteAddress($quote, $transaction);
@@ -69,6 +70,7 @@ class Vipps_Payment_Model_QuoteUpdater
         $quote->setTotalsCollectedFlag(false);
         $quote->collectTotals();
         $this->cartRepository->save($quote);
+
         return $quote;
     }
 
@@ -100,6 +102,7 @@ class Vipps_Payment_Model_QuoteUpdater
         $shippingAddress->setTelephone($userDetails->getMobileNumber());
         $shippingAddress->setShippingMethod($shippingDetails->getShippingMethodId());
         $shippingAddress->setShippingAmount($shippingDetails->getShippingCost(), true);
+        $shippingAddress->setCollectShippingRates(true);
 
         // try to obtain postCode one more time if it is not done before
         if (!$shippingAddress->getPostcode() && $shippingDetails->getPostcode()) {

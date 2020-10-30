@@ -70,6 +70,8 @@ class Vipps_Payment_Gateway_Transaction_TransactionBuilder
             $shippingDetails = new Vipps_Payment_Gateway_Transaction_ShippingDetails($this->response['shippingDetails']);
         }
 
-        return new Vipps_Payment_Gateway_Transaction_Transaction($info, $summary, $logHistory, $userDetails, $shippingDetails);
+        $orderId = $this->response['orderId'];
+
+        return new Vipps_Payment_Gateway_Transaction_Transaction($orderId, $info, $summary, $logHistory, $userDetails, $shippingDetails);
     }
 }

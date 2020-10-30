@@ -7,9 +7,13 @@
         {
             "name": "Oleg Malichenko",
             "email": "oleg.malichenko@vaimo.com"
+        },
+        {
+            "name": "Eduard Melnyk",
+            "email": "eduard.melnik@vaimo.com"
         }
     ],
-    "version": "1.1.0",
+    "version": "1.1.1",
     "extra": {
         "vaimo-module-category": "Integration"
     },

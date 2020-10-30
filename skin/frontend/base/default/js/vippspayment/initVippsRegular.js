@@ -4,12 +4,16 @@ $(document).observe('dom:loaded', function () {
             if (payment.currentMethod === 'vipps') {
                 checkout.setLoadWaiting('review');
                 jQuery.post(
-                    '/vipps/payment_regular',
+                    BASE_URL +'vipps/payment_regular',
                     {}
                 ).done(
                     function (response, msg, xhr) {
                         checkout.setLoadWaiting(false);
-                        return callOriginal();
+                        if (typeof response.url !== 'undefined') {
+                            return callOriginal();
+                        } else {
+                            window.location.href = BASE_URL + 'checkout/cart';
+                        }
                     }
                 );
             } else {

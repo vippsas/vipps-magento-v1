@@ -137,7 +137,7 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
                 self::HEADER_PARAM_X_REQUEST_ID     => '',
                 self::HEADER_PARAM_X_SOURCE_ADDRESS => '',
                 self::HEADER_PARAM_X_TIMESTAMP      => '',
-                self::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key2')
+                self::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1')
             ],
             $headers
         );

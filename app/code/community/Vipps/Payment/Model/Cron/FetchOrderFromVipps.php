@@ -30,11 +30,6 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
     private $transactionBuilder;
 
     /**
-     * @var Vipps_Payment_Model_OrderPlace
-     */
-    private $orderPlace;
-
-    /**
      * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
     private $attemptManagement;
@@ -55,6 +50,11 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
     private $vippsQuoteRepository;
 
     /**
+     * @var Vipps_Payment_Model_TransactionProcessor
+     */
+    private $transactionProcessor;
+
+    /**
      * FetchOrderFromVipps constructor.
      */
     public function __construct()
@@ -62,11 +62,11 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
         parent::__construct();
 
         $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
-        $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
         $this->attemptManagement = Mage::getSingleton('vipps_payment/quote_attemptManagement');
         $this->quoteRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
         $this->vippsQuoteRepository = Mage::getSingleton('vipps_payment/quoteRepository');
         $this->orderLocator = Mage::getSingleton('vipps_payment/orderRepository');
+        $this->transactionProcessor = Mage::getSingleton('vipps_payment/transactionProcessor');
     }
 
     /**
@@ -134,21 +134,7 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             // Register new attempt.
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
 
-            // Get Magento Quote for processing.
-            $transaction = $this->getTransaction($vippsQuote->getReservedOrderId());
-            if ($transaction->transactionWasCancelled() || $transaction->transactionWasVoided()) {
-                $attemptMessage = __('Transaction was cancelled in Vipps');
-                $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED;
-            } elseif ($transaction->isTransactionReserved()) {
-                $order = $this->placeOrder($vippsQuote, $transaction);
-                if ($order) {
-                    $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED;
-                    $attemptMessage = __('Placed');
-                }
-            } elseif ($transaction->isTransactionExpired()) {
-                $vippsQuoteStatus = Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED;
-                $attemptMessage = __('Transaction has been expired');
-            }
+            $transaction = $this->transactionProcessor->process($vippsQuote);
         } catch (\Exception $e) {
             $vippsQuoteStatus = $this->isMaxAttemptsReached($vippsQuote)
                 ? Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACE_FAILED
@@ -167,68 +153,6 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
                 $this->attemptManagement->save($attempt);
             }
         }
-    }
-
-    /**
-     * @param $orderId
-     *
-     * @return Vipps_Payment_Gateway_Transaction_Transaction
-     * @throws Vipps_Payment_Gateway_Command_CommandException
-     */
-    private function getTransaction($orderId)
-    {
-        $response = $this->commandManager->getPaymentDetails(
-            ['orderId' => $orderId]
-        );
-        return $this->transactionBuilder->setData($response)->build();
-    }
-
-    /**
-     * @param Vipps_Payment_Model_Quote $vippsQuote
-     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
-     *
-     * @return Mage_Sales_Model_Order|null
-     * @throws Mage_Core_Exception
-     * @throws Vipps_Payment_Gateway_Exception_VippsException
-     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
-     * @throws Zend_Db_Adapter_Exception
-     * @throws Zend_Db_Statement_Exception
-     */
-    private function placeOrder(Vipps_Payment_Model_Quote $vippsQuote, Vipps_Payment_Gateway_Transaction_Transaction $transaction)
-    {
-        $quote = $this->quoteRepository->get($vippsQuote->getQuoteId());
-
-        $existentOrder = $this->orderLocator->getByIncrement($vippsQuote->getReservedOrderId());
-
-        $order = isset($existentOrder) ? $existentOrder : $this->orderPlace->execute($quote, $transaction);
-        if ($order) {
-            $this->logger->debug(sprintf('Order placed: "%s"', $order->getIncrementId()));
-        } else {
-            $this->logger->critical(sprintf(
-                'Order has not been placed, quote id: "%s", reserved_order_id: "%s"',
-                $quote->getId(),
-                $quote->getReservedOrderId()
-            ));
-        }
-        return $order;
-    }
-
-    /**
-     * Validate Vipps Quote expiration.
-     *
-     * @param Vipps_Payment_Model_Quote $vippsQuote
-     * @return bool
-     * @throws \Exception
-     */
-    private function isQuoteExpired(Vipps_Payment_Model_Quote $vippsQuote)
-    {
-        $createdAt = new DateTime($vippsQuote->getCreatedAt());
-
-        $interval = new \DateInterval("PT{$this->cancellationConfig->getInactivityTime()}M");  //@codingStandardsIgnoreLine
-
-        $createdAt->add($interval);
-
-        return !$createdAt->diff(new DateTime())->invert;
     }
 
     /**
