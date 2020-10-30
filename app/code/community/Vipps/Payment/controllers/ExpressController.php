@@ -56,6 +56,15 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
             $shippingAddress->setShippingMethod(null);
             $quote->collectTotals();
 
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_KEY,
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_EXPRESS_CHECKOUT
+            );
+
+            $shippingAddress = $quote->getShippingAddress();
+            $shippingAddress->setShippingMethod(null);
+            $quote->collectTotals();
+
             $responseData = $this->commandManager->initiatePayment(
                 $quote->getPayment(),
                 [
@@ -83,6 +92,29 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
             $quote->setIsActive(true);
             $quote->save();
 
+
+if (!isset($responseData['url'])) {
+                throw new \Exception('Can\'t retrieve redirect URL.');
+            }
+
+            // save URL, so we can understand that we already have it for pay in case of some error
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY,
+                $responseData['url']
+            );
+
+            if (!$quote->getCheckoutMethod()) {
+                if ($this->customerSession->isLoggedIn()) {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_CUSTOMER);
+                } elseif ($this->checkoutHelper->isAllowedGuestCheckout($quote)) {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
+                } else {
+                    $quote->setCheckoutMethod(Mage_Checkout_Model_Type_Onepage::METHOD_REGISTER);
+                }
+            }
+
+            $quote->setIsActive(true);
+            $quote->save();
 
             return $this->_redirectUrl($vippsUrl);
         } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {

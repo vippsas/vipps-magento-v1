@@ -55,11 +55,6 @@ class Vipps_Payment_Controller_Abstract extends Mage_Core_Controller_Front_Actio
     protected $gdprCompliance;
 
     /**
-     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
-     */
-    protected $transactionBuilder;
-
-    /**
      * @var Vipps_Payment_Helper_Gateway
      */
     protected $helper;
@@ -78,7 +73,6 @@ class Vipps_Payment_Controller_Abstract extends Mage_Core_Controller_Front_Actio
         $this->messageManager = Mage::getSingleton('vipps_payment/adapter_messageManager');
         $this->serializer = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
         $this->gdprCompliance = Mage::getSingleton('vipps_payment/gdpr_compliance');
-        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder;
 
         return $this;
     }

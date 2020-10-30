@@ -151,6 +151,11 @@ class Vipps_Payment_Gateway_Transaction_Transaction
     private $shippingDetails;
 
     /**
+     * @var string
+     */
+    private $orderId;
+
+    /**
      * Transaction constructor.
      *
      * @param Vipps_Payment_Gateway_Transaction_TransactionInfo $transactionInfo
@@ -160,17 +165,24 @@ class Vipps_Payment_Gateway_Transaction_Transaction
      * @param \Vipps_Payment_Gateway_Transaction_ShippingDetails|null $shippingDetails
      */
     public function __construct(
+        $orderId,
         Vipps_Payment_Gateway_Transaction_TransactionInfo $transactionInfo,
         Vipps_Payment_Gateway_Transaction_TransactionSummary $transactionSummary,
         Vipps_Payment_Gateway_Transaction_TransactionLogHistory $transactionLogHistory,
         \Vipps_Payment_Gateway_Transaction_UserDetails $userDetails = null,
         \Vipps_Payment_Gateway_Transaction_ShippingDetails $shippingDetails = null
     ) {
+        $this->orderId = $orderId;
         $this->transactionInfo = $transactionInfo;
         $this->transactionSummary = $transactionSummary;
         $this->transactionLogHistory = $transactionLogHistory;
         $this->userDetails = $userDetails;
         $this->shippingDetails = $shippingDetails;
+    }
+
+    public function getOrderId()
+    {
+        return $this->orderId;
     }
 
     /**
@@ -258,7 +270,7 @@ class Vipps_Payment_Gateway_Transaction_Transaction
 
         return false;
     }
-    
+
     /**
      * @return string|null
      */

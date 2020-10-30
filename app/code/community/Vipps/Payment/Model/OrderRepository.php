@@ -49,7 +49,7 @@ class Vipps_Payment_Model_OrderRepository
 
     /**
      * @param string $incrementId
-     * @return null
+     * @return Mage_Sales_Model_Order|null
      */
     public function getByIncrement($incrementId)
     {

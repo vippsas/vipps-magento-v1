@@ -22,11 +22,6 @@
 class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller_Abstract
 {
     /**
-     * @var Vipps_Payment_Model_OrderPlace
-     */
-    private $orderPlace;
-
-    /**
      * @var Vipps_Payment_Model_QuoteLocator
      */
     private $quoteLocator;
@@ -37,14 +32,25 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
     private $quote;
 
     /**
+     * @var Vipps_Payment_Model_TransactionProcessor
+     */
+    private $transactionProcessor;
+
+    /**
+     * @var Vipps_Payment_Model_QuoteManagement
+     */
+    private $vippsQuoteManagement;
+
+    /**
      * @return $this|Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
      */
     public function preDispatch()
     {
         parent::preDispatch();
 
-        $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
         $this->quoteLocator = Mage::getSingleton('vipps_payment/quoteLocator');
+        $this->transactionProcessor = Mage::getSingleton('vipps_payment/transactionProcessor');
+        $this->vippsQuoteManagement = Mage::getSingleton('vipps_payment/quoteManagement');
 
         return $this;
     }
@@ -59,11 +65,21 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
             $requestData = $this->serializer->unserialize($this->getRequest()->getRawBody());
 
             $this->authorize($requestData);
-            $transaction = $this->transactionBuilder->setData($requestData)->build();
-            $this->orderPlace->execute($this->getQuote($requestData), $transaction);
+
+            $quote = $this->getQuote($requestData);
+            $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
+
+            $this->transactionProcessor->process($vippsQuote);
 
             $this->getResponse()->setHttpResponseCode(self::STATUS_CODE_200);
             $result = ['status' => self::STATUS_CODE_200, 'message' => 'success'];
+        } catch (Vipps_Payment_Model_Exception_AcquireLock $e) {
+            $this->logger->critical($e->getMessage());
+            $this->getResponse()->setHttpResponseCode(self::STATUS_CODE_200);
+            $result = [
+                'status'  => self::STATUS_CODE_200,
+                'message' => $e->getMessage()
+            ];
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->getResponse()->setHttpResponseCode(self::STATUS_CODE_500);
@@ -146,6 +162,7 @@ class Vipps_Payment_Payment_CallbackController extends \Vipps_Payment_Controller
         if (null === $this->quote) {
             $this->quote = $this->quoteLocator->get($this->getOrderId($requestData)) ?: null;
         }
+
         return $this->quote;
     }
 

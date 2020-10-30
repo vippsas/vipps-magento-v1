@@ -14,8 +14,6 @@
  * IN THE SOFTWARE.
  */
 
-use Vipps\Payment\Api\Data\QuoteStatusInterface;
-
 /**
  * Class Fallback
  * @package Vipps\Payment\Controller\Payment
@@ -27,11 +25,6 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      * @var Mage_Checkout_Model_Session
      */
     private $checkoutSession;
-
-    /**
-     * @var Vipps_Payment_Model_OrderPlace
-     */
-    private $orderPlace;
 
     /**
      * @var Vipps_Payment_Model_Adapter_CartRepository
@@ -54,9 +47,9 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     private $vippsQuoteManagement;
 
     /**
-     * @var Vipps_Payment_Model_Quote_AttemptManagement
+     * @var Vipps_Payment_Model_TransactionProcessor
      */
-    private $attemptManagement;
+    private $transactionProcessor;
 
     /**
      * @var Mage_Sales_Model_Quote
@@ -76,12 +69,11 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
         parent::preDispatch();
 
         $this->checkoutSession = Mage::getSingleton('checkout/session');
-        $this->orderPlace = Mage::getSingleton('vipps_payment/orderPlace');
         $this->cartRepository = Mage::getSingleton('vipps_payment/adapter_cartRepository');
         $this->quoteLocator = Mage::getSingleton('vipps_payment/quoteLocator');
         $this->orderLocator = Mage::getSingleton('vipps_payment/orderRepository');
         $this->vippsQuoteManagement = Mage::getSingleton('vipps_payment/quoteManagement');
-        $this->attemptManagement = Mage::getSingleton('vipps_payment/quote_attemptManagement');
+        $this->transactionProcessor = Mage::getSingleton('vipps_payment/transactionProcessor');
 
         return $this;
     }
@@ -96,42 +88,40 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
             $attemptMessage = '';
             $this->authorize();
             $quote = $this->getQuote();
-            $order = $this->getOrder();
             $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
-            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING);
-            $attempt = $this->attemptManagement->createAttempt($vippsQuote);
-            if (!$order) {
-                $order = $this->placeOrder($quote, $vippsQuote, $attempt);
+
+            $transaction = $this->transactionProcessor->process($vippsQuote);
+            $redirectPath = $this->prepareResponse($vippsQuote, $transaction);
+
+        } catch (Vipps_Payment_Model_Exception_AcquireLock $e) {
+            $this->logger->critical($e->getMessage());
+            if (!$this->updateCheckoutSession()) {
+                $redirectPath = 'checkout/onepage/failure';
             }
-            $attemptMessage = __('Placed');
-            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_PLACED);
-            $this->updateCheckoutSession($quote, $order);
-            $redirectPath = 'checkout/onepage/success';
         } catch (Vipps_Payment_Model_Exception_TransactionExpired $e) {
-            $attemptMessage = __('Transaction was expired. Please, place your order again');
             $this->messageManager->addErrorMessage(
                 __('Transaction was expired. Please, place your order again')
             );
-            $redirectPath = 'checkout/cart';
+            if (!$this->updateCheckoutSession()) {
+                $redirectPath = 'checkout/onepage/failure';
+            }
         } catch (Mage_Core_Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
-            $attemptMessage = $e->getMessage();
-            $redirectPath = 'checkout/onepage/failure';
-        } catch (\Exception $e) {
-            $attemptMessage = $e->getMessage();
+            if (!$this->updateCheckoutSession()) {
+                $redirectPath = 'checkout/onepage/failure';
+            }
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage(__('An error occurred during payment status update.'));
-            $redirectPath = 'checkout/onepage/failure';
+            if (!$this->updateCheckoutSession()) {
+                $redirectPath = 'checkout/onepage/failure';
+            }
         } finally {
             $compliant = $this->gdprCompliance->process($this->getRequest()->getRequestString());
             $this->logger->debug($compliant);
-            if (isset($attempt)) {
-                $attempt->setMessage($attemptMessage);
-                $this->attemptManagement->save($attempt);
-                $this->vippsQuoteManagement->save($vippsQuote);
-            }
         }
+
         $this->_redirect($redirectPath, ['_secure' => true]);
     }
 
@@ -170,7 +160,6 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      * Retrieve quote from quote repository if no then from order
      *
      * @return Mage_Sales_Model_Quote|bool
-     * @throws NoSuchEntityException
      */
     private function getQuote()
     {
@@ -186,6 +175,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
                 $this->quote = false;
             }
         }
+
         return $this->quote;
     }
 
@@ -199,97 +189,62 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
         if (null === $this->order) {
             $this->order = $this->orderLocator->getByIncrement($this->getRequest()->getParam('order_id'));
         }
+
         return $this->order;
     }
 
     /**
-     * @param Mage_Sales_Model_Quote $quote
+     * @param Vipps_Payment_Model_Quote $vippsQuote
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
-     * @param \Vipps_Payment_Model_Quote $vippsQuote
-     * @param \Vipps_Payment_Model_Quote_Attempt $attempt
-     * @return Mage_Sales_Model_Order|null
-     * @throws Vipps_Payment_Gateway_Exception_MerchantException
-     * @throws Mage_Core_Exception
-     * @throws Vipps_Payment_Gateway_Exception_VippsException
-     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
-     * @throws \Zend_Db_Adapter_Exception
-     * @throws \Zend_Db_Statement_Exception
-     * @throws Vipps_Payment_Model_Exception_TransactionExpired
+     * @return string
      */
-    private function placeOrder(
-        Mage_Sales_Model_Quote $quote,
-        \Vipps_Payment_Model_Quote $vippsQuote,
-        \Vipps_Payment_Model_Quote_Attempt $attempt)
-    {
-        try {
-            $response = $this->commandManager->getPaymentDetails(
-                ['orderId' => $this->getRequest()->getParam('order_id')]
+    private function prepareResponse(
+        Vipps_Payment_Model_Quote $vippsQuote,
+        Vipps_Payment_Gateway_Transaction_Transaction $transaction
+    ) {
+        $redirectUrl = 'checkout/onepage/success';
+        if ($transaction->transactionWasCancelled()) {
+            $this->messageManager->addErrorMessage(__('Your order was cancelled in Vipps.'));
+        } elseif ($transaction->isTransactionExpired()) {
+            $this->messageManager->addErrorMessage(
+                __('Transaction was expired. Please, place your order again')
             );
-            $transaction = $this->transactionBuilder->setData($response)->build();
-            if ($transaction->isTransactionAborted() || $transaction->transactionWasCancelled()) {
-                $attempt->setMessage('Transaction was cancelled in Vipps');
-                $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_CANCELED);
-                $this->restoreQuote();
-                Mage::throwException(__('Your order was canceled in Vipps.'));
-            }
-            if ($transaction->isTransactionExpired()) {
-                $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_EXPIRED);
-                $vippsQuote->save();
-                $this->restoreQuote();
-                throw new Vipps_Payment_Model_Exception_TransactionExpired();
-            }
-
-            $order = $this->orderPlace->execute($quote, $transaction);
-            if (!$order) {
-                Mage::throwException(__('Couldn\'t get information about order status right now. Please contact a store administrator.'));
-            }
-            $this->updateCheckoutSession($quote, $order);
-            return $order;
-        } catch (Vipps_Payment_Gateway_Exception_MerchantException $e) {
-            //@todo workaround for vipps issue with order cancellation (delete this condition after fix) //@codingStandardsIgnoreLine
-            if ($e->getCode() == Vipps_Payment_Gateway_Exception_MerchantException::ERROR_CODE_REQUESTED_ORDER_NOT_FOUND) {
-                $this->restoreQuote();
-            } else {
-                throw $e;
-            }
+        } elseif ($transaction->isTransactionReserved()) {
+            $this->updateCheckoutSession();
+            return $redirectUrl;
+        } else {
+            $this->messageManager->addErrorMessage(
+                __('We have not received a confirmation that order was reserved. It will be checked later again.')
+            );
         }
+
+        $this->updateCheckoutSession();
+
+        return $redirectUrl;
     }
 
     /**
-     * @throws Mage_Core_Exception
-     */
-    private function restoreQuote()
-    {
-        $quote = $this->getQuote();
-
-        /** @var Mage_Sales_Model_Quote $quote */
-        $quote->setIsActive(true);
-        $quote->setReservedOrderId(null);
-        $quote->getPayment()->setAdditionalInformation(
-            Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY,
-            null
-        );
-        $this->cartRepository->save($quote);
-
-        $this->checkoutSession->setLastQuoteId($quote->getId());
-        $this->checkoutSession->replaceQuote($quote);
-    }
-
-    /**
-     * Method to update Checkout session for success page when order was placed with Callback Controller.
-     *
      * @param Mage_Sales_Model_Quote $quote
-     * @param Mage_Sales_Model_Order $order
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
+     *
+     * @return bool
      */
-    private function updateCheckoutSession(Mage_Sales_Model_Quote $quote, Mage_Sales_Model_Order $order = null)
+    private function updateCheckoutSession()
     {
-        $this->checkoutSession->setLastQuoteId($quote->getId());
-        if ($order) {
+        $order = $this->getOrder();
+        $quote = $this->getQuote();
+        if ($order && $quote) {
+            $this->checkoutSession->setLastQuoteId($quote->getId());
             $this->checkoutSession
                 ->setLastSuccessQuoteId($quote->getId())
                 ->setLastOrderId($order->getEntityId())
                 ->setLastRealOrderId($order->getIncrementId())
                 ->setLastOrderStatus($order->getStatus());
+
+            return true;
         }
+
+        return false;
     }
 }

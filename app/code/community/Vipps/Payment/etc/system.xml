@@ -116,7 +116,7 @@
                                     <sort_order>80</sort_order>
                                 </client_secret>
                                 <subscription_key1 translate="label comment" type="obscure">
-                                    <label>Subscription Key 1</label>
+                                    <label>Subscription Key</label>
                                     <comment>
                                         <![CDATA[Ocp-Apim-Subscription-Key for DEFAULT product.]]>
                                     </comment>
@@ -129,20 +129,6 @@
                                     <show_in_store>1</show_in_store>
                                     <sort_order>90</sort_order>
                                 </subscription_key1>
-                                <subscription_key2 translate="label comment">
-                                    <label>Subscription Key 2</label>
-                                    <comment>
-                                        <![CDATA[Ocp-Apim-Subscription-Key for eCommerce product.]]>
-                                    </comment>
-                                    <tooltip>This can be found in User Profile page on Merchant developer portal after merchant account is created.</tooltip>
-                                    <config_path>payment/vipps/subscription_key2</config_path>
-                                    <frontend_type>obscure</frontend_type>
-                                    <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                                    <show_in_default>1</show_in_default>
-                                    <show_in_website>1</show_in_website>
-                                    <show_in_store>1</show_in_store>
-                                    <sort_order>100</sort_order>
-                                </subscription_key2>
                             </fields>
                         </vipps_connection>
                         <vipps_express type="group" translate="label">

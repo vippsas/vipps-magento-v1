@@ -45,7 +45,6 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
      */
     public function indexAction()
     {
-        $responseData = [];
         try {
             $quote = $this->onePageCheckout->getQuote();
             $quote->hasItems();
@@ -56,8 +55,7 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
             if ($vippsUrl) {
                 return $this->_renderJson(['url' => $vippsUrl]);
             }
-            $responseData = $this
-                ->commandManager
+            $responseData = $this->commandManager
                 ->initiatePayment(
                     $quote->getPayment(), [
                         'amount' => $quote->getGrandTotal(),
@@ -65,33 +63,39 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
                         => Vipps_Payment_Gateway_Request_Initiate_InitiateBuilderInterface::PAYMENT_TYPE_REGULAR_PAYMENT
                     ]
                 );
-            $vippsUrl = $responseData['url'] ?? '';
 
-            $quote->getPayment()->setAdditionalInformation(
-                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_KEY,
-                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_EXPRESS_CHECKOUT
-            );
+            if (!isset($responseData['url'])) {
+                throw new \Exception('Can\'t retrieve redirect URL.');
+            }
+
             // save URL, so we can understand that we already have it for pay in case of some error
             $quote->getPayment()->setAdditionalInformation(
                 Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY,
-                $vippsUrl
+                $responseData['url']
+            );
+
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_KEY,
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_REGULAR_CHECKOUT
             );
             $quote->setIsActive(true);
             $quote->save();
 
-            return $this->_renderJson(['url' => $vippsUrl]);
+            return $this->_renderJson(['url' => $responseData['url']]);
         } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
             $this->logger->critical($e->getMessage());
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $errorMessage = $e->getMessage();
+            $this->messageManager->addErrorMessage($errorMessage);
         } catch (Mage_Core_Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $errorMessage = $e->getMessage();
+            $this->messageManager->addErrorMessage($errorMessage);
+
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
-            $this
-                ->messageManager
-                ->addErrorMessage(__('An error occurred during request to Vipps. Please try again later.'));
+            $errorMessage = __('An error occurred during request to Vipps. Please try again later.');
+            $this->messageManager->addErrorMessage($errorMessage);
         }
 
-        $this->_redirect('checkout/onepage');
+        return $this->_renderJson(['message' => ($errorMessage ?: '')]);
     }
 }

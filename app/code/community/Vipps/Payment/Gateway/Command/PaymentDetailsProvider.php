@@ -25,6 +25,16 @@ class Vipps_Payment_Gateway_Command_PaymentDetailsProvider
     private $commandManager;
 
     /**
+     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
+     */
+    private $transactionBuilder;
+
+    public function __construct()
+    {
+        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder;
+    }
+
+    /**
      * @param array $arguments
      *
      * @return mixed
@@ -32,7 +42,9 @@ class Vipps_Payment_Gateway_Command_PaymentDetailsProvider
      */
     public function get(array $arguments)
     {
-        return $this->getCommandManager()->getPaymentDetails($arguments);
+        $responseData = $this->getCommandManager()->getPaymentDetails($arguments);
+
+        return $this->transactionBuilder->setData($responseData)->build();
     }
 
     /**
@@ -41,7 +53,8 @@ class Vipps_Payment_Gateway_Command_PaymentDetailsProvider
     private function getCommandManager()
     {
         if (!$this->commandManager) {
-            $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager'); // @TODO: Replace with async singleton loading
+            $this->commandManager = Mage::helper('vipps_payment/gateway')
+                ->getSingleton('command_commandManager'); // @TODO: Replace with async singleton loading
         }
 
         return $this->commandManager;
