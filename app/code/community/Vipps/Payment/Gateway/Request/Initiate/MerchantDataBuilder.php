@@ -102,7 +102,7 @@ class Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder extends Vipps_P
         $merchantInfo = [
             self::$merchantInfo => [
                 self::$authToken            => $callBackAuthToken,
-                self::$callbackPrefix       => $this->urlBuilder->getUrl('vipps/payment_callback/index') . '?XDEBUG_SESSION_START=PHPSTORM',
+                self::$callbackPrefix       => $this->urlBuilder->getUrl('vipps/payment_callback/index'),
                 self::$fallBack             => $this->urlBuilder->getUrl(
                     'vipps/payment_fallback/index',
                     [
