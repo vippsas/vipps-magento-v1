@@ -47,6 +47,7 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory extends \Varien_Ob
         if ($this->getLastSuccessItem()) {
             $transactionId = $this->getLastSuccessItem()->getTransactionId();
         }
+
         return $transactionId;
     }
 
@@ -67,6 +68,7 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory extends \Varien_Ob
                 }
             }
         }
+
         return $this->lastSuccessItem;
     }
 
@@ -97,6 +99,7 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory extends \Varien_Ob
                 return $item;
             }
         }
+
         return null;
     }
 
