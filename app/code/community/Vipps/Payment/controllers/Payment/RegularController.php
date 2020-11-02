@@ -47,6 +47,7 @@ class Vipps_Payment_Payment_RegularController extends \Vipps_Payment_Controller_
     {
         try {
             $quote = $this->onePageCheckout->getQuote();
+
             $quote->hasItems();
             $vippsUrl = $quote->getPayment()->getAdditionalInformation(
                 Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter::VIPPS_URL_KEY

@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2019 Vipps
+ * Copyright 2020 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
- *  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
@@ -114,7 +114,11 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             )
             ->addFieldToFilter(
                 Vipps_Payment_Model_QuoteStatusInterface::FIELD_STATUS,
-                ['in' => [Vipps_Payment_Model_QuoteStatusInterface::STATUS_NEW, Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING]]
+                ['in' => [
+                    Vipps_Payment_Model_QuoteStatusInterface::STATUS_NEW,
+                    Vipps_Payment_Model_QuoteStatusInterface::STATUS_PROCESSING
+                    ]
+                ]
             ); // Filter new and place failed quotes.
 
         return $collection;
@@ -133,7 +137,6 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             $environmentInfo = $this->storeEmulation->startEnvironmentEmulation($vippsQuote->getStoreId());
             // Register new attempt.
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
-
             $transaction = $this->transactionProcessor->process($vippsQuote);
         } catch (\Exception $e) {
             $vippsQuoteStatus = $this->isMaxAttemptsReached($vippsQuote)
@@ -145,8 +148,14 @@ class Vipps_Payment_Model_Cron_FetchOrderFromVipps extends Vipps_Payment_Model_C
             if(isset($environmentInfo)) {
                 $this->storeEmulation->stopEnvironmentEmulation($environmentInfo);
             }
-            $vippsQuote->setStatus($vippsQuoteStatus);
-            $this->vippsQuoteRepository->save($vippsQuote);
+
+            if (isset($transaction) &&
+                $transaction->getTransactionStatus() ==
+                Vipps_Payment_Gateway_Transaction_Transaction::TRANSACTION_STATUS_INITIATE
+            ) {
+                $vippsQuote->setStatus($vippsQuoteStatus);
+                $this->vippsQuoteRepository->save($vippsQuote);
+            }
 
             if (isset($attempt)) {
                 $attempt->setMessage($attemptMessage);

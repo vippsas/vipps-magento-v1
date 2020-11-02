@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2019 Vipps
+ * Copyright 2020 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -23,9 +23,15 @@ class Vipps_Payment_Model_Cron_AbstractCron
 
     /** @var Vipps_Payment_Model_Adapter_Logger  */
     protected $logger;
+
     /** @var Mage_Core_Model_App_Emulation */
     protected $storeEmulation;
+
+    /**
+     * @var Vipps_Payment_Gateway_Command_CommandManager
+     */
     protected $commandManager;
+
     /**
      * @var Vipps_Payment_Model_Order_Cancellation_Config
      */
@@ -37,6 +43,5 @@ class Vipps_Payment_Model_Cron_AbstractCron
         $this->storeEmulation = Mage::getSingleton('core/app_emulation');
         $this->commandManager = Mage::helper('vipps_payment/gateway')->getSingleton('command_commandManager');
         $this->cancellationConfig = Mage::getSingleton('vipps_payment/order_cancellation_config');
-
     }
 }

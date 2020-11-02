@@ -118,7 +118,9 @@ class Vipps_Payment_Model_Cron_CancelQuoteByAttempts extends Vipps_Payment_Model
         $this->logger->info('Start quote cancelling', ['vipps_quote_id' => $vippsQuote->getId()]);
 
         try {
-            $environmentInfo = $this->storeEmulation->startEnvironmentEmulation($vippsQuote->getStoreId());
+            $environmentInfo = $this->storeEmulation->startEnvironmentEmulation(
+                $vippsQuote->getStoreId()
+            );
 
             if ($this->cancellationConfig->isAutomatic($vippsQuote->getStoreId())) {
                 $quote = $this->cartRepository->get($vippsQuote->getQuoteId());
@@ -131,9 +133,7 @@ class Vipps_Payment_Model_Cron_CancelQuoteByAttempts extends Vipps_Payment_Model
                         $this->cancellationConfig->getAttemptsMaxCount()
                     ));
 
-                $this
-                    ->cancellationFacade
-                    ->cancel($vippsQuote, $quote);
+                $this->cancellationFacade->cancel($vippsQuote, $quote);
 
                 $attempt->save();
             }

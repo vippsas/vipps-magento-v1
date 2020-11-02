@@ -85,7 +85,6 @@ class Vipps_Payment_Model_TransactionProcessor
 
     /**
      * @param Vipps_Payment_Model_Quote $vippsQuote
-     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
      *
      * @throws Mage_Core_Exception
      * @throws Zend_Db_Adapter_Exception
@@ -97,6 +96,7 @@ class Vipps_Payment_Model_TransactionProcessor
         try {
             $lockName = $this->acquireLock($vippsQuote->getReservedOrderId());
 
+            /** @var Vipps_Payment_Gateway_Transaction_Transaction $transaction */
             $transaction = $this->paymentDetailsProvider->get(
                 ['orderId' =>$vippsQuote->getReservedOrderId()]
             );
@@ -126,6 +126,7 @@ class Vipps_Payment_Model_TransactionProcessor
         if ($vippsQuote->getReservedOrderId()) {
             $order = $this->orderRepository->getByIncrement($vippsQuote->getReservedOrderId());
             $order->cancel();
+            $order->save();
         }
 
         $vippsQuote->setStatus(Vipps_Payment_Model_Quote::STATUS_CANCELED);
@@ -143,6 +144,7 @@ class Vipps_Payment_Model_TransactionProcessor
         if ($vippsQuote->getReservedOrderId()) {
             $order = $this->orderRepository->getByIncrement($vippsQuote->getReservedOrderId());
             $order->cancel();
+            $order->save();
         }
 
         $vippsQuote->setStatus(Vipps_Payment_Model_Quote::STATUS_EXPIRED);

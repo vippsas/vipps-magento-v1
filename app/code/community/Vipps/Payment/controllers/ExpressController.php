@@ -65,6 +65,15 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
             $shippingAddress->setShippingMethod(null);
             $quote->collectTotals();
 
+            $quote->getPayment()->setAdditionalInformation(
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_KEY,
+                Vipps_Payment_Model_Method_Vipps::METHOD_TYPE_EXPRESS_CHECKOUT
+            );
+
+            $shippingAddress = $quote->getShippingAddress();
+            $shippingAddress->setShippingMethod(null);
+            $quote->collectTotals();
+
             $responseData = $this->commandManager->initiatePayment(
                 $quote->getPayment(),
                 [
