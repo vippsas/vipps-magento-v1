@@ -54,6 +54,58 @@ class Vipps_Payment_Gateway_Transaction_TransactionLogHistory extends \Varien_Ob
     /**
      * Method to return last Item.
      *
+     * @return Item|null
+     */
+    public function getLastSuccessItem()
+    {
+        if (!$this->lastSuccessItem) {
+            $items = $this->getItems();
+            $lastTransactionTime = 0;
+            foreach ($items as $item) {
+                if ($item->isOperationSuccess() && $item->getTimeStamp() >= $lastTransactionTime) {
+                    $lastTransactionTime = $item->getTimeStamp();
+                    $this->lastSuccessItem = $item;
+                }
+            }
+        }
+
+        return $this->lastSuccessItem;
+    }
+
+    /**
+     * @param string $operation
+     *
+     * @return Item|null
+     */
+    public function findItem($operation)
+    {
+        foreach ($this->getItems() as $item) {
+            if ($item->getOperation() == $operation) {
+                return $item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param string $operation
+     *
+     * @return Item|null
+     */
+    public function findSuccessItemWithOperation($operation)
+    {
+        foreach ($this->getItems() as $item) {
+            if ($item->getOperation() == $operation && $item->isOperationSuccess()) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to return last Item.
+     *
      * @return Vipps_Payment_Gateway_Transaction_TransactionLogHistory_Item
      */
     public function getLastItem()
