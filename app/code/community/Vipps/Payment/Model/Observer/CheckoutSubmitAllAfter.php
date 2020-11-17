@@ -22,12 +22,53 @@ class Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter
     /** @var string  */
     const VIPPS_URL_KEY = 'vipps_url';
 
+    /**
+     * @var Vipps_Payment_Model_QuoteManagement
+     */
+    private $vippsQuoteManagement;
+
+    /**
+     * @var Vipps_Payment_Model_Adapter_Logger
+     */
+    private $logger;
+
+    /**
+     * Vipps_Payment_Model_Observer_CheckoutSubmitAllAfter constructor.
+     */
+    public function __construct()
+    {
+        $this->vippsQuoteManagement =  Mage::getSingleton('vipps_payment/quoteManagement');
+        $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+    }
+
     public function setRedirectUrl(Varien_Event_Observer $observer)
     {
+        /** @var Mage_Sales_Model_Order $order */
+        $order =  $observer->getEvent()->getData('order');
         $quote = $observer->getEvent()->getData('quote');
+        if (!$order || !$quote) {
+            return;
+        }
+
+        $payment = $order->getPayment();
+        if (!$payment || $payment->getMethod() != 'vipps') {
+            return;
+        }
+
+        try {
+            // updated vipps quote
+            $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
+            $vippsQuote->setOrderId((int)$order->getEntityId());
+            $vippsQuote->setStatus(Vipps_Payment_Model_QuoteStatusInterface::STATUS_NEW);
+            $this->vippsQuoteManagement->save($vippsQuote);
+        } catch (\Throwable $t) {
+            $this->logger->error($t);
+        }
+
         $redirectUrl = $quote->getPayment()->getAdditionalInformation(
             self::VIPPS_URL_KEY
         );
+
         if ($redirectUrl) {
             Mage::getSingleton('checkout/session')->setRedirectUrl($redirectUrl);
             $quote->getPayment()->setAdditionalInformation(

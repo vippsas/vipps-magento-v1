@@ -170,6 +170,7 @@ class Vipps_Payment_Model_Adapter_Curl implements \Zend_Http_Client_Adapter_Inte
         }
         $this->_applyConfig();
 
+        curl_setopt($this->_getResource(), CURLOPT_HTTP_VERSION, $http_ver);
         // set url to post to
         curl_setopt($this->_getResource(), CURLOPT_URL, $url);
         curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);

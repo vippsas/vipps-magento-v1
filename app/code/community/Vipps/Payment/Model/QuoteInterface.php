@@ -38,6 +38,11 @@ interface Vipps_Payment_Model_QuoteInterface extends Vipps_Payment_Model_QuoteSt
     /**
      * @const string
      */
+    const ORDER_ID = 'order_id';
+
+    /**
+     * @const string
+     */
     const CREATED_AT = 'created_at';
 
     /**
@@ -114,6 +119,17 @@ interface Vipps_Payment_Model_QuoteInterface extends Vipps_Payment_Model_QuoteSt
      * @return int
      */
     public function getEntityId();
+
+    /**
+     * @param int $orderId
+     * @return self
+     */
+    public function setOrderId($orderId);
+
+    /**
+     * @return int
+     */
+    public function getOrderId();
 
     /**
      * @return int

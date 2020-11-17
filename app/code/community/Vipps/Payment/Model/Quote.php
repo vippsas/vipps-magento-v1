@@ -167,6 +167,24 @@ class Vipps_Payment_Model_Quote extends Mage_Core_Model_Abstract implements Vipp
     }
 
     /**
+     * @return int|null
+     */
+    public function getOrderId()
+    {
+        return $this->getData(self::ORDER_ID);
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return Vipps_Payment_Model_Quote|Vipps_Payment_Model_QuoteInterface
+     */
+    public function setOrderId($orderId)
+    {
+        return $this->setData(self::ORDER_ID, $orderId);
+    }
+
+    /**
      * Constructor.
      */
     protected function _construct()
