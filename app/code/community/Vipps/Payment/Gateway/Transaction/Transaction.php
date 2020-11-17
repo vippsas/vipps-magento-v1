@@ -272,6 +272,25 @@ class Vipps_Payment_Gateway_Transaction_Transaction
     }
 
     /**
+     * Check that transaction has not been reserved yet
+     *
+     * @return bool
+     */
+    public function isTransactionCaptured()
+    {
+        $statuses = [
+            self::TRANSACTION_OPERATION_CAPTURE,
+            self::TRANSACTION_STATUS_CAPTURED
+        ];
+        $item = $this->transactionLogHistory->getLastSuccessItem();
+        if (in_array($item->getOperation(), $statuses)) {
+            return true;
+        }
+
+        return false;
+    }
+    
+    /**
      * @return string|null
      */
     public function getTransactionStatus()
@@ -332,6 +351,7 @@ class Vipps_Payment_Gateway_Transaction_Transaction
         if ($item) {
             return true;
         }
+
         return false;
     }
 
@@ -347,6 +367,7 @@ class Vipps_Payment_Gateway_Transaction_Transaction
         if ($item) {
             return true;
         }
+
         return false;
     }
 
@@ -362,6 +383,7 @@ class Vipps_Payment_Gateway_Transaction_Transaction
         if ($item) {
             return true;
         }
+
         return false;
     }
 
@@ -377,6 +399,7 @@ class Vipps_Payment_Gateway_Transaction_Transaction
         if ($item) {
             return true;
         }
+
         return false;
     }
 

@@ -83,6 +83,7 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
     private function place(Vipps_Payment_Gateway_Http_Transfer $transfer)
     {
         try {
+            /** @var Vipps_Payment_Model_Adapter_Curl $adapter */
             $adapter = Mage::getModel('vipps_payment/adapter_curl');
 
             $options = $this->getBasicOptions();

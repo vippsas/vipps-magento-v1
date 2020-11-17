@@ -26,11 +26,6 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
     private $paymentDetailsProvider;
 
     /**
-     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
-     */
-    private $transactionBuilder;
-
-    /**
      * @var \Vipps_Payment_Model_OrderRepository
      */
     private $orderRepository;
@@ -46,7 +41,6 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
         );
 
         $this->paymentDetailsProvider = new Vipps_Payment_Gateway_Command_PaymentDetailsProvider();
-        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
         $this->orderRepository = Mage::getSingleton('vipps_payment/orderRepository');
 
     }
@@ -67,8 +61,7 @@ class Vipps_Payment_Gateway_Command_CaptureCommand extends Vipps_Payment_Gateway
         $amount = $this->subjectReader->readAmount($commandSubject);
         $amount = (int)round($this->formatPrice($amount) * 100);
 
-        $response = $this->paymentDetailsProvider->get($commandSubject);
-        $transaction = $this->transactionBuilder->setData($response)->build();
+        $transaction = $this->paymentDetailsProvider->get($commandSubject);
 
         // try to capture based on payment details data
         if ($this->captureBasedOnPaymentDetails($commandSubject, $transaction)) {

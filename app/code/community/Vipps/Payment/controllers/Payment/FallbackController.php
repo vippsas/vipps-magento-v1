@@ -62,6 +62,11 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     private $order;
 
     /**
+     * @var Vipps_Payment_Model_Quote|null
+     */
+    private $vippsQuote = null;
+
+    /**
      * @return $this|Mage_Core_Controller_Front_Action|\Vipps_Payment_Controller_Abstract
      */
     public function preDispatch()
@@ -84,40 +89,34 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      */
     public function indexAction()
     {
+        $redirectPath = 'checkout/onepage/success';
         try {
-            $attemptMessage = '';
             $this->authorize();
-            $quote = $this->getQuote();
-            $vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);
 
+            $vippsQuote = $this->getVippsQuote();
             $transaction = $this->transactionProcessor->process($vippsQuote);
-            $redirectPath = $this->prepareResponse($vippsQuote, $transaction);
 
-        } catch (Vipps_Payment_Model_Exception_AcquireLock $e) {
-            $this->logger->critical($e->getMessage());
-            if (!$this->updateCheckoutSession()) {
-                $redirectPath = 'checkout/onepage/failure';
-            }
+            $redirectPath = $this->prepareResponse($transaction);
         } catch (Vipps_Payment_Model_Exception_TransactionExpired $e) {
+            $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage(
                 __('Transaction was expired. Please, place your order again')
             );
-            if (!$this->updateCheckoutSession()) {
-                $redirectPath = 'checkout/onepage/failure';
-            }
         } catch (Mage_Core_Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage($e->getMessage());
-            if (!$this->updateCheckoutSession()) {
-                $redirectPath = 'checkout/onepage/failure';
-            }
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
             $this->messageManager->addErrorMessage(__('An error occurred during payment status update.'));
-            if (!$this->updateCheckoutSession()) {
-                $redirectPath = 'checkout/onepage/failure';
-            }
         } finally {
+            $this->storeLastOrderOrRestoreQuote();
+            if (isset($e)) {
+                if ($this->getVippsQuote()->getOrderId()) {
+                    $redirectPath = 'checkout/onepage/failure';
+                } else {
+                    $redirectPath = 'checkout/cart';
+                }
+            }
             $compliant = $this->gdprCompliance->process($this->getRequest()->getRequestString());
             $this->logger->debug($compliant);
         }
@@ -199,27 +198,25 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      *
      * @return string
      */
-    private function prepareResponse(
-        Vipps_Payment_Model_Quote $vippsQuote,
-        Vipps_Payment_Gateway_Transaction_Transaction $transaction
-    ) {
-        $redirectUrl = 'checkout/onepage/success';
+    private function prepareResponse(Vipps_Payment_Gateway_Transaction_Transaction $transaction)
+    {
         if ($transaction->transactionWasCancelled()) {
             $this->messageManager->addErrorMessage(__('Your order was cancelled in Vipps.'));
         } elseif ($transaction->isTransactionExpired()) {
-            $this->messageManager->addErrorMessage(
-                __('Transaction was expired. Please, place your order again')
-            );
-        } elseif ($transaction->isTransactionReserved()) {
-            $this->updateCheckoutSession();
-            return $redirectUrl;
+            $this->messageManager->addErrorMessage(__('Transaction was expired. Please, place your order again'));
+        } elseif ($transaction->isTransactionReserved() || $transaction->isTransactionCaptured()) {
+            return 'checkout/onepage/success';
         } else {
             $this->messageManager->addErrorMessage(
                 __('We have not received a confirmation that order was reserved. It will be checked later again.')
             );
         }
 
-        $this->updateCheckoutSession();
+        if ($this->getVippsQuote()->getOrderId()) {
+            $redirectUrl = 'checkout/onepage/failure';
+        } else {
+            $redirectUrl = 'checkout/cart';
+        }
 
         return $redirectUrl;
     }
@@ -230,21 +227,43 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
      *
      * @return bool
      */
-    private function updateCheckoutSession()
+    private function storeLastOrderOrRestoreQuote()
     {
         $order = $this->getOrder();
         $quote = $this->getQuote();
-        if ($order && $quote) {
-            $this->checkoutSession->setLastQuoteId($quote->getId());
+        $vippsQuote = $this->getVippsQuote(true);
+
+        if ($vippsQuote->getOrderId()) {
             $this->checkoutSession
                 ->setLastSuccessQuoteId($quote->getId())
+                ->setLastQuoteId($quote->getId())
                 ->setLastOrderId($order->getEntityId())
                 ->setLastRealOrderId($order->getIncrementId())
-                ->setLastOrderStatus($order->getStatus());
+                ->setLastOrderStatus($order->getStatus());;
+        } else {
+            $quote = $this->cartRepository->get($vippsQuote->getQuoteId());
+            $quote->setIsActive(true);
+            $quote->setReservedOrderId(null);
 
-            return true;
+            $this->cartRepository->save($quote);
+            $this->checkoutSession->replaceQuote($quote);
+        }
+    }
+
+    /**
+     * @param $quote
+     * @param bool $forceReload
+     *
+     * @return Vipps_Payment_Model_Quote|null
+     * @throws Mage_Core_Exception
+     */
+    private function getVippsQuote($forceReload = false)
+    {
+        if (null === $this->vippsQuote || $forceReload) {
+            $quote = $this->getQuote();
+            $this->vippsQuote = $this->vippsQuoteManagement->getByQuote($quote);;
         }
 
-        return false;
+        return $this->vippsQuote;
     }
 }

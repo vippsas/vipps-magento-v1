@@ -27,11 +27,6 @@ class Vipps_Payment_Gateway_Command_CancelCommand extends Vipps_Payment_Gateway_
     private $paymentDetailsProvider;
 
     /**
-     * @var Vipps_Payment_Gateway_Transaction_TransactionBuilder
-     */
-    private $transactionBuilder;
-
-    /**
      * CancelCommand constructor.
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -47,7 +42,6 @@ class Vipps_Payment_Gateway_Command_CancelCommand extends Vipps_Payment_Gateway_
         );
 
         $this->paymentDetailsProvider = new Vipps_Payment_Gateway_Command_PaymentDetailsProvider();
-        $this->transactionBuilder = new Vipps_Payment_Gateway_Transaction_TransactionBuilder();
     }
 
     /**
@@ -57,8 +51,7 @@ class Vipps_Payment_Gateway_Command_CancelCommand extends Vipps_Payment_Gateway_
      */
     public function execute(array $commandSubject)
     {
-        $response = $this->paymentDetailsProvider->get($commandSubject);
-        $transaction = $this->transactionBuilder->setData($response)->build();
+        $transaction = $this->paymentDetailsProvider->get($commandSubject);
 
         // try to cancel based on payment details data
         if ($this->cancelBasedOnPaymentDetails($commandSubject, $transaction)) {
