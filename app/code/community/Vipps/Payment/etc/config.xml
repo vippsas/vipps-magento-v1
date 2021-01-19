@@ -102,6 +102,14 @@
                     </vipps_set_redirect_url>
                 </observers>
             </checkout_submit_all_after>
+            <checkout_type_onepage_save_order_after>
+                <observers>
+                    <vipps_deactivate_email_sent>
+                        <class>vipps_payment/observer_CheckoutOnepageSaveOrderAfter</class>
+                        <method>deactivateSentEmail</method>
+                    </vipps_deactivate_email_sent>
+                </observers>
+            </checkout_type_onepage_save_order_after>
         </events>
         <translate>
             <modules>

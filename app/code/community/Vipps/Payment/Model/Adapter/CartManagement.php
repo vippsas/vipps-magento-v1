@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2019 Vipps
+ * Copyright 2021 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- *    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
- *  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
@@ -20,7 +20,7 @@
 class Vipps_Payment_Model_Adapter_CartManagement
 {
     /**
-     * @var Mage_Checkout_Model_Cart_Api
+     * @var Vipps_Payment_Model_Cart_Api
      */
     private $orderApi;
 
@@ -34,7 +34,7 @@ class Vipps_Payment_Model_Adapter_CartManagement
      */
     public function __construct()
     {
-        $this->orderApi = Mage::getModel('checkout/cart_api');
+        $this->orderApi = Mage::getModel('vipps_payment/cart_api');
         $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
     }
 
@@ -52,7 +52,7 @@ class Vipps_Payment_Model_Adapter_CartManagement
             if ($order !== null) {
                 return $order;
             }
-        }catch (Mage_Api_Exception $e){
+        } catch (Mage_Api_Exception $e){
             $this->logger->critical($e->getMessage());
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());

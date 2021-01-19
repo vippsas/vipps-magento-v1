@@ -30,6 +30,7 @@ class Vipps_Payment_Model_Quote_CancelFacade
      * @var Vipps_Payment_Model_QuoteRepository
      */
     private $quoteRepository;
+
     /**
      * @var Vipps_Payment_Model_Quote_AttemptManagement
      */
