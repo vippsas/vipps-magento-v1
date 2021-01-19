@@ -182,6 +182,13 @@ class Vipps_Payment_Model_TransactionProcessor
         return $order;
     }
 
+    /**
+     * @param Vipps_Payment_Gateway_Transaction_Transaction $transaction
+     *
+     * @return Mage_Core_Model_Abstract|Mage_Sales_Model_Order|null
+     * @throws Mage_Core_Exception
+     * @throws Vipps_Payment_Gateway_Exception_WrongAmountException
+     */
     private function placeOrder(
         Vipps_Payment_Gateway_Transaction_Transaction $transaction
     ) {
@@ -326,8 +333,15 @@ class Vipps_Payment_Model_TransactionProcessor
      */
     private function notify(Mage_Sales_Model_Order $order)
     {
-        if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
+        $payment = $order->getPayment();
+        if (
+            $order->getCanSendNewEmailFlag() &&
+            !$order->getEmailSent() &&
+            !$payment->getAdditionalInformation('email_added_to_queue')
+        ) {
             $order->sendOrderUpdateEmail(true);
+            $payment->setAdditionalInformation('email_added_to_queue', true);
+            $payment->save();
         }
     }
 

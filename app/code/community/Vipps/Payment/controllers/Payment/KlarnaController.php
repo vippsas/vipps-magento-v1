@@ -77,7 +77,7 @@ class Vipps_Payment_Payment_KlarnaController extends \Vipps_Payment_Controller_A
                 throw new \Exception('Can\'t retrieve redirect URL.');
             }
 
-            $this->cartManagement->placeOrder($quote->getId());
+            $this->placeOrder($quote);
 
             return $this->_redirectUrl($responseData['url']);
         } catch (Vipps_Payment_Gateway_Exception_VippsException $e) {
