@@ -97,7 +97,11 @@ class Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder extends Vipps_P
         $payment = $paymentDO->getPayment();
         $payment->setAdditionalInformation(self::MERCHANT_AUTH_TOKEN, $callBackAuthToken);
         $payment->setAdditionalInformation(self::FALLBACK_AUTH_TOKEN, $fallBackAuthToken);
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote = $payment->getQuote();
+        if ($buildSubject[self::PAYMENT_TYPE_KEY] == self::PAYMENT_TYPE_EXPRESS_CHECKOUT) {
+            $quote->setReservedOrderId(null);
+        }
         $quote->reserveOrderId();
         $merchantInfo = [
             self::$merchantInfo => [
@@ -121,6 +125,7 @@ class Vipps_Payment_Gateway_Request_Initiate_MerchantDataBuilder extends Vipps_P
                 ->urlBuilder
                 ->getUrl('vipps/payment_shippingDetails/index');
         }
+
         return $merchantInfo;
     }
 

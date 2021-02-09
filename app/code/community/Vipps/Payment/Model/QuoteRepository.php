@@ -52,40 +52,38 @@ class Vipps_Payment_Model_QuoteRepository
     }
 
     /**
-     * Load monitoring quote by quote.
-     *
-     * @param $quoteId
-     * @return false|Mage_Core_Model_Abstract
-     * @throws Mage_Core_Exception
-     */
-    public function loadByQuote($quoteId)
-    {
-        $monitoringQuote = $this->quoteFactory->create();
-
-        $monitoringQuote->load($quoteId, 'quote_id');
-
-        if (!$monitoringQuote->getId()) {
-            throw new Mage_Core_Exception(__('No such entity with quote_id = %s', $quoteId));
-        }
-
-        return $monitoringQuote;
-    }
-
-    /**
-     * @param int $monitoringQuoteId
+     * @param int $vippsQuoteId
      * @return \Vipps_Payment_Model_Quote
      * @throws Mage_Core_Exception
      */
-    public function load($monitoringQuoteId)
+    public function load($vippsQuoteId)
     {
-        $monitoringQuote = $this->quoteFactory->create();
+        $vippsQuote = $this->quoteFactory->create();
 
-        $monitoringQuote->load($monitoringQuoteId);
+        $vippsQuote->load($vippsQuoteId);
 
-        if (!$monitoringQuote->getId()) {
-            throw new Mage_Core_Exception(__('No such entity with entity_id = %s', $monitoringQuoteId));
+        if (!$vippsQuote->getId()) {
+            throw new Mage_Core_Exception(__('No such entity with entity_id = %s', $vippsQuoteId));
         }
 
-        return $monitoringQuote;
+        return $vippsQuote;
+    }
+
+    /**
+     * @param $reservedOrderId
+     *
+     * @return Vipps_Payment_Model_Quote
+     * @throws Mage_Core_Exception
+     */
+    public function loadByReservedOrderId($reservedOrderId)
+    {
+        $vippsQuote = $this->quoteFactory->create();
+        $vippsQuote->load($reservedOrderId, 'reserved_order_id');
+
+        if (!$vippsQuote->getId()) {
+            throw new Mage_Core_Exception(__('No such entity with reserved_order_id = %s', $reservedOrderId));
+        }
+
+        return $vippsQuote;
     }
 }

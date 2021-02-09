@@ -20,6 +20,19 @@
 class Vipps_Payment_Model_QuoteLocator
 {
     /**
+     * @var Vipps_Payment_Model_QuoteRepository
+     */
+    private $quoteRepository;
+
+    /**
+     * QuoteManagement constructor.
+     */
+    public function __construct()
+    {
+        $this->quoteRepository = Mage::getSingleton('vipps_payment/quoteRepository');
+    }
+
+    /**
      * Retrieve a quote by increment id
      *
      * @param string $incrementId
@@ -28,7 +41,13 @@ class Vipps_Payment_Model_QuoteLocator
      */
     public function get($incrementId)
     {
-        $quote = Mage::getModel('sales/quote')->load($incrementId, 'reserved_order_id');
+        $vippsQuote = $this->quoteRepository->loadByReservedOrderId($incrementId);
+
+        if (!$vippsQuote->getQuoteId()) {
+            return null;
+        }
+
+        $quote = Mage::getModel('sales/quote')->load($vippsQuote->getQuoteId());
 
         if (!$quote->getId()) {
             return null;
