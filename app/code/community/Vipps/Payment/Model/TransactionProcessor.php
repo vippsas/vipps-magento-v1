@@ -123,8 +123,8 @@ class Vipps_Payment_Model_TransactionProcessor
     private function processCancelledTransaction(
         Vipps_Payment_Model_Quote $vippsQuote
     ) {
-        if ($vippsQuote->getReservedOrderId()) {
-            $order = $this->orderRepository->getByIncrement($vippsQuote->getReservedOrderId());
+        if ($vippsQuote->getOrderId()) {
+            $order = $this->orderRepository->getById($vippsQuote->getOrderId());
             $order->cancel();
             $order->save();
         }
@@ -141,8 +141,8 @@ class Vipps_Payment_Model_TransactionProcessor
     private function processExpiredTransaction(
         Vipps_Payment_Model_Quote $vippsQuote
     ) {
-        if ($vippsQuote->getReservedOrderId()) {
-            $order = $this->orderRepository->getByIncrement($vippsQuote->getReservedOrderId());
+        if ($vippsQuote->getOrderId()) {
+            $order = $this->orderRepository->getById($vippsQuote->getOrderId());
             $order->cancel();
             $order->save();
         }
@@ -162,13 +162,11 @@ class Vipps_Payment_Model_TransactionProcessor
         Vipps_Payment_Model_Quote $vippsQuote,
         Vipps_Payment_Gateway_Transaction_Transaction $transaction
     ) {
-        $order = null;
-        if ($vippsQuote->getReservedOrderId()) {
-            $order = $this->orderRepository->getByIncrement($vippsQuote->getReservedOrderId());
-        }
-
-        if (!$order || !$vippsQuote->getReservedOrderId()) {
+        if ($vippsQuote->getOrderId()) {
+            $order = $this->orderRepository->getById($vippsQuote->getOrderId());
+        } else {
             $order = $this->placeOrder($transaction);
+            $vippsQuote->setOrderId($order->getId());
         }
 
         $paymentAction = $this->config->getValue('vipps_payment_action');
@@ -357,15 +355,15 @@ class Vipps_Payment_Model_TransactionProcessor
     {
         $lockName = 'vipps_place_order_' . $reservedOrderId;
         $retries = 0;
-        do {
+        $canLock = $this->lockManager->lock($lockName, 10);
+
+        while (!$canLock && ($retries < 10)) {
+            usleep(200000); //wait for 0.2 seconds
             $canLock = $this->lockManager->lock($lockName, 10);
-            //If we could acquire a lock retry in 0.2 sec
             if (!$canLock) {
-                usleep(200000);
                 $retries++;
             }
-            //try to acquire lock for 10 times ~ 2 sec
-        } while (!$canLock && ($retries < 10));
+        }
 
         if (!$canLock) {
             throw new Vipps_Payment_Model_Exception_AcquireLock(

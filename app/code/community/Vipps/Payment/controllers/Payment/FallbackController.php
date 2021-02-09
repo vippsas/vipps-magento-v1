@@ -186,7 +186,7 @@ class Vipps_Payment_Payment_FallbackController extends \Vipps_Payment_Controller
     private function getOrder()
     {
         if (null === $this->order) {
-            $this->order = $this->orderLocator->getByIncrement($this->getRequest()->getParam('order_id'));
+            $this->order = $this->orderLocator->getById($this->getVippsQuote(true)->getOrderId());
         }
 
         return $this->order;

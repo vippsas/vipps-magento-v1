@@ -46,15 +46,15 @@ class Vipps_Payment_Model_QuoteManagement
      */
     public function create(Mage_Sales_Model_Quote $cart)
     {
-        /** @var Quote $monitoringQuote */
-        $monitoringQuote = $this->quoteFactory->create();
+        /** @var Vipps_Payment_Model_Quote $vippsQuote */
+        $vippsQuote = $this->quoteFactory->create();
 
-        $monitoringQuote
+        $vippsQuote
             ->setQuoteId($cart->getId())
             ->setStoreId($cart->getStoreId())
             ->setReservedOrderId($cart->getReservedOrderId());
 
-        return $this->quoteRepository->save($monitoringQuote);
+        return $this->quoteRepository->save($vippsQuote);
     }
 
     /**
@@ -65,7 +65,7 @@ class Vipps_Payment_Model_QuoteManagement
     public function getByQuote(Mage_Sales_Model_Quote $quote)
     {
         try {
-            $vippsQuote = $this->quoteRepository->loadByQuote($quote->getId());
+            $vippsQuote = $this->quoteRepository->loadByReservedOrderId($quote->getReservedOrderId());
         } catch (Mage_Core_Exception $exception) {
             // Setup default values for backward compatibility with current quotes.
             $vippsQuote = $this->quoteFactory->create()

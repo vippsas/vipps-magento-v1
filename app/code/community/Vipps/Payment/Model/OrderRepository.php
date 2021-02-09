@@ -48,13 +48,29 @@ class Vipps_Payment_Model_OrderRepository
     }
 
     /**
-     * @param string $incrementId
-     * @return Mage_Sales_Model_Order|null
+     * @param $incrementId
+     *
+     * @return Mage_Core_Model_Abstract|null
      */
     public function getByIncrement($incrementId)
     {
         try {
             return $this->get($incrementId, 'increment_id');
+        } catch (Mage_Core_Exception $e) {
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $orderId
+     *
+     * @return Mage_Core_Model_Abstract|null
+     */
+    public function getById($orderId)
+    {
+        try {
+            return $this->get($orderId);
         } catch (Mage_Core_Exception $e) {
         }
 

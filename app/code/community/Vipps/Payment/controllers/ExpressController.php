@@ -22,6 +22,11 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
     protected $checkoutSession;
 
     /**
+     * @var Mage_Customer_Model_Session
+     */
+    protected $customerSession;
+
+    /**
      * @var Mage_Checkout_Helper_Data
      */
     protected $checkoutHelper;
@@ -30,6 +35,8 @@ class Vipps_Payment_ExpressController extends Vipps_Payment_Controller_Abstract
     {
         return parent::preDispatch();
         $this->checkoutHelper = Mage::helper('checkout');
+        $this->checkoutSession = Mage::getSingleton('checkout/session');
+        $this->customerSession = Mage::getSingleton('customer/session');
     }
 
     public function indexAction()
