@@ -38,6 +38,11 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
      * @var \Vipps_Payment_Model_Adapter_Logger
      */
     private $logger;
+    
+    /**
+     * @var \Vipps_Payment_Model_ModuleMetadata
+     */
+    private $moduleMetadata;
 
     /**
      * Curl constructor.
@@ -49,6 +54,7 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
         $this->tokenProvider = Mage::getModel('vipps_payment/tokenProvider');
         $this->jsonEncoder = Mage::getSingleton('vipps_payment/adapter_jsonEncoder');
         $this->logger = Mage::getSingleton('vipps_payment/adapter_logger');
+        $this->moduleMetadata = Mage::getModel('vipps_payment/moduleMetadata');
     }
 
     /**
@@ -143,6 +149,8 @@ class Vipps_Payment_Gateway_Http_Client_Curl implements Vipps_Payment_Gateway_Ht
             $headers
         );
 
+        $headers = $this->moduleMetadata->addOptionalHeaders($headers);
+        
         $result = [];
         foreach ($headers as $key => $value) {
             $result[] = sprintf('%s: %s', $key, $value);
