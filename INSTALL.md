@@ -56,11 +56,23 @@ For information about how to find the above values, see the [Vipps Developer Por
 
 # Basic Vipps Settings
 
-![Screenshot of Basic Vipps Settings](docs/vipps_basic.png)
+![Screenshot of Basic Vipps Settings](docs/vipps_basic_v2.png)
 
 # Express Checkout Settings
 
-![Screenshot of Express Vipps Settings](docs/express_vipps_settings.png)
+![Screenshot of Express Vipps Settings](docs/express_checkout_v2.png)
+
+#### Cancellation Settings
+
+Here you could configure following settings:
+
+- "Cart Persistence", if set to "Yes", in case when client cancel an order on Vipps side, cart contains recently added products.
+- "Number of Attempts", number of failed attempts to place an order before order will be canceled.
+- "Storage Period", number of days to store quotes information. 0 value to keep all records.
+- "Inactivity Time", developers only. Number of minutes that customer is idle before Vipps order will be canceled in Magento.
+- "Processing Type", deprecated settings that will be removed in future releases. (should be set to "Automatic")
+
+![Screenshot of Cancellation Settings](docs/cancellation_v2.png)
 
 # Support
 
