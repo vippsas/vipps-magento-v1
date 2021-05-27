@@ -1,13 +1,13 @@
 # Vipps Payment Module for Magento 1: Installation
 
-# Prerequisites
+## Prerequisites
 
 1. [Magento 1.7+](https://devdocs.magento.com/guides/m1x/install/installing_install.html)
 1. SSL must be installed on your site and active on your Checkout pages.
 1. You must have a Vipps merchant account. See [Vipps på Nett](https://www.vipps.no/bedrift/vipps-pa-nett)
 1. As with _all_ Magento extensions, it is highly recommended to backup your site before installation and to install and test on a staging environment prior to production deployments.
 
-# Manual Installation
+## Manual Installation
 
 Here are steps required to install Payments extension manually.
 
@@ -15,13 +15,13 @@ Here are steps required to install Payments extension manually.
 1. Copy recursively extension directories (app, skin) to Magento root directory. `cp -r vipps_payment/{app,skin} $magentoRoot/`
 1. Clear Magento cache.
 
-# Configuration
+## Configuration
 
 The Vipps Payment module can be easily configured to meet business expectations of your web store. This section will show you how to configure the extension via `Magento Admin`.
 
 From Magento Admin navigate to `System` -> `Configuration` -> `Sales` -> `Payment Methods` section. On the Payments Methods page the Vipps Payments method should be listed together with other installed payment methods in a system.
 
-## Add a separate connection for Vipps resources
+### Add a separate connection for Vipps resources
 * Duplicate 'default' connection in app/etc/local.xml and name it 'vipps'. It should look like:
 ```         
             <vipps>
@@ -41,7 +41,7 @@ From Magento Admin navigate to `System` -> `Configuration` -> `Sales` -> `Paymen
 
 These settings are required to prevent profiles loss when Magento reverts invoice/refund transactions.
 
-# Settings
+## Settings
 
 Vipps Payments configuration is divided by sections. It helps to quickly find and manage settings of each module feature:
 
@@ -54,15 +54,15 @@ Please ensure you check all configuration settings prior to using Vipps Payment.
 
 For information about how to find the above values, see the [Vipps Developer Portal documentation](https://github.com/vippsas/vipps-developers/blob/master/vipps-developer-portal-getting-started.md).
 
-# Basic Vipps Settings
+### Basic Vipps Settings
 
 ![Screenshot of Basic Vipps Settings](docs/vipps_basic_v2.png)
 
-# Express Checkout Settings
+### Express Checkout Settings
 
 ![Screenshot of Express Vipps Settings](docs/express_checkout_v2.png)
 
-#### Cancellation Settings
+### Cancellation Settings
 
 Here you could configure following settings:
 
@@ -74,7 +74,7 @@ Here you could configure following settings:
 
 ![Screenshot of Cancellation Settings](docs/cancellation_v2.png)
 
-# Support
+## Support
 
 Magento is an open source ecommerce solution: https://magento.com
 
