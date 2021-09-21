@@ -1,11 +1,17 @@
-# Vipps Payment Module for Magento 1
+# Vipps Payment Module for Magento 1 
 
-## Important notice 💥
+## Important deprecation notice 💥 
+The Vipps Payment Module for Magento 1 is no longer supported. 
+Vipps will no longer do updates or patches to the module.
+Run this code at your own risk.
+
 Adobe and Magento announced in 2018 that Magento 1 will become end of life from June 30, 2020. 
 
 This means there will be no more security patches to the plattform. 
 The consequence of this is an increased risk of data breaches.
 Vipps strongly recommends to take urgent action for migrating to Magento 2 or other plattforms. 
+
+Read more about the [Magento Commerce Software End of Support](https://magento.com/sites/default/files8/2019-09/implications-of-unsupported-software-FAQ.pdf).
 
 You can find more information about Vipps payment module for Magento 2 [here](https://github.com/vippsas/vipps-magento).
 
